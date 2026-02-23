@@ -46,6 +46,37 @@ jobs:
             dist/*.AppImage
             dist/latest-linux.yml
 
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download yt-dlp (macOS)
+        run: |
+          mkdir -p bin/mac
+          curl -L -o bin/mac/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos
+          chmod +x bin/mac/yt-dlp
+
+      - name: Build macOS DMG
+        run: npm run build:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: |
+            dist/*.dmg
+            dist/latest-mac.yml
+
   build-windows:
     runs-on: windows-latest
     steps:
@@ -77,7 +108,7 @@ jobs:
             dist/latest.yml
 
   release:
-    needs: [build-linux, build-windows]
+    needs: [build-linux, build-macos, build-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -96,4 +127,5 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/linux-build/*
+            artifacts/macos-build/*
             artifacts/windows-build/*

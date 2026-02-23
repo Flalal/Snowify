@@ -9,7 +9,8 @@
     "build": "electron-vite build",
     "build:linux": "electron-vite build && electron-builder --linux",
     "build:win": "electron-vite build && electron-builder --win",
-    "build:all": "electron-vite build && electron-builder --linux --win"
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:all": "electron-vite build && electron-builder --linux --win --mac"
   },
   "keywords": [
     "music",
@@ -50,6 +51,22 @@
         {
           "from": "bin/linux",
           "to": "bin/linux",
+          "filter": [
+            "yt-dlp"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "assets/logo.png",
+      "identity": null,
+      "extraResources": [
+        {
+          "from": "bin/mac",
+          "to": "bin/mac",
           "filter": [
             "yt-dlp"
           ]

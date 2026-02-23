@@ -31,8 +31,9 @@ export function setCachedUrl(key, value) {
 
 export function getYtDlpPath() {
   const isWin = process.platform === 'win32';
+  const isMac = process.platform === 'darwin';
   const binName = isWin ? 'yt-dlp.exe' : 'yt-dlp';
-  const subDir = isWin ? 'win' : 'linux';
+  const subDir = isWin ? 'win' : isMac ? 'mac' : 'linux';
 
   // In production: resources/bin/<platform>/yt-dlp
   const bundled = path.join(process.resourcesPath, 'bin', subDir, binName);
