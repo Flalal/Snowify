@@ -41,15 +41,35 @@ You'll need [Node.js](https://nodejs.org/) (v18+) and [yt-dlp](https://github.co
 
 ```bash
 # Clone the repo
-git clone https://github.com/nyakuoff/Snowify.git
-cd snowify
+git clone https://github.com/Flalal/Snowify.git
+cd Snowify
 
 # Install dependencies
 npm install
 
-# Run
+# Run in development mode (with hot reload)
+npm run dev
+
+# Preview production build
 npm start
 ```
+
+## Building
+
+Build standalone executables with yt-dlp bundled automatically (no need to install yt-dlp separately for packaged builds):
+
+```bash
+# Windows (.exe installer)
+npm run build:win
+
+# Linux (AppImage)
+npm run build:linux
+
+# Both platforms
+npm run build:all
+```
+
+Output files are placed in the `dist/` directory.
 
 ### Requirements
 
@@ -57,9 +77,8 @@ npm start
 |---|---|
 | [Electron](https://www.electronjs.org/) | Desktop app shell |
 | [ytmusic-api](https://github.com/sigmundgranaas/ytmusic-api) | YouTube Music search, artist & album data |
-| [yt-dlp](https://github.com/yt-dlp/yt-dlp) | Extracts audio stream URLs (must be in PATH) |
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp) | Extracts audio stream URLs (must be in PATH for dev, bundled in builds) |
 | [synclyrics](https://github.com/Stef-00012/SyncLyrics) | Synced lyrics from Musixmatch, LrcLib, Netease |
-| [Firebase](https://firebase.google.com/) | Authentication & cloud sync |
 
 ## Keyboard Shortcuts
 
@@ -77,7 +96,6 @@ npm start
 - **ytmusic-api** — YouTube Music metadata
 - **yt-dlp** — Audio stream extraction
 - **synclyrics** — Synced lyrics (Musixmatch, LrcLib, Netease)
-- **Firebase** — Auth & Firestore cloud sync
 - **Discord RPC** — Rich presence integration
 
 ## Roadmap

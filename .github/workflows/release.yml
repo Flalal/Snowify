@@ -1,6 +1,9 @@
 name: Build & Release
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       tag:
@@ -31,7 +34,7 @@ jobs:
           chmod +x bin/linux/yt-dlp
 
       - name: Build Linux AppImage
-        run: npm run build
+        run: npm run build:linux
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -83,9 +86,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.tag }}
-          name: Snowify ${{ inputs.tag }}
-          prerelease: ${{ inputs.prerelease }}
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          name: Snowify ${{ inputs.tag || github.ref_name }}
+          prerelease: ${{ inputs.prerelease || false }}
           generate_release_notes: true
           files: |
             artifacts/linux-build/*
