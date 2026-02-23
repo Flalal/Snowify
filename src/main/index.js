@@ -42,7 +42,7 @@ function createWindow() {
       preload: path.join(import.meta.dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     },
     icon: nativeImage.createFromPath(path.join(import.meta.dirname, '../../assets/logo.ico'))
   });
@@ -60,7 +60,7 @@ function createWindow() {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           "default-src 'self'; " +
-          "script-src 'self' 'unsafe-inline'; " +
+          "script-src 'self'; " +
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
           "font-src 'self' https://fonts.gstatic.com; " +
           "img-src 'self' https: data: file:; " +

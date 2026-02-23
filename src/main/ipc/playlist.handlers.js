@@ -27,9 +27,12 @@ export function register(ipcMain, deps) {
   ipcMain.handle('playlist:saveImage', async (_event, playlistId, sourcePath) => {
     try {
       const coversDir = getCoversDir();
+      const safeId = String(playlistId).replace(/[^a-zA-Z0-9_-]/g, '_');
       const ext = path.extname(sourcePath) || '.jpg';
-      const destName = `${playlistId}_${Date.now()}${ext}`;
+      const destName = `${safeId}_${Date.now()}${ext}`;
       const destPath = path.join(coversDir, destName);
+      // Verify destination resolves inside covers directory
+      if (!path.resolve(destPath).startsWith(path.resolve(coversDir))) return null;
       fs.copyFileSync(sourcePath, destPath);
       return destPath;
     } catch (err) {
@@ -40,7 +43,10 @@ export function register(ipcMain, deps) {
 
   ipcMain.handle('playlist:deleteImage', async (_event, imagePath) => {
     try {
-      if (imagePath && fs.existsSync(imagePath)) {
+      const coversDir = getCoversDir();
+      // Only allow deleting files inside the covers directory
+      if (!imagePath || !path.resolve(imagePath).startsWith(path.resolve(coversDir))) return false;
+      if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }
       return true;
