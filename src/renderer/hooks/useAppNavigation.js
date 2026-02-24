@@ -6,17 +6,14 @@ import {
   playlistViewState,
   videoPlayerState
 } from '../state/navigation.js';
-import { showToast } from '../state/ui.js';
+import { showToast, lyricsVisible } from '../state/ui.js';
 import { api } from '../services/api.js';
 
-export function useAppNavigation(playFromList, getAudio, lyricsVisible, setLyricsVisible) {
-  const switchView = useCallback(
-    (name) => {
-      currentView.value = name;
-      if (lyricsVisible) setLyricsVisible(false);
-    },
-    [lyricsVisible]
-  );
+export function useAppNavigation(playFromList, getAudio) {
+  const switchView = useCallback((name) => {
+    currentView.value = name;
+    if (lyricsVisible.value) lyricsVisible.value = false;
+  }, []);
 
   const showPlaylistDetail = useCallback(
     (playlist, isLiked) => {

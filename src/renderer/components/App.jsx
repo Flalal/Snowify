@@ -89,11 +89,7 @@ export function App() {
   const initialized = useAppInit(getAudio);
   const { switchView, showPlaylistDetail, closeVideoPlayer, nav } = useAppNavigation(
     playFromList,
-    getAudio,
-    lyricsVisible,
-    (v) => {
-      lyricsVisible.value = v;
-    }
+    getAudio
   );
 
   // ─── Like / Unlike (for mobile media session only) ───
