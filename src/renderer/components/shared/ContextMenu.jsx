@@ -1,34 +1,11 @@
-import { signal } from '@preact/signals';
 import { useRef } from 'preact/hooks';
 import { useContextMenu } from '../../hooks/useContextMenu.js';
 import { playlists, likedSongs, recentTracks, queue, queueIndex, pendingRadioNav, saveState } from '../../state/index.js';
-import { showToast } from './Toast.jsx';
+import { showToast, menuVisible, menuX, menuY, menuTrack, menuOptions, removeContextMenu } from '../../state/ui.js';
 import { escapeHtml } from '../../utils/escapeHtml.js';
+import { api } from '../../services/api.js';
 
-const menuVisible = signal(false);
-const menuX = signal(0);
-const menuY = signal(0);
-const menuTrack = signal(null);
-const menuOptions = signal({});
-
-/**
- * Show the context menu at the given position for a track.
- * options can contain:
- *   onPlay, onPlayNext, onAddQueue, onWatchVideo, onLike, onAddToPlaylist, onShare
- */
-export function showContextMenu(e, track, options = {}) {
-  e.preventDefault();
-  menuTrack.value = track;
-  menuOptions.value = options;
-  menuX.value = e.clientX;
-  menuY.value = e.clientY;
-  menuVisible.value = true;
-}
-
-export function removeContextMenu() {
-  menuVisible.value = false;
-  menuTrack.value = null;
-}
+export { showContextMenu, removeContextMenu } from '../../state/ui.js';
 
 export function ContextMenu() {
   const menuRef = useRef(null);
@@ -86,7 +63,7 @@ export function ContextMenu() {
           pendingRadioNav.value = existing;
         } else {
           showToast('Creating radio...');
-          window.snowify.getUpNexts(track.id).then(upNexts => {
+          api.getUpNexts(track.id).then(upNexts => {
             const newPlaylist = {
               id: 'pl_' + Date.now(),
               name: radioName,
@@ -127,7 +104,7 @@ export function ContextMenu() {
       <>
         <div className="context-menu-divider" />
         <div
-          className="context-menu-item context-menu-has-sub"
+          className="context-menu-has-sub"
           onClick={(e) => e.stopPropagation()}
         >
           <span>Add to playlist</span>

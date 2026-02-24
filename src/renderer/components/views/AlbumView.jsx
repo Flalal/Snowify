@@ -1,49 +1,23 @@
-import { useState, useEffect } from 'preact/hooks';
 import { TrackList } from '../shared/TrackList.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
-import { showPlaylistPicker } from '../shared/PlaylistPickerModal.jsx';
+import { showPlaylistPicker } from '../../state/ui.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
+import { useAsyncData } from '../../hooks/useAsyncData.js';
+import { shuffleArray } from '../../utils/shuffleArray.js';
+import { api } from '../../services/api.js';
 
 export function AlbumView({ albumId, albumMeta }) {
   const { playFromList } = useNavigation();
   const handleLike = useLikeTrack();
 
-  const [album, setAlbum] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { data: album, loading, error } = useAsyncData(
+    () => albumId ? api.albumTracks(albumId) : Promise.resolve(null),
+    [albumId]
+  );
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchAlbum() {
-      setLoading(true);
-      setError(false);
-
-      try {
-        const result = await window.snowify.albumTracks(albumId);
-
-        if (cancelled) return;
-
-        if (!result || !result.tracks.length) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        setAlbum(result);
-      } catch (err) {
-        console.error('Album load error:', err);
-        if (!cancelled) setError(true);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    if (albumId) fetchAlbum();
-    return () => { cancelled = true; };
-  }, [albumId]);
+  const hasError = error || (album && !album.tracks?.length);
 
   function handlePlayAll() {
     if (album && album.tracks.length) {
@@ -53,8 +27,7 @@ export function AlbumView({ albumId, albumMeta }) {
 
   function handleShuffle() {
     if (album && album.tracks.length) {
-      const shuffled = [...album.tracks].sort(() => Math.random() - 0.5);
-      playFromList(shuffled, 0);
+      playFromList(shuffleArray(album.tracks), 0);
     }
   }
 
@@ -132,10 +105,10 @@ export function AlbumView({ albumId, albumMeta }) {
       {/* Track list or loading/error */}
       <div id="album-tracks">
         {loading && <Spinner />}
-        {error && !loading && (
+        {hasError && !loading && (
           <div className="empty-state"><p>Could not load album tracks.</p></div>
         )}
-        {!loading && !error && album && album.tracks.length > 0 && (
+        {!loading && !hasError && album && album.tracks.length > 0 && (
           <TrackList
             tracks={album.tracks}
             context="album"

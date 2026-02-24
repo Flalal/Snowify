@@ -5,6 +5,7 @@ import { Spinner } from '../shared/Spinner.jsx';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
 import { SEARCH_DEBOUNCE_MS } from '../../../shared/constants.js';
+import { api } from '../../services/api.js';
 
 export function SearchView() {
   const { playFromList, openArtistPage } = useNavigation();
@@ -35,8 +36,8 @@ export function SearchView() {
 
     try {
       const [results, artistResults] = await Promise.all([
-        window.snowify.search(q, musicOnly.value),
-        window.snowify.searchArtists(q)
+        api.search(q, musicOnly.value),
+        api.searchArtists(q)
       ]);
 
       if (!results.length && !artistResults.length) {

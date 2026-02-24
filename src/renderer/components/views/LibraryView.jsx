@@ -1,7 +1,6 @@
 import { useCallback } from 'preact/hooks';
 import { playlists, likedSongs, saveState } from '../../state/index.js';
-import { showInputModal } from '../shared/InputModal.jsx';
-import { showToast } from '../shared/Toast.jsx';
+import { showInputModal, showToast } from '../../state/ui.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { PlaylistCover } from '../shared/PlaylistCover.jsx';
 

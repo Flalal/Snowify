@@ -1,33 +1,7 @@
-import { signal } from '@preact/signals';
 import { playlists, likedSongs, saveState } from '../../state/index.js';
-import { showInputModal } from './InputModal.jsx';
-import { showToast } from './Toast.jsx';
+import { showToast, showInputModal, pickerVisible, pickerTracks, cleanupPicker } from '../../state/ui.js';
 
-const pickerVisible = signal(false);
-const pickerTracks = signal([]);
-let _resolve = null;
-
-/**
- * Show a playlist picker modal.
- * @param {Array} tracks - one or more tracks to add
- * @returns {Promise<string|null>} playlist name chosen, or null if cancelled
- */
-export function showPlaylistPicker(tracks) {
-  return new Promise((resolve) => {
-    _resolve = resolve;
-    pickerTracks.value = Array.isArray(tracks) ? tracks : [tracks];
-    pickerVisible.value = true;
-  });
-}
-
-function cleanup(result) {
-  pickerVisible.value = false;
-  pickerTracks.value = [];
-  if (_resolve) {
-    _resolve(result);
-    _resolve = null;
-  }
-}
+export { showPlaylistPicker } from '../../state/ui.js';
 
 function addTracksToPlaylist(playlist, tracks) {
   const existingIds = new Set(playlist.tracks.map(t => t.id));
@@ -50,11 +24,11 @@ export function PlaylistPickerModal() {
   const allPlaylists = playlists.value;
 
   function onOverlay(e) {
-    if (e.target === e.currentTarget) cleanup(null);
+    if (e.target === e.currentTarget) cleanupPicker(null);
   }
 
   function onKey(e) {
-    if (e.key === 'Escape') cleanup(null);
+    if (e.key === 'Escape') cleanupPicker(null);
   }
 
   function handleLiked() {
@@ -68,14 +42,14 @@ export function PlaylistPickerModal() {
       const label = toAdd.length === 1 ? toAdd[0].title : `${toAdd.length} songs`;
       showToast(`Added ${label} to Liked Songs`);
     }
-    cleanup('liked');
+    cleanupPicker('liked');
   }
 
   function handlePlaylist(pl) {
     addTracksToPlaylist(pl, tracks);
     // Trigger reactivity by reassigning the array
     playlists.value = [...playlists.value];
-    cleanup(pl.name);
+    cleanupPicker(pl.name);
   }
 
   async function handleNewPlaylist() {
@@ -91,7 +65,7 @@ export function PlaylistPickerModal() {
     playlists.value = [...playlists.value, newPl];
     addTracksToPlaylist(newPl, tracks);
     playlists.value = [...playlists.value];
-    cleanup(name);
+    cleanupPicker(name);
   }
 
   return (
@@ -130,7 +104,7 @@ export function PlaylistPickerModal() {
 
         {/* Cancel */}
         <div className="modal-buttons">
-          <button className="modal-btn cancel" onClick={() => cleanup(null)}>Cancel</button>
+          <button className="modal-btn cancel" onClick={() => cleanupPicker(null)}>Cancel</button>
         </div>
       </div>
     </div>

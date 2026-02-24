@@ -4,7 +4,7 @@ import {
   cloudSyncEnabled, cloudApiUrl, cloudApiKey, cloudUser,
   cloudAccessToken, cloudRefreshToken, lastSyncAt, saveState
 } from '../../../state/index.js';
-import { showToast } from '../../shared/Toast.jsx';
+import { showToast } from '../../../state/ui.js';
 
 export function CloudSyncSection() {
   const [syncStatus, setSyncStatus] = useState('idle'); // idle | syncing | done | error

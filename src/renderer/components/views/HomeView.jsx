@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { recentTracks, followedArtists, likedSongs, saveState } from '../../state/index.js';
 import { TrackCard } from '../shared/TrackCard.jsx';
-import { showToast } from '../shared/Toast.jsx';
+import { showToast } from '../../state/ui.js';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
 import { AlbumCard } from '../shared/AlbumCard.jsx';
 import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
 import { useNavigation } from '../../hooks/useNavigation.js';
-import { HOME_RELEASES_CACHE_TTL } from '../../../shared/constants.js';
+import { getCachedReleases, setCachedReleases } from '../../services/releasesCache.js';
+import { api } from '../../services/api.js';
 
 export function HomeView() {
   const { playFromList, showAlbumDetail, openArtistPage, playAlbum } = useNavigation();
@@ -36,7 +37,7 @@ export function HomeView() {
 
       const uniqueNames = [...new Set(needsId.map(t => t.artist))];
       const lookups = await Promise.all(
-        uniqueNames.map(n => window.snowify.searchArtists(n).catch(() => []))
+        uniqueNames.map(n => api.searchArtists(n).catch(() => []))
       );
       const nameToId = {};
       uniqueNames.forEach((name, i) => {
@@ -69,10 +70,9 @@ export function HomeView() {
         return;
       }
 
-      // Use a module-level cache
-      const now = Date.now();
-      if (HomeView._cachedReleases && now - HomeView._lastReleaseFetch < HOME_RELEASES_CACHE_TTL) {
-        setReleases(HomeView._cachedReleases);
+      const cached = getCachedReleases();
+      if (cached) {
+        setReleases(cached);
         return;
       }
 
@@ -80,7 +80,7 @@ export function HomeView() {
       try {
         const currentYear = new Date().getFullYear();
         const results = await Promise.allSettled(
-          followed.map(a => window.snowify.artistInfo(a.artistId))
+          followed.map(a => api.artistInfo(a.artistId))
         );
 
         if (cancelled) return;
@@ -102,8 +102,7 @@ export function HomeView() {
         });
 
         releasesList.sort((a, b) => (b.year || 0) - (a.year || 0));
-        HomeView._cachedReleases = releasesList;
-        HomeView._lastReleaseFetch = now;
+        setCachedReleases(releasesList);
         setReleases(releasesList);
       } catch (err) {
         console.error('New releases error:', err);
@@ -154,7 +153,7 @@ export function HomeView() {
       const songs = [];
 
       const results = await Promise.allSettled(
-        topArtists.map(a => window.snowify.artistInfo(a.artistId))
+        topArtists.map(a => api.artistInfo(a.artistId))
       );
 
       if (cancelled) return;
@@ -293,7 +292,3 @@ export function HomeView() {
     </div>
   );
 }
-
-// Module-level cache for releases
-HomeView._cachedReleases = null;
-HomeView._lastReleaseFetch = 0;

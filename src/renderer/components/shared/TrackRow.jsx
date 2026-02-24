@@ -1,5 +1,5 @@
 import { ArtistLink } from './ArtistLink.jsx';
-import { showContextMenu } from './ContextMenu.jsx';
+import { showContextMenu } from '../../state/ui.js';
 
 /**
  * A single row in a track list.

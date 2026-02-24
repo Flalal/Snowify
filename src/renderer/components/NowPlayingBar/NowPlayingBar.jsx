@@ -4,7 +4,7 @@ import { PlaybackControls } from './PlaybackControls.jsx';
 import { ProgressBar } from './ProgressBar.jsx';
 import { VolumeControl } from './VolumeControl.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
-import { showPlaylistPicker } from '../shared/PlaylistPickerModal.jsx';
+import { showPlaylistPicker } from '../../state/ui.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
 
 export function NowPlayingBar({ audio, onTogglePlay, onNext, onPrev, onToggleShuffle, onToggleRepeat, onSetVolume, onToggleLyrics, onToggleQueue, onShowAlbum }) {

@@ -1,8 +1,9 @@
-/** Fisher-Yates shuffle (in-place). Returns the same array. */
+/** Fisher-Yates shuffle (returns a new array, does not mutate the input). */
 export function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [result[i], result[j]] = [result[j], result[i]];
   }
-  return arr;
+  return result;
 }

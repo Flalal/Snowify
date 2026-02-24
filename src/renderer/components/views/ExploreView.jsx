@@ -1,13 +1,15 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
+import { useState, useCallback } from 'preact/hooks';
 import { country } from '../../state/index.js';
 import { ArtistCard } from '../shared/ArtistCard.jsx';
 import { VideoCard } from '../shared/VideoCard.jsx';
 import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
-import { showToast } from '../shared/Toast.jsx';
+import { showToast } from '../../state/ui.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
+import { useAsyncData } from '../../hooks/useAsyncData.js';
 import { EXPLORE_CACHE_TTL } from '../../../shared/constants.js';
+import { api } from '../../services/api.js';
 
 const MOOD_COLORS = [
   '#1db954', '#e13300', '#8c67ab', '#e8115b', '#1e90ff',
@@ -32,7 +34,7 @@ let _chartsCacheTime = 0;
 async function fetchExploreData() {
   const now = Date.now();
   if (_exploreCache && now - _exploreCacheTime < EXPLORE_CACHE_TTL) return _exploreCache;
-  _exploreCache = await window.snowify.explore();
+  _exploreCache = await api.explore();
   _exploreCacheTime = now;
   return _exploreCache;
 }
@@ -40,7 +42,7 @@ async function fetchExploreData() {
 async function fetchChartsData() {
   const now = Date.now();
   if (_chartsCache && now - _chartsCacheTime < EXPLORE_CACHE_TTL) return _chartsCache;
-  _chartsCache = await window.snowify.charts();
+  _chartsCache = await api.charts();
   _chartsCacheTime = now;
   return _chartsCache;
 }
@@ -48,39 +50,19 @@ async function fetchChartsData() {
 export function ExploreView() {
   const { playFromList, showAlbumDetail, openArtistPage, openVideoPlayer, playAlbum } = useNavigation();
 
-  const [loading, setLoading] = useState(true);
-  const [exploreData, setExploreData] = useState(null);
-  const [chartsData, setChartsData] = useState(null);
   const [moodPlaylists, setMoodPlaylists] = useState(null);
   const [moodLabel, setMoodLabel] = useState('');
   const [moodLoading, setMoodLoading] = useState(false);
 
   const countryVal = country.value;
 
-  // Fetch explore and charts data
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadData() {
-      setLoading(true);
-      // Apply country before fetching
-      await window.snowify.setCountry(countryVal || '');
-
-      const [explore, charts] = await Promise.all([
-        fetchExploreData(),
-        fetchChartsData()
-      ]);
-
-      if (cancelled) return;
-
-      setExploreData(explore);
-      setChartsData(charts);
-      setLoading(false);
-    }
-
-    loadData();
-    return () => { cancelled = true; };
+  const { data: exploreAndCharts, loading } = useAsyncData(async () => {
+    await api.setCountry(countryVal || '');
+    const [explore, charts] = await Promise.all([fetchExploreData(), fetchChartsData()]);
+    return { explore, charts };
   }, [countryVal]);
+  const exploreData = exploreAndCharts?.explore || null;
+  const chartsData = exploreAndCharts?.charts || null;
 
   const handleAlbumClick = useCallback((albumId, album) => {
     showAlbumDetail(albumId, album);
@@ -113,7 +95,7 @@ export function ExploreView() {
     setMoodLoading(true);
     setMoodLabel(label);
     try {
-      const playlists = await window.snowify.browseMood(browseId, params);
+      const playlists = await api.browseMood(browseId, params);
       if (!playlists?.length) {
         showToast('No playlists found for this mood');
         setMoodLoading(false);
@@ -134,7 +116,7 @@ export function ExploreView() {
 
   async function handleMoodPlaylistClick(playlistId) {
     try {
-      const vids = await window.snowify.getPlaylistVideos?.(playlistId);
+      const vids = await api.getPlaylistVideos(playlistId);
       if (vids?.length) {
         playFromList(vids, 0);
       } else {

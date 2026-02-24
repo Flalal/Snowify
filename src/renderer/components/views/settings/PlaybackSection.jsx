@@ -2,7 +2,7 @@ import {
   autoplay, audioQuality, videoQuality, videoPremuxed,
   discordRpc, country, isPlaying, queue, queueIndex, saveState
 } from '../../../state/index.js';
-import { showToast } from '../../shared/Toast.jsx';
+import { showToast } from '../../../state/ui.js';
 import { invalidateExploreCache } from '../ExploreView.jsx';
 
 export function PlaybackSection() {

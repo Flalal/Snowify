@@ -1,9 +1,7 @@
 import { playlists, likedSongs, saveState, currentView } from '../../state/index.js';
 import { TrackList } from '../shared/TrackList.jsx';
 import { PlaylistCover } from '../shared/PlaylistCover.jsx';
-import { showToast } from '../shared/Toast.jsx';
-import { showInputModal } from '../shared/InputModal.jsx';
-import { showContextMenu } from '../shared/ContextMenu.jsx';
+import { showToast, showInputModal, showContextMenu } from '../../state/ui.js';
 import { shuffleArray } from '../../utils/shuffleArray.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
@@ -24,7 +22,7 @@ export function PlaylistView({ playlist, isLiked }) {
 
   function handleShuffle() {
     if (tracks.length) {
-      playFromList(shuffleArray([...tracks]), 0);
+      playFromList(shuffleArray(tracks), 0);
     }
   }
 

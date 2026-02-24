@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'preact/hooks';
 import { queue, queueIndex, isPlaying, likedSongs } from '../../state/index.js';
 import { TrackRow } from './TrackRow.jsx';
-import { showPlaylistPicker } from './PlaylistPickerModal.jsx';
+import { showPlaylistPicker } from '../../state/ui.js';
 import { ROW_HEIGHT, VIRTUALIZE_OVERSCAN as OVERSCAN, VIRTUALIZE_THRESHOLD } from '../../../shared/constants.js';
 
 /**
@@ -26,6 +26,26 @@ export function TrackList({ tracks, context, onPlay, onLike, onContextMenu, onDr
     showPlaylistPicker([track]);
   }
 
+  function renderRow(i) {
+    const track = tracks[i];
+    return (
+      <TrackRow
+        key={track.id || i}
+        track={track}
+        index={i}
+        context={context}
+        isPlaying={currentTrack?.id === track.id && playing}
+        isLiked={likedSet.has(track.id)}
+        showPlays={showPlays}
+        onPlay={handlePlay}
+        onLike={onLike}
+        onAddToPlaylist={handleAddToPlaylist}
+        onContextMenu={onContextMenu}
+        onDragStart={onDragStart}
+      />
+    );
+  }
+
   const header = (
     <div className={`track-list-header${modifier}`}>
       <span>#</span>
@@ -37,55 +57,19 @@ export function TrackList({ tracks, context, onPlay, onLike, onContextMenu, onDr
     </div>
   );
 
-  // Small lists: render all rows directly
   if (tracks.length <= VIRTUALIZE_THRESHOLD) {
     return (
       <div>
         {header}
-        {tracks.map((track, i) => (
-          <TrackRow
-            key={track.id || i}
-            track={track}
-            index={i}
-            context={context}
-            isPlaying={currentTrack?.id === track.id && playing}
-            isLiked={likedSet.has(track.id)}
-            showPlays={showPlays}
-            onPlay={handlePlay}
-            onLike={onLike}
-            onAddToPlaylist={handleAddToPlaylist}
-            onContextMenu={onContextMenu}
-            onDragStart={onDragStart}
-          />
-        ))}
+        {tracks.map((_, i) => renderRow(i))}
       </div>
     );
   }
 
-  // Large lists: virtualized rendering
-  return (
-    <VirtualTrackList
-      tracks={tracks}
-      context={context}
-      showPlays={showPlays}
-      modifier={modifier}
-      currentTrack={currentTrack}
-      playing={playing}
-      likedSet={likedSet}
-      header={header}
-      onPlay={handlePlay}
-      onLike={onLike}
-      onAddToPlaylist={handleAddToPlaylist}
-      onContextMenu={onContextMenu}
-      onDragStart={onDragStart}
-    />
-  );
+  return <VirtualTrackList tracks={tracks} header={header} renderRow={renderRow} />;
 }
 
-function VirtualTrackList({
-  tracks, context, showPlays, currentTrack, playing, likedSet,
-  header, onPlay, onLike, onAddToPlaylist, onContextMenu, onDragStart
-}) {
+function VirtualTrackList({ tracks, header, renderRow }) {
   const containerRef = useRef(null);
   const [range, setRange] = useState({ start: 0, end: 40 });
   const totalHeight = tracks.length * ROW_HEIGHT;
@@ -136,10 +120,9 @@ function VirtualTrackList({
       >
         {Array.from({ length: range.end - range.start }, (_, j) => {
           const i = range.start + j;
-          const track = tracks[i];
           return (
             <div
-              key={track.id || i}
+              key={tracks[i].id || i}
               style={{
                 position: 'absolute',
                 left: 0,
@@ -148,19 +131,7 @@ function VirtualTrackList({
                 transform: `translateY(${i * ROW_HEIGHT}px)`,
               }}
             >
-              <TrackRow
-                track={track}
-                index={i}
-                context={context}
-                isPlaying={currentTrack?.id === track.id && playing}
-                isLiked={likedSet.has(track.id)}
-                showPlays={showPlays}
-                onPlay={onPlay}
-                onLike={onLike}
-                onAddToPlaylist={onAddToPlaylist}
-                onContextMenu={onContextMenu}
-                onDragStart={onDragStart}
-              />
+              {renderRow(i)}
             </div>
           );
         })}

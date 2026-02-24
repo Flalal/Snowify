@@ -1,41 +1,22 @@
-import { signal } from '@preact/signals';
 import { useRef } from 'preact/hooks';
 import { useContextMenu } from '../../hooks/useContextMenu.js';
 import { playlists, currentView, currentPlaylistId, saveState } from '../../state/index.js';
-import { showInputModal } from './InputModal.jsx';
-import { removeContextMenu } from './ContextMenu.jsx';
+import {
+  showInputModal, removeContextMenu,
+  plMenuVisible, plMenuX, plMenuY, plMenuPlaylist, plMenuIndex, plMenuTotal,
+  removePlaylistContextMenu
+} from '../../state/ui.js';
 
-const menuVisible = signal(false);
-const menuX = signal(0);
-const menuY = signal(0);
-const menuPlaylist = signal(null);
-const menuIndex = signal(0);
-const menuTotal = signal(0);
-
-export function showPlaylistContextMenu(e, playlist, index, total) {
-  e.preventDefault();
-  removeContextMenu();
-  menuPlaylist.value = playlist;
-  menuIndex.value = index;
-  menuTotal.value = total;
-  menuX.value = e.clientX;
-  menuY.value = e.clientY;
-  menuVisible.value = true;
-}
-
-export function removePlaylistContextMenu() {
-  menuVisible.value = false;
-  menuPlaylist.value = null;
-}
+export { showPlaylistContextMenu, removePlaylistContextMenu } from '../../state/ui.js';
 
 export function PlaylistContextMenu() {
   const menuRef = useRef(null);
-  const visible = menuVisible.value;
-  const playlist = menuPlaylist.value;
-  const index = menuIndex.value;
-  const total = menuTotal.value;
+  const visible = plMenuVisible.value;
+  const playlist = plMenuPlaylist.value;
+  const index = plMenuIndex.value;
+  const total = plMenuTotal.value;
 
-  useContextMenu(menuRef, visible, menuX.value, menuY.value, removePlaylistContextMenu);
+  useContextMenu(menuRef, visible, plMenuX.value, plMenuY.value, removePlaylistContextMenu);
 
   if (!visible || !playlist) return null;
 
@@ -88,7 +69,7 @@ export function PlaylistContextMenu() {
     <div
       ref={menuRef}
       className="context-menu"
-      style={{ left: menuX.value + 'px', top: menuY.value + 'px' }}
+      style={{ left: plMenuX.value + 'px', top: plMenuY.value + 'px' }}
     >
       <div className="context-menu-item" onClick={handleRename}>
         Rename

@@ -1,31 +1,7 @@
-import { signal } from '@preact/signals';
 import { useEffect, useRef } from 'preact/hooks';
+import { modalVisible, modalTitle, modalDefaultValue, cleanupInputModal } from '../../state/ui.js';
 
-const modalVisible = signal(false);
-const modalTitle = signal('');
-const modalDefaultValue = signal('');
-let _resolve = null;
-
-/**
- * Show an input modal with the given title and optional default value.
- * Returns a Promise that resolves to the trimmed input value, or null if cancelled.
- */
-export function showInputModal(title, defaultValue = '') {
-  return new Promise((resolve) => {
-    _resolve = resolve;
-    modalTitle.value = title;
-    modalDefaultValue.value = defaultValue;
-    modalVisible.value = true;
-  });
-}
-
-function cleanup(result) {
-  modalVisible.value = false;
-  if (_resolve) {
-    _resolve(result);
-    _resolve = null;
-  }
-}
+export { showInputModal } from '../../state/ui.js';
 
 export function InputModal() {
   const inputRef = useRef(null);
@@ -44,11 +20,11 @@ export function InputModal() {
 
   function onOk() {
     const val = inputRef.current ? inputRef.current.value.trim() : '';
-    cleanup(val || null);
+    cleanupInputModal(val || null);
   }
 
   function onCancel() {
-    cleanup(null);
+    cleanupInputModal(null);
   }
 
   function onKey(e) {

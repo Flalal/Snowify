@@ -1,6 +1,6 @@
 import { queue, queueIndex } from '../../state/index.js';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
-import { showContextMenu } from '../shared/ContextMenu.jsx';
+import { showContextMenu } from '../../state/ui.js';
 
 /**
  * QueuePanel -- Slide-out panel on the right showing the current queue.

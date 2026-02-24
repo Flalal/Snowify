@@ -1,6 +1,6 @@
 import { useCallback } from 'preact/hooks';
 import { likedSongs, saveState } from '../state/index.js';
-import { showToast } from '../components/shared/Toast.jsx';
+import { showToast } from '../state/ui.js';
 import { spawnHeartParticles } from '../utils/spawnHeartParticles.js';
 
 /**

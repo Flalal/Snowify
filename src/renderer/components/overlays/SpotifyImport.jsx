@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'preact/hooks';
 import { playlists, saveState } from '../../state/index.js';
-import { showToast } from '../shared/Toast.jsx';
+import { showToast } from '../../state/ui.js';
 
 /**
  * SpotifyImport -- Modal overlay for importing Spotify playlists from CSV files.

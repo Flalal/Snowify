@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { showToast } from '../../shared/Toast.jsx';
+import { showToast } from '../../../state/ui.js';
 
 export function UpdateSection() {
   const [updateStatus, setUpdateStatus] = useState('idle'); // idle | checking | available | downloading | ready

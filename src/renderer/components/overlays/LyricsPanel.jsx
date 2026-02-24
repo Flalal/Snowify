@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { queue, queueIndex, isPlaying } from '../../state/index.js';
-import { showToast } from '../shared/Toast.jsx';
+import { showToast } from '../../state/ui.js';
+import { api } from '../../services/api.js';
 
 /**
  * LyricsPanel -- Slide-out panel displaying synced or plain lyrics.
@@ -103,7 +104,7 @@ export function LyricsPanel({ visible, onClose, audio }) {
     }
 
     try {
-      const result = await window.snowify.getLyrics(track.title, track.artist, track.album || '', durationSec);
+      const result = await api.getLyrics(track.title, track.artist, track.album || '', durationSec);
 
       // Ensure we're still viewing the same track
       if (trackIdRef.current !== track.id) return;

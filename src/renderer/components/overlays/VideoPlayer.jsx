@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { isPlaying, volume, videoQuality, videoPremuxed } from '../../state/index.js';
-import { showToast } from '../shared/Toast.jsx';
+import { showToast } from '../../state/ui.js';
+import { api } from '../../services/api.js';
 
 /**
  * VideoPlayer -- Full-screen overlay for music video playback.
@@ -120,7 +121,7 @@ export function VideoPlayer({ videoId, title, artist, onClose }) {
 
     (async () => {
       try {
-        const result = await window.snowify.getVideoStreamUrl(videoId, videoQuality.value, videoPremuxed.value);
+        const result = await api.getVideoStreamUrl(videoId, videoQuality.value, videoPremuxed.value);
         if (cancelled) return;
 
         videoEl.src = result.videoUrl;

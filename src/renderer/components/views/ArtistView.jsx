@@ -6,46 +6,32 @@ import { VideoCard } from '../shared/VideoCard.jsx';
 import { ArtistCard } from '../shared/ArtistCard.jsx';
 import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
-import { showToast } from '../shared/Toast.jsx';
-import { showPlaylistPicker } from '../shared/PlaylistPickerModal.jsx';
+import { showToast, showPlaylistPicker } from '../../state/ui.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
-import { HomeView } from './HomeView.jsx';
+import { useAsyncData } from '../../hooks/useAsyncData.js';
+import { invalidateReleasesCache } from '../../services/releasesCache.js';
+import { api } from '../../services/api.js';
 
 export function ArtistView({ artistId }) {
   const { playFromList, showAlbumDetail, openVideoPlayer, openArtistPage, playAlbum } = useNavigation();
   const handleLike = useLikeTrack();
 
-  const [info, setInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: info, loading } = useAsyncData(
+    () => artistId ? api.artistInfo(artistId) : Promise.resolve(null),
+    [artistId]
+  );
+
   const [discoFilter, setDiscoFilter] = useState('all');
   const [avatarLoaded, setAvatarLoaded] = useState(false);
 
-  const followed = followedArtists.value;
-
+  // Reset UI state when artist changes
   useEffect(() => {
-    let cancelled = false;
-
-    async function fetchArtist() {
-      setLoading(true);
-      setInfo(null);
-      setDiscoFilter('all');
-      setAvatarLoaded(false);
-
-      try {
-        const result = await window.snowify.artistInfo(artistId);
-        if (cancelled) return;
-        setInfo(result);
-      } catch (err) {
-        console.error('Artist load error:', err);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    if (artistId) fetchArtist();
-    return () => { cancelled = true; };
+    setDiscoFilter('all');
+    setAvatarLoaded(false);
   }, [artistId]);
+
+  const followed = followedArtists.value;
 
   const isFollowed = followed.some(a => a.artistId === artistId);
 
@@ -60,9 +46,7 @@ export function ArtistView({ artistId }) {
       ];
       showToast(`Following ${info?.name || 'artist'}`);
     }
-    // Invalidate release cache
-    HomeView._cachedReleases = null;
-    HomeView._lastReleaseFetch = 0;
+    invalidateReleasesCache();
     saveState();
   }
 

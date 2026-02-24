@@ -1,8 +1,6 @@
 import { playlists, likedSongs, currentView, currentPlaylistId, saveState } from '../../state/index.js';
 import { PlaylistItem } from './PlaylistItem.jsx';
-import { showInputModal } from '../shared/InputModal.jsx';
-import { showToast } from '../shared/Toast.jsx';
-import { showPlaylistContextMenu } from '../shared/PlaylistContextMenu.jsx';
+import { showInputModal, showToast, showPlaylistContextMenu } from '../../state/ui.js';
 import { signal } from '@preact/signals';
 
 // Drag state shared across the app

@@ -1,5 +1,5 @@
 import { recentTracks, saveState } from '../../state/index.js';
-import { showToast } from '../shared/Toast.jsx';
+import { showToast } from '../../state/ui.js';
 import { UpdateSection } from './settings/UpdateSection.jsx';
 import { PlaybackSection } from './settings/PlaybackSection.jsx';
 import { AppearanceSection } from './settings/AppearanceSection.jsx';
