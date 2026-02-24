@@ -59,6 +59,24 @@ export function useTrackPlayer() {
       audio.src = directUrl;
       audio.volume = volume.value * VOLUME_SCALE;
       audio.load();
+
+      // Wait for audio data to be ready before playing.
+      // On Android WebView, play() can reject if called before data is available.
+      if (audio.readyState < 3) {
+        await new Promise((resolve, reject) => {
+          const onReady = () => {
+            audio.removeEventListener('error', onErr);
+            resolve();
+          };
+          const onErr = () => {
+            audio.removeEventListener('canplay', onReady);
+            reject(audio.error || new Error('Audio load failed'));
+          };
+          audio.addEventListener('canplay', onReady, { once: true });
+          audio.addEventListener('error', onErr, { once: true });
+        });
+      }
+
       await audio.play();
       isPlaying.value = true;
       isLoading.value = false;

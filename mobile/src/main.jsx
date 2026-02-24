@@ -46,17 +46,6 @@ import { initMediaSession, updateMobileMediaSession, setMobileLiked, registerMob
 import { initAudioFocus } from './audio-focus.js';
 window.__mobileMediaSession = { update: updateMobileMediaSession, setLiked: setMobileLiked };
 
-// Unlock AudioContext on first user gesture (Android WebView requires this)
-document.addEventListener('touchstart', function unlockAudio() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  if (ctx.state === 'suspended') ctx.resume();
-  const buf = ctx.createBuffer(1, 1, 22050);
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  src.connect(ctx.destination);
-  src.start();
-  document.removeEventListener('touchstart', unlockAudio);
-}, { once: true });
 
 // Import the main app (shared with desktop)
 import { App } from '@components/App.jsx';
