@@ -61,6 +61,9 @@ function createWindow() {
     mainWindow.loadFile(path.join(import.meta.dirname, '../renderer/index.html'));
   }
 
+  const isDev = !!process.env.ELECTRON_RENDERER_URL;
+  const connectSrc = isDev ? "connect-src 'self' https: http: ws:" : "connect-src 'self'";
+
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -72,7 +75,8 @@ function createWindow() {
             "font-src 'self' https://fonts.gstatic.com; " +
             "img-src 'self' https: data: file:; " +
             "media-src 'self' blob: https:; " +
-            "connect-src 'self' https: http:;"
+            connectSrc +
+            ';'
         ]
       }
     });

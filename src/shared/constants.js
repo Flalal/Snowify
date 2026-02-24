@@ -2,8 +2,8 @@
 
 // Playback
 export const VOLUME_SCALE = 0.3; // Cap actual audio volume to prevent distortion
-export const WATCHDOG_INTERVAL_MS = 2000; // Playback stall detection interval
-export const WATCHDOG_STALL_TICKS = 4; // Stall ticks before auto-advance
+export const WATCHDOG_INTERVAL_MS = 4000; // Playback stall detection interval
+export const WATCHDOG_STALL_TICKS = 2; // Stall ticks before auto-advance (same 8s total)
 export const SEEK_STEP_S = 5; // Arrow key seek step in seconds
 export const VOLUME_STEP = 0.05; // Arrow key volume step
 export const RESTART_THRESHOLD_S = 3; // Seconds before "prev" restarts current track
@@ -34,3 +34,11 @@ export const YTMUSIC_RETRY_DELAYS = [1000, 3000, 8000];
 
 // Stream cache
 export const STREAM_CACHE_MAX_SIZE = 200;
+
+// Error codes
+export const ErrorCode = {
+  AUDIO_ERROR: 'audio_error',
+  STREAM_STALLED: 'stream_stalled',
+  PLAYBACK_FAILED: 'playback_failed',
+  YTMUSIC_INIT: 'ytmusic_init'
+};

@@ -12,7 +12,8 @@ import {
   saveStateNow,
   loadState
 } from '../state/index.js';
-import { showToast } from '../state/ui.js';
+import { setError } from './useError.js';
+import { ErrorCode } from '../../shared/constants.js';
 import { api } from '../services/api.js';
 import { VOLUME_SCALE } from '../../shared/constants.js';
 import { applyThemeToDOM } from '../utils/applyThemeToDOM.js';
@@ -51,11 +52,16 @@ export function useAppInit(getAudio) {
     if (audio) audio.volume = volume.value * VOLUME_SCALE;
     if (discordRpc.value) window.snowify.connectDiscord();
     applyThemeToDOM(theme.value);
+    const mql = window.matchMedia('(prefers-color-scheme: light)');
+    const onSchemeChange = () => {
+      if (theme.value === 'system') applyThemeToDOM('system');
+    };
+    mql.addEventListener('change', onSchemeChange);
     document.documentElement.classList.toggle('no-animations', !animations.value);
     document.documentElement.classList.toggle('no-effects', !effects.value);
     if (country.value) api.setCountry(country.value);
     window.snowify.onYtMusicInitError?.(() => {
-      showToast('Music service failed to initialize — restart the app');
+      setError(ErrorCode.YTMUSIC_INIT, 'Music service failed to initialize — restart the app');
     });
     window.snowify.onTokensUpdated?.((tokens) => {
       cloudAccessToken.value = tokens.accessToken;
@@ -72,7 +78,10 @@ export function useAppInit(getAudio) {
 
     const flushState = () => saveStateNow();
     window.addEventListener('beforeunload', flushState);
-    return () => window.removeEventListener('beforeunload', flushState);
+    return () => {
+      window.removeEventListener('beforeunload', flushState);
+      mql.removeEventListener('change', onSchemeChange);
+    };
   }, []);
 
   return initialized;

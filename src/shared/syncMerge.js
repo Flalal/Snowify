@@ -35,7 +35,7 @@ export function syncMerge(local, remote) {
   const newHistory = (remote.history || [])
     .filter((h) => !historyIds.has(h.track_id || h.id))
     .map((h) => mapHistoryEntry(h));
-  const recentTracks = [...newHistory, ...local.recentTracks];
+  const recentTracks = [...newHistory, ...(local.recentTracks || [])];
 
   return { playlists, likedSongs, recentTracks };
 }

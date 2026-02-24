@@ -14,6 +14,7 @@ import {
 import { shuffleArray } from '../utils/shuffleArray.js';
 import { showToast } from '../state/ui.js';
 import { updateDiscordPresence } from '../utils/discordPresence.js';
+import { handlePlaybackError } from '../utils/playbackError.js';
 import { VOLUME_SCALE, RECENT_TRACKS_MAX } from '../../shared/constants.js';
 import { api } from '../services/api.js';
 
@@ -68,10 +69,7 @@ export function useTrackPlayer() {
       onTrackPlayedRef.current?.(track);
     } catch (err) {
       console.error('Playback error:', err);
-      const msg = typeof err === 'string' ? err : err.message || 'unknown error';
-      showToast('Playback failed: ' + msg);
-      isPlaying.value = false;
-      isLoading.value = false;
+      handlePlaybackError({ reason: 'playback_failed', error: err, shouldAdvance: false });
       if (!skipAdvanceRef.current) {
         const q = queue.value;
         const nextIdx = queueIndex.value + 1;

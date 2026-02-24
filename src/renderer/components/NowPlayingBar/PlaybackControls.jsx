@@ -1,13 +1,8 @@
 import { shuffle, repeat, isPlaying } from '../../state/index.js';
+import { usePlaybackContext } from '../../hooks/usePlaybackContext.js';
 
-export function PlaybackControls({
-  onTogglePlay,
-  onNext,
-  onPrev,
-  onToggleShuffle,
-  onToggleRepeat,
-  loading
-}) {
+export function PlaybackControls({ loading }) {
+  const { togglePlay, playNext, playPrev, toggleShuffle, toggleRepeat } = usePlaybackContext();
   const rep = repeat.value;
   const shuf = shuffle.value;
   const playing = isPlaying.value;
@@ -89,7 +84,7 @@ export function PlaybackControls({
     <div className="np-buttons">
       <button
         className={`icon-btn${shuf ? ' active' : ''}`}
-        onClick={onToggleShuffle}
+        onClick={toggleShuffle}
         title="Shuffle"
         aria-label="Shuffle"
       >
@@ -141,14 +136,14 @@ export function PlaybackControls({
           />
         </svg>
       </button>
-      <button className="icon-btn" onClick={onPrev} title="Previous" aria-label="Previous">
+      <button className="icon-btn" onClick={playPrev} title="Previous" aria-label="Previous">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z" />
         </svg>
       </button>
       <button
         className={`play-btn${loading ? ' loading' : ''}`}
-        onClick={onTogglePlay}
+        onClick={togglePlay}
         title={loading ? 'Loading...' : playing ? 'Pause' : 'Play'}
         aria-label={loading ? 'Loading' : playing ? 'Pause' : 'Play'}
       >
@@ -164,14 +159,14 @@ export function PlaybackControls({
           </svg>
         )}
       </button>
-      <button className="icon-btn" onClick={onNext} title="Next" aria-label="Next">
+      <button className="icon-btn" onClick={playNext} title="Next" aria-label="Next">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z" />
         </svg>
       </button>
       <button
         className={`icon-btn${rep !== 'off' ? ' active' : ''}`}
-        onClick={onToggleRepeat}
+        onClick={toggleRepeat}
         title={rep === 'one' ? 'Repeat One' : rep === 'all' ? 'Repeat All' : 'Repeat'}
         aria-label={rep === 'one' ? 'Repeat one' : rep === 'all' ? 'Repeat all' : 'Repeat'}
       >

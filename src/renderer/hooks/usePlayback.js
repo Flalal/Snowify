@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'preact/hooks';
-import { queue, queueIndex, isPlaying, isLoading, currentTrack } from '../state/index.js';
-import { showToast } from '../state/ui.js';
-import { updateDiscordPresence, clearDiscordPresence } from '../utils/discordPresence.js';
+import { currentTrack, isPlaying } from '../state/index.js';
+import { updateDiscordPresence } from '../utils/discordPresence.js';
 import { updateMediaSession, syncPositionState } from '../utils/mediaSession.js';
+import { handlePlaybackError } from '../utils/playbackError.js';
 import { useTrackPlayer } from './useTrackPlayer.js';
 import { useQueueControls } from './useQueueControls.js';
 import { usePlaybackWatchdog } from './usePlaybackWatchdog.js';
@@ -38,15 +38,7 @@ export function usePlayback() {
 
     const onEnded = () => playNextRef.current();
     const onError = () => {
-      isPlaying.value = false;
-      isLoading.value = false;
-      clearDiscordPresence();
-      showToast('Audio error — skipping to next track');
-      const nextIdx = queueIndex.value + 1;
-      if (nextIdx < queue.value.length) {
-        queueIndex.value = nextIdx;
-        playTrackRef.current(queue.value[nextIdx]);
-      }
+      handlePlaybackError({ reason: 'audio_error', playNext: playNextRef.current });
     };
     const onSeeked = () => {
       if (isPlaying.value) {

@@ -38,6 +38,29 @@ export function mapPlaylist(rp) {
 }
 
 /**
+ * Map a client-format track to server-format.
+ * @param {Object} t - client track
+ * @param {Object} [extra] - additional fields to merge (e.g. { position, liked_at, played_at })
+ */
+export function mapTrackToServer(t, extra) {
+  return {
+    id: t.id,
+    track_id: t.id,
+    title: t.title,
+    artist: t.artist,
+    artistId: t.artistId,
+    artists: t.artists || [],
+    album: t.album,
+    albumId: t.albumId,
+    thumbnail: t.thumbnail,
+    duration: t.duration,
+    durationMs: t.durationMs,
+    url: t.url,
+    ...extra
+  };
+}
+
+/**
  * Map a server-format liked song to client-format (includes liked_at).
  */
 export function mapLikedSong(rs) {

@@ -1,6 +1,7 @@
 // ─── Sync service: push/pull local state to/from backend ───
 
 import { apiFetch, isAuthenticated } from './api.js';
+import { mapTrackToServer } from '../../shared/fieldMapping.js';
 
 let _lastSyncAt = null;
 
@@ -26,54 +27,16 @@ export async function syncPush(localState) {
       description: p.description || '',
       coverUrl: p.coverUrl || '',
       position: p.position ?? 0,
-      tracks: (p.tracks || []).map((t, i) => ({
-        id: t.id,
-        track_id: t.id,
-        title: t.title,
-        artist: t.artist,
-        artistId: t.artistId,
-        artists: t.artists || [],
-        album: t.album,
-        albumId: t.albumId,
-        thumbnail: t.thumbnail,
-        duration: t.duration,
-        durationMs: t.durationMs,
-        url: t.url,
-        position: i
-      })),
+      tracks: (p.tracks || []).map((t, i) => mapTrackToServer(t, { position: i })),
       updated_at: p.updated_at || new Date().toISOString(),
       deleted_at: p.deleted_at || null
     })),
-    likedSongs: (localState.likedSongs || []).map((s) => ({
-      id: s.id,
-      track_id: s.id,
-      title: s.title,
-      artist: s.artist,
-      artistId: s.artistId,
-      artists: s.artists || [],
-      album: s.album,
-      albumId: s.albumId,
-      thumbnail: s.thumbnail,
-      duration: s.duration,
-      durationMs: s.durationMs,
-      url: s.url,
-      liked_at: s.liked_at || new Date().toISOString()
-    })),
-    history: (localState.recentTracks || []).map((h) => ({
-      id: h.id,
-      track_id: h.id,
-      title: h.title,
-      artist: h.artist,
-      artistId: h.artistId,
-      artists: h.artists || [],
-      album: h.album,
-      albumId: h.albumId,
-      thumbnail: h.thumbnail,
-      duration: h.duration,
-      durationMs: h.durationMs,
-      url: h.url,
-      played_at: h.played_at || new Date().toISOString()
-    })),
+    likedSongs: (localState.likedSongs || []).map((s) =>
+      mapTrackToServer(s, { liked_at: s.liked_at || new Date().toISOString() })
+    ),
+    history: (localState.recentTracks || []).map((h) =>
+      mapTrackToServer(h, { played_at: h.played_at || new Date().toISOString() })
+    ),
     settings: localState.settings || undefined
   };
 

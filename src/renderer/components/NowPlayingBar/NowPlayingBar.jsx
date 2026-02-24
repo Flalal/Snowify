@@ -1,26 +1,21 @@
 import { useEffect, useState } from 'preact/hooks';
 import { currentTrack, isCurrentLiked, isLoading } from '../../state/index.js';
+import { toggleLyricsPanel, toggleQueuePanel, showPlaylistPicker } from '../../state/ui.js';
+import { usePlaybackContext } from '../../hooks/usePlaybackContext.js';
+import { useNavigation } from '../../hooks/useNavigation.js';
 import { PlaybackControls } from './PlaybackControls.jsx';
 import { ProgressBar } from './ProgressBar.jsx';
 import { VolumeControl } from './VolumeControl.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
-import { showPlaylistPicker } from '../../state/ui.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
 
-export function NowPlayingBar({
-  audio,
-  onTogglePlay,
-  onNext,
-  onPrev,
-  onToggleShuffle,
-  onToggleRepeat,
-  onSetVolume,
-  onToggleLyrics,
-  onToggleQueue,
-  onShowAlbum
-}) {
+export function NowPlayingBar() {
+  const { getAudio } = usePlaybackContext();
+  const { showAlbumDetail } = useNavigation();
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  const audio = getAudio();
 
   useEffect(() => {
     if (!audio) return;
@@ -51,8 +46,8 @@ export function NowPlayingBar({
   };
 
   const handleTitleClick = () => {
-    if (track.albumId && onShowAlbum) {
-      onShowAlbum(track.albumId, { name: track.album, thumbnail: track.thumbnail });
+    if (track.albumId && showAlbumDetail) {
+      showAlbumDetail(track.albumId, { name: track.album, thumbnail: track.thumbnail });
     }
   };
 
@@ -119,19 +114,12 @@ export function NowPlayingBar({
       </div>
 
       <div className="np-controls">
-        <PlaybackControls
-          onTogglePlay={onTogglePlay}
-          onNext={onNext}
-          onPrev={onPrev}
-          onToggleShuffle={onToggleShuffle}
-          onToggleRepeat={onToggleRepeat}
-          loading={loading}
-        />
+        <PlaybackControls loading={loading} />
         <ProgressBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
       </div>
 
       <div className="np-extras">
-        <button className="icon-btn" onClick={onToggleLyrics} title="Lyrics" aria-label="Lyrics">
+        <button className="icon-btn" onClick={toggleLyricsPanel} title="Lyrics" aria-label="Lyrics">
           <svg
             width="18"
             height="18"
@@ -147,12 +135,12 @@ export function NowPlayingBar({
             <circle cx="18" cy="16" r="3" />
           </svg>
         </button>
-        <button className="icon-btn" onClick={onToggleQueue} title="Queue" aria-label="Queue">
+        <button className="icon-btn" onClick={toggleQueuePanel} title="Queue" aria-label="Queue">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2zm14-1v6l5-3-5-3z" />
           </svg>
         </button>
-        <VolumeControl onSetVolume={onSetVolume} />
+        <VolumeControl />
       </div>
     </footer>
   );

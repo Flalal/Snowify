@@ -23,6 +23,25 @@ export function showToast(message) {
 
 export { toastMessage, toastVisible, toastShow };
 
+// ─── Error state ───
+export const lastError = signal(null);
+
+// ─── Overlay panels ───
+export const lyricsVisible = signal(false);
+export const queueVisible = signal(false);
+
+export function toggleLyricsPanel() {
+  const opening = !lyricsVisible.value;
+  lyricsVisible.value = !lyricsVisible.value;
+  if (opening) queueVisible.value = false;
+}
+
+export function toggleQueuePanel() {
+  const opening = !queueVisible.value;
+  queueVisible.value = !queueVisible.value;
+  if (opening) lyricsVisible.value = false;
+}
+
 // ─── ContextMenu ───
 const menuVisible = signal(false);
 const menuX = signal(0);

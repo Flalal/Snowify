@@ -1,7 +1,9 @@
 import { useRef } from 'preact/hooks';
 import { volume } from '../../state/index.js';
+import { usePlaybackContext } from '../../hooks/usePlaybackContext.js';
 
-export function VolumeControl({ onSetVolume }) {
+export function VolumeControl() {
+  const { setVolumeLevel: onSetVolume } = usePlaybackContext();
   const sliderRef = useRef(null);
   const dragging = useRef(false);
   const prevVolume = useRef(0.7);

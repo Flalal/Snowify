@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { isPlaying, isLoading } from '../state/index.js';
-import { showToast } from '../state/ui.js';
+import { handlePlaybackError } from '../utils/playbackError.js';
 import { WATCHDOG_INTERVAL_MS, WATCHDOG_STALL_TICKS } from '../../shared/constants.js';
 
 export function usePlaybackWatchdog(getAudio, playNext) {
@@ -23,8 +23,7 @@ export function usePlaybackWatchdog(getAudio, playNext) {
           console.warn('Watchdog: playback stalled at', ct, '— advancing');
           watchdogRef.current.stallTicks = 0;
           watchdogRef.current.lastTime = -1;
-          showToast('Stream stalled — skipping to next');
-          playNextRef.current();
+          handlePlaybackError({ reason: 'stream_stalled', playNext: playNextRef.current });
         }
       } else {
         watchdogRef.current.stallTicks = 0;

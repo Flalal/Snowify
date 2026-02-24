@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'preact/hooks';
+import { useEffect, useMemo, useState, useCallback } from 'preact/hooks';
 import { lazy, Suspense } from 'preact/compat';
 import { currentView, likedSongs, currentTrack, pendingRadioNav } from '../state/index.js';
 import {
@@ -7,6 +7,7 @@ import {
   playlistViewState,
   videoPlayerState
 } from '../state/navigation.js';
+import { lyricsVisible, queueVisible } from '../state/ui.js';
 
 import { Titlebar } from './Titlebar.jsx';
 import { Sidebar } from './Sidebar/Sidebar.jsx';
@@ -27,6 +28,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts.js';
 import { useAppInit } from '../hooks/useAppInit.js';
 import { useAppNavigation } from '../hooks/useAppNavigation.js';
 import { NavigationProvider } from '../hooks/useNavigation.js';
+import { PlaybackProvider } from '../hooks/usePlaybackContext.js';
 
 // ─── Lazy-loaded views & overlays ───
 const ExploreView = lazy(() =>
@@ -58,8 +60,6 @@ const SpotifyImport = lazy(() =>
 );
 
 export function App() {
-  const [queueVisible, setQueueVisible] = useState(false);
-  const [lyricsVisible, setLyricsVisible] = useState(false);
   const [spotifyVisible, setSpotifyVisible] = useState(false);
 
   const {
@@ -73,9 +73,28 @@ export function App() {
     toggleRepeat
   } = usePlayback();
 
+  const playback = useMemo(
+    () => ({
+      getAudio,
+      togglePlay,
+      playNext,
+      playPrev,
+      setVolumeLevel,
+      toggleShuffle,
+      toggleRepeat
+    }),
+    [getAudio, togglePlay, playNext, playPrev, setVolumeLevel, toggleShuffle, toggleRepeat]
+  );
+
   const initialized = useAppInit(getAudio);
-  const { switchView, showPlaylistDetail, showAlbumDetail, closeVideoPlayer, nav } =
-    useAppNavigation(playFromList, getAudio, lyricsVisible, setLyricsVisible);
+  const { switchView, showPlaylistDetail, closeVideoPlayer, nav } = useAppNavigation(
+    playFromList,
+    getAudio,
+    lyricsVisible,
+    (v) => {
+      lyricsVisible.value = v;
+    }
+  );
 
   // ─── Like / Unlike (for mobile media session only) ───
   const handleLikeToggle = useLikeTrack();
@@ -116,16 +135,6 @@ export function App() {
     }
   }, [pendingRadioNav.value, showPlaylistDetail]);
 
-  const toggleLyrics = useCallback(() => {
-    setLyricsVisible((v) => !v);
-    if (!lyricsVisible) setQueueVisible(false);
-  }, [lyricsVisible]);
-
-  const toggleQueue = useCallback(() => {
-    setQueueVisible((v) => !v);
-    if (!queueVisible) setLyricsVisible(false);
-  }, [queueVisible]);
-
   // ─── Floating search ───
   const showFloatingSearch = ['home', 'explore', 'library', 'artist', 'album', 'playlist'].includes(
     currentView.value
@@ -136,160 +145,156 @@ export function App() {
   const hasPlayer = !!track;
 
   return (
-    <NavigationProvider value={nav}>
-      <Titlebar />
+    <PlaybackProvider value={playback}>
+      <NavigationProvider value={nav}>
+        <Titlebar />
 
-      <div id="app" className={hasPlayer ? '' : 'no-player'}>
-        <Sidebar
-          onNavigate={switchView}
-          onShowPlaylist={showPlaylistDetail}
-          onOpenSpotifyImport={() => setSpotifyVisible(true)}
+        <div id="app" className={hasPlayer ? '' : 'no-player'}>
+          <Sidebar
+            onNavigate={switchView}
+            onShowPlaylist={showPlaylistDetail}
+            onOpenSpotifyImport={() => setSpotifyVisible(true)}
+          />
+
+          <main id="main-content">
+            {showFloatingSearch && (
+              <div className="floating-search" onClick={() => switchView('search')}>
+                <svg
+                  className="floating-search-icon"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M16 16l4.5 4.5" strokeLinecap="round" />
+                </svg>
+                <span className="floating-search-text">Search</span>
+              </div>
+            )}
+
+            <section className={`view${view === 'home' ? ' active' : ''}`} id="view-home">
+              {initialized && view === 'home' && (
+                <ViewErrorBoundary>
+                  <HomeView />
+                </ViewErrorBoundary>
+              )}
+            </section>
+
+            <section className={`view${view === 'search' ? ' active' : ''}`} id="view-search">
+              {view === 'search' && (
+                <ViewErrorBoundary>
+                  <SearchView />
+                </ViewErrorBoundary>
+              )}
+            </section>
+
+            <Suspense fallback={<Spinner />}>
+              <section className={`view${view === 'explore' ? ' active' : ''}`} id="view-explore">
+                {view === 'explore' && (
+                  <ViewErrorBoundary>
+                    <ExploreView />
+                  </ViewErrorBoundary>
+                )}
+              </section>
+
+              <section className={`view${view === 'library' ? ' active' : ''}`} id="view-library">
+                {view === 'library' && (
+                  <ViewErrorBoundary>
+                    <LibraryView />
+                  </ViewErrorBoundary>
+                )}
+              </section>
+
+              <section className={`view${view === 'playlist' ? ' active' : ''}`} id="view-playlist">
+                {view === 'playlist' && playlistViewState.value && (
+                  <ViewErrorBoundary>
+                    <PlaylistView
+                      playlist={playlistViewState.value.playlist}
+                      isLiked={playlistViewState.value.isLiked}
+                    />
+                  </ViewErrorBoundary>
+                )}
+              </section>
+
+              <section className={`view${view === 'album' ? ' active' : ''}`} id="view-album">
+                {view === 'album' && albumViewState.value && (
+                  <ViewErrorBoundary>
+                    <AlbumView
+                      albumId={albumViewState.value.albumId}
+                      albumMeta={albumViewState.value.albumMeta}
+                    />
+                  </ViewErrorBoundary>
+                )}
+              </section>
+
+              <section className={`view${view === 'artist' ? ' active' : ''}`} id="view-artist">
+                {view === 'artist' && artistViewState.value && (
+                  <ViewErrorBoundary>
+                    <ArtistView artistId={artistViewState.value.artistId} />
+                  </ViewErrorBoundary>
+                )}
+              </section>
+
+              <section className={`view${view === 'settings' ? ' active' : ''}`} id="view-settings">
+                {view === 'settings' && (
+                  <ViewErrorBoundary>
+                    <SettingsView />
+                  </ViewErrorBoundary>
+                )}
+              </section>
+            </Suspense>
+          </main>
+        </div>
+
+        {hasPlayer && <NowPlayingBar />}
+
+        <QueuePanel
+          visible={queueVisible.value}
+          onClose={() => {
+            queueVisible.value = false;
+          }}
         />
 
-        <main id="main-content">
-          {showFloatingSearch && (
-            <div className="floating-search" onClick={() => switchView('search')}>
-              <svg
-                className="floating-search-icon"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="M16 16l4.5 4.5" strokeLinecap="round" />
-              </svg>
-              <span className="floating-search-text">Search</span>
-            </div>
+        <Suspense fallback={null}>
+          {lyricsVisible.value && (
+            <ViewErrorBoundary>
+              <LyricsPanel
+                visible={lyricsVisible.value}
+                onClose={() => {
+                  lyricsVisible.value = false;
+                }}
+                audio={getAudio()}
+              />
+            </ViewErrorBoundary>
           )}
 
-          <section className={`view${view === 'home' ? ' active' : ''}`} id="view-home">
-            {initialized && view === 'home' && (
-              <ViewErrorBoundary>
-                <HomeView />
-              </ViewErrorBoundary>
-            )}
-          </section>
+          {videoPlayerState.value && (
+            <ViewErrorBoundary>
+              <VideoPlayer
+                videoId={videoPlayerState.value.videoId}
+                title={videoPlayerState.value.title}
+                artist={videoPlayerState.value.artist}
+                onClose={closeVideoPlayer}
+              />
+            </ViewErrorBoundary>
+          )}
 
-          <section className={`view${view === 'search' ? ' active' : ''}`} id="view-search">
-            {view === 'search' && (
-              <ViewErrorBoundary>
-                <SearchView />
-              </ViewErrorBoundary>
-            )}
-          </section>
+          {spotifyVisible && (
+            <ViewErrorBoundary>
+              <SpotifyImport visible={spotifyVisible} onClose={() => setSpotifyVisible(false)} />
+            </ViewErrorBoundary>
+          )}
+        </Suspense>
 
-          <Suspense fallback={<Spinner />}>
-            <section className={`view${view === 'explore' ? ' active' : ''}`} id="view-explore">
-              {view === 'explore' && (
-                <ViewErrorBoundary>
-                  <ExploreView />
-                </ViewErrorBoundary>
-              )}
-            </section>
-
-            <section className={`view${view === 'library' ? ' active' : ''}`} id="view-library">
-              {view === 'library' && (
-                <ViewErrorBoundary>
-                  <LibraryView />
-                </ViewErrorBoundary>
-              )}
-            </section>
-
-            <section className={`view${view === 'playlist' ? ' active' : ''}`} id="view-playlist">
-              {view === 'playlist' && playlistViewState.value && (
-                <ViewErrorBoundary>
-                  <PlaylistView
-                    playlist={playlistViewState.value.playlist}
-                    isLiked={playlistViewState.value.isLiked}
-                  />
-                </ViewErrorBoundary>
-              )}
-            </section>
-
-            <section className={`view${view === 'album' ? ' active' : ''}`} id="view-album">
-              {view === 'album' && albumViewState.value && (
-                <ViewErrorBoundary>
-                  <AlbumView
-                    albumId={albumViewState.value.albumId}
-                    albumMeta={albumViewState.value.albumMeta}
-                  />
-                </ViewErrorBoundary>
-              )}
-            </section>
-
-            <section className={`view${view === 'artist' ? ' active' : ''}`} id="view-artist">
-              {view === 'artist' && artistViewState.value && (
-                <ViewErrorBoundary>
-                  <ArtistView artistId={artistViewState.value.artistId} />
-                </ViewErrorBoundary>
-              )}
-            </section>
-
-            <section className={`view${view === 'settings' ? ' active' : ''}`} id="view-settings">
-              {view === 'settings' && (
-                <ViewErrorBoundary>
-                  <SettingsView />
-                </ViewErrorBoundary>
-              )}
-            </section>
-          </Suspense>
-        </main>
-      </div>
-
-      {hasPlayer && (
-        <NowPlayingBar
-          audio={getAudio()}
-          onTogglePlay={togglePlay}
-          onNext={playNext}
-          onPrev={playPrev}
-          onToggleShuffle={toggleShuffle}
-          onToggleRepeat={toggleRepeat}
-          onSetVolume={setVolumeLevel}
-          onToggleLyrics={toggleLyrics}
-          onToggleQueue={toggleQueue}
-          onShowAlbum={showAlbumDetail}
-        />
-      )}
-
-      <QueuePanel visible={queueVisible} onClose={() => setQueueVisible(false)} />
-
-      <Suspense fallback={null}>
-        {lyricsVisible && (
-          <ViewErrorBoundary>
-            <LyricsPanel
-              visible={lyricsVisible}
-              onClose={() => setLyricsVisible(false)}
-              audio={getAudio()}
-            />
-          </ViewErrorBoundary>
-        )}
-
-        {videoPlayerState.value && (
-          <ViewErrorBoundary>
-            <VideoPlayer
-              videoId={videoPlayerState.value.videoId}
-              title={videoPlayerState.value.title}
-              artist={videoPlayerState.value.artist}
-              onClose={closeVideoPlayer}
-            />
-          </ViewErrorBoundary>
-        )}
-
-        {spotifyVisible && (
-          <ViewErrorBoundary>
-            <SpotifyImport visible={spotifyVisible} onClose={() => setSpotifyVisible(false)} />
-          </ViewErrorBoundary>
-        )}
-      </Suspense>
-
-      <ContextMenu />
-      <PlaylistContextMenu />
-      <Toast />
-      <InputModal />
-      <PlaylistPickerModal />
-    </NavigationProvider>
+        <ContextMenu />
+        <PlaylistContextMenu />
+        <Toast />
+        <InputModal />
+        <PlaylistPickerModal />
+      </NavigationProvider>
+    </PlaybackProvider>
   );
 }
