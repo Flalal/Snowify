@@ -35,18 +35,9 @@
   transform: scale(1.02);
 }
 .lib-card-cover.liked-cover {
-  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  background: var(--liked-gradient);
 }
 .lib-card-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.lib-card-cover .playlist-cover-grid {
-  width: 100%;
-  height: 100%;
-}
-.lib-card-cover .playlist-cover-grid img {
   width: 100%;
   height: 100%;
   object-fit: cover;

@@ -10,7 +10,7 @@
   width: 200px;
   height: 200px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  background: var(--liked-gradient);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -24,15 +24,6 @@
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 .playlist-hero-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.playlist-hero-cover .playlist-cover-grid {
-  width: 100%;
-  height: 100%;
-}
-.playlist-hero-cover .playlist-cover-grid img {
   width: 100%;
   height: 100%;
   object-fit: cover;

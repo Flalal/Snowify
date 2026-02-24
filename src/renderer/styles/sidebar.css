@@ -141,7 +141,7 @@
   overflow: hidden;
 }
 .liked-cover {
-  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  background: var(--liked-gradient);
 }
 
 .playlist-info {

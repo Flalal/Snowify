@@ -246,7 +246,7 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] #now-playing { border-top-color: rgba(0, 0, 0, 0.08); }
-[data-theme="light"] .progress-track { background: rgba(0, 0, 0, 0.1); }
-[data-theme="light"] .volume-track { background: rgba(0, 0, 0, 0.1); }
+[data-theme="light"] #now-playing-bar { border-top-color: rgba(0, 0, 0, 0.08); }
+[data-theme="light"] .progress-bar { background: rgba(0, 0, 0, 0.1); }
+[data-theme="light"] .volume-slider { background: rgba(0, 0, 0, 0.1); }
 [data-theme="light"] .icon-btn:hover { color: var(--text-primary); }

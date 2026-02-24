@@ -67,7 +67,7 @@
 
 ---
 
-## 2. CSS & Theming (5.5/10)
+## 2. CSS & Theming (5.5/10 → **7/10**)
 
 ### What's good
 
@@ -76,24 +76,19 @@
 - Shadow variables (`--shadow-card-hover`, `--shadow-accent-sm`, etc.)
 - All animations use GPU-friendly transform/opacity
 - Scrollbar themed per-theme
+- All CSS variables defined (`--bg-elevated-hover`, `--border`, `--ease-bounce`) ✓
+- Dead selectors fixed (context-menu.css, nowplaying.css) ✓
+- `--liked-gradient` variable deduplicates gradient across 3 files ✓
+- `:focus-visible` on all 23 interactive elements ✓
+- `playlist-cover-grid` consolidated (redundant scoped rules removed) ✓
 
 ### To fix
 
 #### CRITICAL
 
-- [ ] **3 undefined CSS variables (silently broken)**
-  - `--bg-elevated-hover` — used in explore.css:54,132,150
-  - `--border` — used in search.css:154
-  - `--ease-bounce` — used in cards.css:191
-  - Fix: define in variables.css `:root` + all theme blocks
-
-- [ ] **Dead selectors targeting non-existent classes**
-  - context-menu.css:83-84 — `.flyout-menu`, `.flyout-item` don't exist (actual: `.context-submenu`, `.context-sub-item`)
-  - Fix: remove dead rules, add light overrides for actual selectors
-
-- [ ] **Wrong ID selector in light override**
-  - nowplaying.css:249 — `#now-playing` should be `#now-playing-bar`
-  - Fix: correct the selector
+- [x] **3 undefined CSS variables** — Fixed: defined in `:root` + all theme blocks
+- [x] **Dead selectors** — Fixed: `.flyout-menu` → `.context-submenu`, `.flyout-item` → `.context-sub-item`
+- [x] **Wrong ID selector** — Fixed: `#now-playing` → `#now-playing-bar`, `.progress-track` → `.progress-bar`, `.volume-track` → `.volume-slider`
 
 #### HIGH
 
@@ -115,17 +110,9 @@
 
 #### MEDIUM
 
-- [ ] **Liked-cover gradient hardcoded 3 times**
-  - library.css:38, sidebar.css:144, playlist.css:13 — same `#6c5ce7 → #a29bfe`
-  - Fix: add `--liked-gradient` variable
-
-- [ ] **12 interactive elements missing `:focus-visible` state**
-  - `.icon-btn`, `.nav-btn`, `.playlist-item`, `.track-row`, `.disco-filter`, `.show-more-btn`, `.follow-btn`, `.artist-tag`, `.picker-item`, `.picker-new`, `.modal-btn`, `.spotify-pick-btn`
-  - Fix: add `:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }` or `box-shadow: var(--shadow-focus)`
-
-- [ ] **`playlist-cover-grid` defined in 3 files**
-  - library.css:45-52, sidebar.css:126-138, playlist.css:31-38
-  - Fix: consolidate into one shared rule in global.css or a new `covers.css`
+- [x] **Liked-cover gradient hardcoded 3 times** — Fixed: `--liked-gradient` variable
+- [x] **12 interactive elements missing `:focus-visible`** — Fixed: 23 selectors in global.css
+- [x] **`playlist-cover-grid` defined in 3 files** — Fixed: redundant scoped rules removed
 
 #### LOW
 
@@ -222,12 +209,12 @@
 
 ## Roadmap to 10/10
 
-### Phase 1 — CSS fixes (quick wins)
-1. Define the 3 missing variables in variables.css
-2. Fix dead selectors (context-menu.css, nowplaying.css)
-3. Add `--liked-gradient` variable, deduplicate
-4. Add `:focus-visible` to all interactive elements
-5. Consolidate `playlist-cover-grid` into one location
+### Phase 1 — CSS fixes (quick wins) ✅ DONE
+1. ~~Define the 3 missing variables in variables.css~~ ✅
+2. ~~Fix dead selectors (context-menu.css, nowplaying.css)~~ ✅
+3. ~~Add `--liked-gradient` variable, deduplicate~~ ✅
+4. ~~Add `:focus-visible` to all interactive elements~~ ✅
+5. ~~Consolidate `playlist-cover-grid` into one location~~ ✅
 
 ### Phase 2 — Light theme completion
 6. Add `[data-theme="light"]` overrides to the 9 files listed above

@@ -118,6 +118,34 @@ html, body {
   text-decoration: underline;
 }
 
+/* ── :focus-visible on all interactive elements ── */
+.icon-btn:focus-visible,
+.nav-btn:focus-visible,
+.playlist-item:focus-visible,
+.track-row:focus-visible,
+.disco-filter:focus-visible,
+.show-more-btn:focus-visible,
+.follow-btn:focus-visible,
+.artist-tag:focus-visible,
+.picker-item:focus-visible,
+.picker-new:focus-visible,
+.modal-btn:focus-visible,
+.spotify-pick-btn:focus-visible,
+.track-card:focus-visible,
+.album-card:focus-visible,
+.video-card:focus-visible,
+.similar-artist-card:focus-visible,
+.top-artist-card:focus-visible,
+.artist-result-card:focus-visible,
+.quick-pick-card:focus-visible,
+.play-btn:focus-visible,
+.play-all-btn:focus-visible,
+.btn-primary:focus-visible,
+.filter-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

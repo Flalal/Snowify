@@ -80,5 +80,5 @@
 /* ── Light-mode overrides ── */
 [data-theme="light"] .context-menu { background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
 [data-theme="light"] .context-menu-item:hover { background: rgba(0, 0, 0, 0.05); }
-[data-theme="light"] .flyout-menu { background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
-[data-theme="light"] .flyout-item:hover { background: rgba(0, 0, 0, 0.05); }
+[data-theme="light"] .context-submenu { background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+[data-theme="light"] .context-sub-item:hover { background: rgba(0, 0, 0, 0.05); }
