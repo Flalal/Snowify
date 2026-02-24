@@ -6,7 +6,7 @@ import {
   shuffle, repeat, volume, autoplay, audioQuality, discordRpc,
   likedSongs, recentTracks, playlists, followedArtists,
   currentTrack, currentPlaylistId, animations, effects, theme, country,
-  pendingRadioNav,
+  pendingRadioNav, cloudAccessToken, cloudRefreshToken,
   saveState, saveStateNow, loadState
 } from '../state/index.js';
 
@@ -83,6 +83,11 @@ export function App() {
     if (country.value) window.snowify.setCountry(country.value);
     window.snowify.onYtMusicInitError?.(() => {
       showToast('Music service failed to initialize — restart the app');
+    });
+    window.snowify.onTokensUpdated?.((tokens) => {
+      cloudAccessToken.value = tokens.accessToken;
+      cloudRefreshToken.value = tokens.refreshToken;
+      saveState();
     });
     setInitialized(true);
 
