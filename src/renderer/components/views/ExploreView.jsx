@@ -6,6 +6,7 @@ import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
 import { showToast } from '../shared/Toast.jsx';
+import { EXPLORE_CACHE_TTL } from '../../../shared/constants.js';
 
 const MOOD_COLORS = [
   '#1db954', '#e13300', '#8c67ab', '#e8115b', '#1e90ff',
@@ -20,8 +21,6 @@ const POPULAR_MOODS = new Set([
   'country', 'electronic', 'indie', 'sleep', 'energy booster',
   'commute', 'latin', 'k-pop', 'metal',
 ]);
-
-const EXPLORE_CACHE_TTL = 30 * 60 * 1000;
 
 // Module-level caches
 let _exploreCache = null;

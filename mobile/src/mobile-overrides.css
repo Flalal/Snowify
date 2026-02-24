@@ -38,9 +38,14 @@ button,
 .btn-secondary,
 .nav-btn,
 .icon-btn,
-input[type="checkbox"],
 input[type="radio"],
 select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Toggle switches keep their own dimensions — touch target via row padding */
+input[type="checkbox"]:not(.settings-toggle) {
   min-height: 44px;
   min-width: 44px;
 }
@@ -143,7 +148,8 @@ select {
   right: 0 !important;
   border-radius: 0 !important;
   padding: 0 8px !important;
-  z-index: 99;
+  z-index: 250;
+  grid-template-columns: 1fr auto 1fr !important;
 }
 
 /* Hide volume on mobile */
@@ -156,11 +162,44 @@ select {
 }
 
 .np-track-info {
-  max-width: 45%;
+  max-width: none;
+  overflow: hidden;
+}
+
+.np-controls {
+  padding: 0 4px;
 }
 
 .np-controls .np-buttons {
   gap: 8px;
+}
+
+/* Progress bar — thin strip at the top of the now playing bar, with large touch target */
+.np-progress {
+  position: absolute !important;
+  top: -20px;
+  left: 0;
+  right: 0;
+  height: 24px;
+  max-width: none !important;
+  gap: 0 !important;
+  padding: 20px 0 0 0 !important;
+  z-index: 1;
+}
+
+.np-progress .time {
+  display: none !important;
+}
+
+.np-progress .progress-bar {
+  height: 3px !important;
+  border-radius: 0 !important;
+}
+
+.np-extras {
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 4px !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -285,6 +324,28 @@ select {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   PLAYLIST ACTIONS — icon only (hide text labels)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.playlist-actions .btn-primary,
+.playlist-actions .btn-secondary {
+  font-size: 0 !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+}
+
+.playlist-actions .btn-primary svg,
+.playlist-actions .btn-secondary svg {
+  font-size: initial;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    SETTINGS — full width
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -334,9 +395,8 @@ select {
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+  bottom: var(--now-playing-height) !important;
+  height: auto !important;
   border: none !important;
   border-radius: 0 !important;
   z-index: 200;
@@ -351,9 +411,8 @@ select {
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+  bottom: var(--now-playing-height) !important;
+  height: auto !important;
   border-radius: 0 !important;
   z-index: 200;
 }

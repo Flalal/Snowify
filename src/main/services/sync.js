@@ -1,6 +1,7 @@
 // ─── Sync service: push/pull local state to/from backend ───
 
 import { apiFetch, isAuthenticated } from './api.js';
+import { mapTrack, mapLikedSong, mapHistoryEntry, mapPlaylist } from '../../shared/fieldMapping.js';
 
 let _lastSyncAt = null;
 
@@ -106,22 +107,7 @@ export function mergeState(local, remote) {
   for (const rp of (remote.playlists || [])) {
     const lp = localPlaylistMap.get(rp.id);
     if (!lp || (rp.updated_at && rp.updated_at > (lp.updated_at || ''))) {
-      localPlaylistMap.set(rp.id, {
-        ...rp,
-        tracks: (rp.tracks || []).map(t => ({
-          id: t.track_id || t.id,
-          title: t.title,
-          artist: t.artist,
-          artistId: t.artist_id || t.artistId,
-          artists: t.artists || JSON.parse(t.artists_json || '[]'),
-          album: t.album,
-          albumId: t.album_id || t.albumId,
-          thumbnail: t.thumbnail,
-          duration: t.duration,
-          durationMs: t.duration_ms || t.durationMs,
-          url: t.url
-        }))
-      });
+      localPlaylistMap.set(rp.id, mapPlaylist(rp));
     }
   }
   const playlists = [...localPlaylistMap.values()].filter(p => !p.deleted_at);
@@ -135,20 +121,7 @@ export function mergeState(local, remote) {
       if (rs.deleted_at) {
         localLikedMap.delete(trackId);
       } else {
-        localLikedMap.set(trackId, {
-          id: trackId,
-          title: rs.title,
-          artist: rs.artist,
-          artistId: rs.artist_id || rs.artistId,
-          artists: rs.artists || JSON.parse(rs.artists_json || '[]'),
-          album: rs.album,
-          albumId: rs.album_id || rs.albumId,
-          thumbnail: rs.thumbnail,
-          duration: rs.duration,
-          durationMs: rs.duration_ms || rs.durationMs,
-          url: rs.url,
-          liked_at: rs.liked_at
-        });
+        localLikedMap.set(trackId, mapLikedSong(rs));
       }
     }
   }
@@ -158,20 +131,7 @@ export function mergeState(local, remote) {
   const historyIds = new Set(local.recentTracks.map(h => h.id));
   const newHistory = (remote.history || [])
     .filter(h => !historyIds.has(h.track_id || h.id))
-    .map(h => ({
-      id: h.track_id || h.id,
-      title: h.title,
-      artist: h.artist,
-      artistId: h.artist_id || h.artistId,
-      artists: h.artists || JSON.parse(h.artists_json || '[]'),
-      album: h.album,
-      albumId: h.album_id || h.albumId,
-      thumbnail: h.thumbnail,
-      duration: h.duration,
-      durationMs: h.duration_ms || h.durationMs,
-      url: h.url,
-      played_at: h.played_at
-    }));
+    .map(h => mapHistoryEntry(h));
   const recentTracks = [...newHistory, ...local.recentTracks];
 
   return { playlists, likedSongs, recentTracks };

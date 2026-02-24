@@ -6,6 +6,7 @@ import { ArtistLink } from '../shared/ArtistLink.jsx';
 import { AlbumCard } from '../shared/AlbumCard.jsx';
 import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
+import { HOME_RELEASES_CACHE_TTL } from '../../../shared/constants.js';
 
 /**
  * HomeView - Landing page with greeting, quick picks, recent tracks,
@@ -88,7 +89,7 @@ export function HomeView({
 
       // Use a module-level cache
       const now = Date.now();
-      if (HomeView._cachedReleases && now - HomeView._lastReleaseFetch < 30 * 60 * 1000) {
+      if (HomeView._cachedReleases && now - HomeView._lastReleaseFetch < HOME_RELEASES_CACHE_TTL) {
         setReleases(HomeView._cachedReleases);
         return;
       }

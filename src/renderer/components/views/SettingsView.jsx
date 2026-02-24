@@ -543,7 +543,7 @@ export function SettingsView({ onRenderHome }) {
             placeholder="https://api.snowify.example.com"
             value={cloudApiUrl.value}
             onInput={handleApiUrlChange}
-            style={{ width: '280px' }}
+
           />
         </div>
         <div className="settings-row">
@@ -555,7 +555,7 @@ export function SettingsView({ onRenderHome }) {
             placeholder="Optional"
             value={cloudApiKey.value}
             onInput={handleApiKeyChange}
-            style={{ width: '280px' }}
+
           />
         </div>
 

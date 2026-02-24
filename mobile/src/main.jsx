@@ -32,7 +32,7 @@ import '@renderer/styles/quickpicks.css';
 import '@renderer/styles/views.css';
 
 // Load state (from localStorage, same as desktop)
-import { loadState } from '@state/index.js';
+import { loadState, saveState, cloudApiUrl, cloudApiKey, cloudUser, cloudAccessToken, cloudRefreshToken, cloudSyncEnabled } from '@state/index.js';
 loadState();
 
 // Check auth before rendering
@@ -74,6 +74,15 @@ function MobileLogin({ onLogin }) {
 
     setLoading(false);
     if (result.ok) {
+      // Persist login info into Cloud Sync signals so Settings shows them
+      cloudApiUrl.value = apiUrl;
+      cloudApiKey.value = apiKey;
+      cloudUser.value = result.user;
+      cloudAccessToken.value = result.accessToken;
+      cloudRefreshToken.value = result.refreshToken;
+      cloudSyncEnabled.value = true;
+      saveState();
+
       onLogin(result);
     } else {
       setError(result.error || 'Authentication failed');

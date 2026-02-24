@@ -1,12 +1,11 @@
 import { useRef, useEffect, useState } from 'preact/hooks';
-import { currentTrack, isCurrentLiked, isPlaying, isLoading, likedSongs, currentView } from '../../state/index.js';
-import { saveState } from '../../state/index.js';
+import { currentTrack, isCurrentLiked, isPlaying, isLoading } from '../../state/index.js';
 import { PlaybackControls } from './PlaybackControls.jsx';
 import { ProgressBar } from './ProgressBar.jsx';
 import { VolumeControl } from './VolumeControl.jsx';
-import { showToast } from '../shared/Toast.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
 import { showPlaylistPicker } from '../shared/PlaylistPickerModal.jsx';
+import { useLikeTrack } from '../../hooks/useLikeTrack.js';
 
 export function NowPlayingBar({ audio, onTogglePlay, onNext, onPrev, onToggleShuffle, onToggleRepeat, onSetVolume, onToggleLyrics, onToggleQueue, onShowAlbum }) {
   const [currentTime, setCurrentTime] = useState(0);
@@ -27,6 +26,8 @@ export function NowPlayingBar({ audio, onTogglePlay, onNext, onPrev, onToggleShu
   const playing = isPlaying.value;
   const loading = isLoading.value;
 
+  const toggleLike = useLikeTrack();
+
   if (!track) return null;
 
   const handleSeek = (ratio) => {
@@ -36,16 +37,7 @@ export function NowPlayingBar({ audio, onTogglePlay, onNext, onPrev, onToggleShu
   };
 
   const handleLike = () => {
-    const idx = likedSongs.value.findIndex(t => t.id === track.id);
-    if (idx >= 0) {
-      likedSongs.value = likedSongs.value.filter(t => t.id !== track.id);
-      showToast('Removed from Liked Songs');
-    } else {
-      likedSongs.value = [...likedSongs.value, track];
-      showToast('Added to Liked Songs');
-      spawnHeartParticles(document.getElementById('np-like'));
-    }
-    saveState();
+    toggleLike(track, document.getElementById('np-like'));
   };
 
   const handleTitleClick = () => {

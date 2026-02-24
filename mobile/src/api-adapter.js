@@ -1,6 +1,8 @@
 // ─── API Adapter: replaces Electron IPC with HTTP fetch to Snowify API ───
 // This file is loaded before the renderer and provides window.snowify
 
+import { mapTrack, mapPlaylist, mapLikedSong, mapHistoryEntry } from '@shared/fieldMapping.js';
+
 const API_URL_KEY = 'snowify_api_url';
 const API_KEY_KEY = 'snowify_api_key';
 const ACCESS_TOKEN_KEY = 'snowify_access_token';
@@ -177,7 +179,10 @@ window.snowify = {
   syncPush: (localState) => apiFetch('/sync/push', { method: 'POST', body: JSON.stringify(localState) }),
   syncPull: async () => {
     try {
-      const data = await apiFetch('/sync/pull');
+      // Read lastSyncAt from state to request delta only
+      const state = JSON.parse(localStorage.getItem('snowify_state') || '{}');
+      const since = state.lastSyncAt || '1970-01-01T00:00:00Z';
+      const data = await apiFetch(`/sync/pull?since=${encodeURIComponent(since)}`);
       return { ok: true, data };
     } catch (err) {
       return { ok: false, error: err.message };
@@ -189,15 +194,7 @@ window.snowify = {
     for (const rp of (remote.playlists || [])) {
       const lp = localPlaylistMap.get(rp.id);
       if (!lp || (rp.updated_at && rp.updated_at > (lp.updated_at || ''))) {
-        localPlaylistMap.set(rp.id, {
-          id: rp.id,
-          name: rp.name,
-          description: rp.description || '',
-          coverImage: rp.coverImage || '',
-          position: rp.position ?? 0,
-          updated_at: rp.updated_at,
-          tracks: (rp.tracks || []).map(t => mapTrack(t))
-        });
+        localPlaylistMap.set(rp.id, mapPlaylist(rp));
       }
     }
     const playlists = [...localPlaylistMap.values()].filter(p => !p.deleted_at);
@@ -211,7 +208,7 @@ window.snowify = {
         if (rs.deleted_at) {
           localLikedMap.delete(trackId);
         } else {
-          localLikedMap.set(trackId, { ...mapTrack(rs), liked_at: rs.liked_at });
+          localLikedMap.set(trackId, mapLikedSong(rs));
         }
       }
     }
@@ -221,7 +218,7 @@ window.snowify = {
     const historyIds = new Set((local.recentTracks || []).map(h => h.id));
     const newHistory = (remote.history || [])
       .filter(h => !historyIds.has(h.track_id || h.id))
-      .map(h => ({ ...mapTrack(h), played_at: h.played_at }));
+      .map(h => mapHistoryEntry(h));
     const recentTracks = [...newHistory, ...local.recentTracks];
 
     return Promise.resolve({ playlists, likedSongs, recentTracks });
@@ -254,20 +251,3 @@ window.snowify = {
   openExternal: (url) => { window.open(url, '_blank'); return Promise.resolve(); },
   onYtMusicInitError: () => {},
 };
-
-// ─── Helper: map server-format track to client-format ───
-function mapTrack(t) {
-  return {
-    id: t.track_id || t.id,
-    title: t.title,
-    artist: t.artist,
-    artistId: t.artist_id || t.artistId,
-    artists: t.artists || (t.artists_json ? JSON.parse(t.artists_json) : []),
-    album: t.album,
-    albumId: t.album_id || t.albumId,
-    thumbnail: t.thumbnail,
-    duration: t.duration,
-    durationMs: t.duration_ms || t.durationMs,
-    url: t.url
-  };
-}

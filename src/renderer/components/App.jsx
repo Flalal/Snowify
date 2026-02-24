@@ -4,7 +4,7 @@ import { signal } from '@preact/signals';
 import {
   currentView, queue, originalQueue, queueIndex, isPlaying, isLoading,
   shuffle, repeat, volume, autoplay, audioQuality, discordRpc,
-  likedSongs, recentTracks, playlists, followedArtists,
+  recentTracks, playlists, followedArtists,
   currentTrack, currentPlaylistId, animations, effects, theme, country,
   pendingRadioNav, cloudAccessToken, cloudRefreshToken,
   saveState, saveStateNow, loadState
@@ -12,7 +12,7 @@ import {
 
 import { Titlebar } from './Titlebar.jsx';
 import { Sidebar } from './Sidebar/Sidebar.jsx';
-import { NowPlayingBar, spawnHeartParticles } from './NowPlayingBar/NowPlayingBar.jsx';
+import { NowPlayingBar } from './NowPlayingBar/NowPlayingBar.jsx';
 import { HomeView } from './views/HomeView.jsx';
 import { SearchView } from './views/SearchView.jsx';
 import { QueuePanel } from './overlays/QueuePanel.jsx';
@@ -24,6 +24,12 @@ import { InputModal } from './shared/InputModal.jsx';
 import { PlaylistPickerModal } from './shared/PlaylistPickerModal.jsx';
 import { Spinner } from './shared/Spinner.jsx';
 import { shuffleArray } from '../utils/shuffleArray.js';
+import { useLikeTrack } from '../hooks/useLikeTrack.js';
+import {
+  VOLUME_SCALE, WATCHDOG_INTERVAL_MS, WATCHDOG_STALL_TICKS,
+  SEEK_STEP_S, VOLUME_STEP, RESTART_THRESHOLD_S,
+  QUEUE_MAX_SIZE, AUTOPLAY_ADD_COUNT, AUTOPLAY_MIN_POOL, RECENT_TRACKS_MAX
+} from '../../shared/constants.js';
 
 // ─── Lazy-loaded views & overlays ───
 const ExploreView = lazy(() => import('./views/ExploreView.jsx').then(m => ({ default: m.ExploreView })));
@@ -41,9 +47,6 @@ const albumViewState = signal(null); // { albumId, albumMeta }
 const artistViewState = signal(null); // { artistId }
 const playlistViewState = signal(null); // { playlist, isLiked }
 const videoPlayerState = signal(null); // { videoId, title, artist }
-
-// Cap actual audio volume at 30% to prevent distortion at max slider
-const VOLUME_SCALE = 0.3;
 
 function applyThemeToDOM(themeName) {
   if (themeName === 'dark') {
@@ -143,7 +146,7 @@ export function App() {
       const ct = audio.currentTime;
       if (watchdogRef.current.lastTime >= 0 && ct === watchdogRef.current.lastTime && ct > 0) {
         watchdogRef.current.stallTicks++;
-        if (watchdogRef.current.stallTicks >= 4) {
+        if (watchdogRef.current.stallTicks >= WATCHDOG_STALL_TICKS) {
           console.warn('Watchdog: playback stalled at', ct, '— advancing');
           watchdogRef.current.stallTicks = 0;
           watchdogRef.current.lastTime = -1;
@@ -154,7 +157,7 @@ export function App() {
         watchdogRef.current.stallTicks = 0;
       }
       watchdogRef.current.lastTime = ct;
-    }, 2000);
+    }, WATCHDOG_INTERVAL_MS);
     return () => clearInterval(handle);
   }, []);
 
@@ -173,19 +176,19 @@ export function App() {
           break;
         case 'ArrowRight':
           if (e.ctrlKey) playNext();
-          else if (audio?.duration) audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+          else if (audio?.duration) audio.currentTime = Math.min(audio.duration, audio.currentTime + SEEK_STEP_S);
           break;
         case 'ArrowLeft':
           if (e.ctrlKey) playPrev();
-          else if (audio?.duration) audio.currentTime = Math.max(0, audio.currentTime - 5);
+          else if (audio?.duration) audio.currentTime = Math.max(0, audio.currentTime - SEEK_STEP_S);
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setVolumeLevel(volume.value + 0.05);
+          setVolumeLevel(volume.value + VOLUME_STEP);
           break;
         case 'ArrowDown':
           e.preventDefault();
-          setVolumeLevel(volume.value - 0.05);
+          setVolumeLevel(volume.value - VOLUME_STEP);
           break;
         case '/':
           e.preventDefault();
@@ -287,7 +290,7 @@ export function App() {
   const playPrev = useCallback(() => {
     const audio = getAudio();
     if (!queue.value.length) return;
-    if (audio && audio.currentTime > 3) {
+    if (audio && audio.currentTime > RESTART_THRESHOLD_S) {
       audio.currentTime = 0;
       return;
     }
@@ -330,7 +333,7 @@ export function App() {
       };
       const upNexts = await window.snowify.getUpNexts(current.id);
       addToPool(upNexts);
-      if (pool.length < 10 && current.artistId) {
+      if (pool.length < AUTOPLAY_MIN_POOL && current.artistId) {
         const info = await window.snowify.artistInfo(current.artistId);
         if (info) addToPool(info.topSongs || []);
       }
@@ -340,15 +343,15 @@ export function App() {
         return;
       }
       shuffleArray(pool);
-      const maxAdd = Math.min(20, 200 - queue.value.length);
+      const maxAdd = Math.min(AUTOPLAY_ADD_COUNT, QUEUE_MAX_SIZE - queue.value.length);
       if (maxAdd <= 0) {
-        const trim = Math.min(queueIndex.value, queue.value.length - 100);
+        const trim = Math.min(queueIndex.value, queue.value.length - (QUEUE_MAX_SIZE / 2));
         if (trim > 0) {
           queue.value = queue.value.slice(trim);
           queueIndex.value = queueIndex.value - trim;
         }
       }
-      const newTracks = pool.slice(0, Math.max(maxAdd, 10));
+      const newTracks = pool.slice(0, Math.max(maxAdd, AUTOPLAY_MIN_POOL));
       queue.value = [...queue.value, ...newTracks];
       queueIndex.value = queueIndex.value + 1;
       playTrack(queue.value[queueIndex.value]);
@@ -403,7 +406,7 @@ export function App() {
   }, []);
 
   const addToRecent = useCallback((track) => {
-    recentTracks.value = [track, ...recentTracks.value.filter(t => t.id !== track.id)].slice(0, 20);
+    recentTracks.value = [track, ...recentTracks.value.filter(t => t.id !== track.id)].slice(0, RECENT_TRACKS_MAX);
     saveState();
   }, []);
 
@@ -437,18 +440,7 @@ export function App() {
   }, [playPrev, playNext, updateDiscordPresence, clearDiscordPresence]);
 
   // ─── Like / Unlike ───
-  const handleLikeToggle = useCallback((track, buttonEl) => {
-    const idx = likedSongs.value.findIndex(t => t.id === track.id);
-    if (idx >= 0) {
-      likedSongs.value = likedSongs.value.filter(t => t.id !== track.id);
-      showToast('Removed from Liked Songs');
-    } else {
-      likedSongs.value = [...likedSongs.value, track];
-      showToast('Added to Liked Songs');
-      if (buttonEl) spawnHeartParticles(buttonEl);
-    }
-    saveState();
-  }, []);
+  const handleLikeToggle = useLikeTrack();
 
   // ─── Navigation ───
   const switchView = useCallback((name) => {

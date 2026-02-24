@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { musicOnly } from '../../state/index.js';
 import { TrackList } from '../shared/TrackList.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
+import { SEARCH_DEBOUNCE_MS } from '../../../shared/constants.js';
 
 /**
  * SearchView - Search input with debounce, artist result card, and song results.
@@ -82,7 +83,7 @@ export function SearchView({
       setLoading(false);
       return;
     }
-    searchTimeoutRef.current = setTimeout(() => performSearch(trimmed), 400);
+    searchTimeoutRef.current = setTimeout(() => performSearch(trimmed), SEARCH_DEBOUNCE_MS);
   }
 
   function handleKeyDown(e) {

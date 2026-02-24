@@ -1,4 +1,5 @@
 import { signal, computed } from '@preact/signals';
+import { SAVE_STATE_DEBOUNCE_MS } from '../../shared/constants.js';
 
 // ─── Persistent signals (saved to localStorage) ───
 export const playlists = signal([]);
@@ -80,7 +81,7 @@ export function saveState() {
   _saveTimer = setTimeout(() => {
     _saveTimer = null;
     _writeState();
-  }, 300);
+  }, SAVE_STATE_DEBOUNCE_MS);
 }
 
 export function saveStateNow() {

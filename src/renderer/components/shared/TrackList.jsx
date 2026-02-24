@@ -2,10 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'preact/hooks';
 import { queue, queueIndex, isPlaying, likedSongs } from '../../state/index.js';
 import { TrackRow } from './TrackRow.jsx';
 import { showPlaylistPicker } from './PlaylistPickerModal.jsx';
-
-const ROW_HEIGHT = 56;
-const OVERSCAN = 10;
-const VIRTUALIZE_THRESHOLD = 80;
+import { ROW_HEIGHT, VIRTUALIZE_OVERSCAN as OVERSCAN, VIRTUALIZE_THRESHOLD } from '../../../shared/constants.js';
 
 /**
  * Renders a track list with header and rows.

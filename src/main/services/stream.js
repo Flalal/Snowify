@@ -3,10 +3,10 @@
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import { STREAM_CACHE_TTL, STREAM_CACHE_MAX_SIZE } from '../../shared/constants.js';
 
 // ─── Stream URL Cache ───
 const _streamCache = new Map();
-const STREAM_CACHE_TTL = 4 * 60 * 60 * 1000;
 
 export function getCachedUrl(key) {
   const entry = _streamCache.get(key);
@@ -21,7 +21,7 @@ export function getCachedUrl(key) {
 export function setCachedUrl(key, value) {
   _streamCache.set(key, { value, ts: Date.now() });
 
-  if (_streamCache.size > 200) {
+  if (_streamCache.size > STREAM_CACHE_MAX_SIZE) {
     const now = Date.now();
     for (const [k, v] of _streamCache) {
       if (now - v.ts > STREAM_CACHE_TTL) _streamCache.delete(k);
