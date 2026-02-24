@@ -2,11 +2,16 @@
 // This file is loaded before the renderer and provides window.snowify
 
 const API_URL_KEY = 'snowify_api_url';
+const API_KEY_KEY = 'snowify_api_key';
 const ACCESS_TOKEN_KEY = 'snowify_access_token';
 const REFRESH_TOKEN_KEY = 'snowify_refresh_token';
 
 function getApiUrl() {
   return localStorage.getItem(API_URL_KEY) || '';
+}
+
+function getApiKey() {
+  return localStorage.getItem(API_KEY_KEY) || '';
 }
 
 function getAccessToken() {
@@ -27,12 +32,19 @@ function clearTokens() {
   localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
+function apiHeaders(extra = {}) {
+  const h = { 'Content-Type': 'application/json', ...extra };
+  const key = getApiKey();
+  if (key) h['X-API-Key'] = key;
+  return h;
+}
+
 async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
   if (!refreshToken) throw new Error('No refresh token');
   const res = await fetch(`${getApiUrl()}/auth/refresh`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
     body: JSON.stringify({ refreshToken })
   });
   if (!res.ok) {
@@ -48,7 +60,7 @@ async function apiFetch(path, options = {}) {
   const api = getApiUrl();
   if (!api) throw new Error('API URL not configured');
 
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  const headers = apiHeaders(options.headers);
   const token = getAccessToken();
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -113,7 +125,7 @@ window.snowify = {
     try {
       const res = await fetch(`${getApiUrl()}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: apiHeaders(),
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
@@ -128,7 +140,7 @@ window.snowify = {
     try {
       const res = await fetch(`${getApiUrl()}/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: apiHeaders(),
         body: JSON.stringify({ username, email, password })
       });
       const data = await res.json();
@@ -144,7 +156,7 @@ window.snowify = {
     if (refreshToken) {
       await fetch(`${getApiUrl()}/auth/logout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: apiHeaders(),
         body: JSON.stringify({ refreshToken })
       }).catch(() => {});
     }

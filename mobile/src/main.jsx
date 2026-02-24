@@ -22,6 +22,7 @@ import { App } from '@renderer/App.jsx';
 function MobileLogin({ onLogin }) {
   const [mode, setMode] = useState('login');
   const [apiUrl, setApiUrl] = useState(getApiUrl() || '');
+  const [apiKey, setApiKey] = useState(localStorage.getItem('snowify_api_key') || '');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -35,6 +36,7 @@ function MobileLogin({ onLogin }) {
     setLoading(true);
 
     localStorage.setItem('snowify_api_url', apiUrl);
+    localStorage.setItem('snowify_api_key', apiKey);
     // Re-run adapter config
     await window.snowify.authConfigure({ baseUrl: apiUrl });
 
@@ -66,6 +68,12 @@ function MobileLogin({ onLogin }) {
           value={apiUrl}
           onInput={e => setApiUrl(e.currentTarget.value)}
           required
+        />
+        <input
+          type="password"
+          placeholder="API Key (optional)"
+          value={apiKey}
+          onInput={e => setApiKey(e.currentTarget.value)}
         />
         {mode === 'register' && (
           <input

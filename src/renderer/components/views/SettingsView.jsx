@@ -4,7 +4,7 @@ import {
   animations, effects, theme, discordRpc, country,
   recentTracks, playlists, likedSongs, saveState,
   isPlaying, queue, queueIndex,
-  cloudSyncEnabled, cloudApiUrl, cloudUser,
+  cloudSyncEnabled, cloudApiUrl, cloudApiKey, cloudUser,
   cloudAccessToken, cloudRefreshToken, lastSyncAt
 } from '../../state/index.js';
 import { showToast } from '../shared/Toast.jsx';
@@ -197,6 +197,11 @@ export function SettingsView({ onRenderHome }) {
     saveState();
   }
 
+  function handleApiKeyChange(e) {
+    cloudApiKey.value = e.currentTarget.value;
+    saveState();
+  }
+
   async function handleSyncToggle(e) {
     cloudSyncEnabled.value = e.currentTarget.checked;
     saveState();
@@ -204,7 +209,8 @@ export function SettingsView({ onRenderHome }) {
       await window.snowify.authConfigure({
         baseUrl: cloudApiUrl.value,
         accessToken: cloudAccessToken.value,
-        refreshToken: cloudRefreshToken.value
+        refreshToken: cloudRefreshToken.value,
+        apiKey: cloudApiKey.value
       });
     }
   }
@@ -214,7 +220,7 @@ export function SettingsView({ onRenderHome }) {
     setAuthError('');
     if (!cloudApiUrl.value) { setAuthError('Please set API URL first'); return; }
 
-    await window.snowify.authConfigure({ baseUrl: cloudApiUrl.value, accessToken: '', refreshToken: '' });
+    await window.snowify.authConfigure({ baseUrl: cloudApiUrl.value, accessToken: '', refreshToken: '', apiKey: cloudApiKey.value });
 
     let result;
     if (authMode === 'login') {
@@ -257,7 +263,8 @@ export function SettingsView({ onRenderHome }) {
       await window.snowify.authConfigure({
         baseUrl: cloudApiUrl.value,
         accessToken: cloudAccessToken.value,
-        refreshToken: cloudRefreshToken.value
+        refreshToken: cloudRefreshToken.value,
+        apiKey: cloudApiKey.value
       });
 
       // Push local state
@@ -500,6 +507,18 @@ export function SettingsView({ onRenderHome }) {
             placeholder="https://api.snowify.example.com"
             value={cloudApiUrl.value}
             onInput={handleApiUrlChange}
+            style={{ width: '280px' }}
+          />
+        </div>
+        <div className="settings-row">
+          <label htmlFor="setting-api-key">API Key</label>
+          <input
+            id="setting-api-key"
+            type="password"
+            className="settings-input"
+            placeholder="Optional"
+            value={cloudApiKey.value}
+            onInput={handleApiKeyChange}
             style={{ width: '280px' }}
           />
         </div>

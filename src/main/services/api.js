@@ -3,12 +3,14 @@
 let _baseUrl = '';
 let _accessToken = '';
 let _refreshToken = '';
+let _apiKey = '';
 let _onTokensUpdated = null;
 
-export function configure({ baseUrl, accessToken, refreshToken, onTokensUpdated }) {
+export function configure({ baseUrl, accessToken, refreshToken, apiKey, onTokensUpdated }) {
   _baseUrl = baseUrl.replace(/\/$/, '');
   _accessToken = accessToken || '';
   _refreshToken = refreshToken || '';
+  _apiKey = apiKey || '';
   _onTokensUpdated = onTokensUpdated || null;
 }
 
@@ -34,11 +36,17 @@ export function isAuthenticated() {
   return !!_accessToken;
 }
 
+function _apiHeaders(extra = {}) {
+  const h = { 'Content-Type': 'application/json', ...extra };
+  if (_apiKey) h['X-API-Key'] = _apiKey;
+  return h;
+}
+
 async function refreshAccessToken() {
   if (!_refreshToken) throw new Error('No refresh token');
   const res = await fetch(`${_baseUrl}/auth/refresh`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: _apiHeaders(),
     body: JSON.stringify({ refreshToken: _refreshToken })
   });
   if (!res.ok) {
@@ -55,7 +63,7 @@ async function refreshAccessToken() {
 export async function apiFetch(path, options = {}) {
   if (!_baseUrl) throw new Error('API not configured');
 
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  const headers = _apiHeaders(options.headers);
   if (_accessToken) headers['Authorization'] = `Bearer ${_accessToken}`;
 
   let res = await fetch(`${_baseUrl}${path}`, { ...options, headers });
@@ -84,7 +92,7 @@ export async function apiFetch(path, options = {}) {
 export async function register(username, email, password) {
   const res = await fetch(`${_baseUrl}/auth/register`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: _apiHeaders(),
     body: JSON.stringify({ username, email, password })
   });
   if (!res.ok) {
@@ -101,7 +109,7 @@ export async function register(username, email, password) {
 export async function login(email, password) {
   const res = await fetch(`${_baseUrl}/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: _apiHeaders(),
     body: JSON.stringify({ email, password })
   });
   if (!res.ok) {
@@ -119,7 +127,7 @@ export async function logout() {
   if (_refreshToken) {
     await fetch(`${_baseUrl}/auth/logout`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: _apiHeaders(),
       body: JSON.stringify({ refreshToken: _refreshToken })
     }).catch(() => {});
   }

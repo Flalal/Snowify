@@ -28,11 +28,12 @@ export function register(ipcMain) {
     return { ok: true };
   });
 
-  ipcMain.handle('auth:configure', async (_event, { baseUrl, accessToken, refreshToken }) => {
+  ipcMain.handle('auth:configure', async (_event, { baseUrl, accessToken, refreshToken, apiKey }) => {
     api.configure({
       baseUrl,
       accessToken,
       refreshToken,
+      apiKey,
       onTokensUpdated: (tokens) => {
         // Tokens will be sent back to renderer for storage
         const win = require('electron').BrowserWindow.getAllWindows()[0];

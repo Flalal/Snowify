@@ -22,6 +22,7 @@ export const country = signal('');
 // ─── Cloud Sync signals (persisted) ───
 export const cloudSyncEnabled = signal(false);
 export const cloudApiUrl = signal('');
+export const cloudApiKey = signal('');
 export const cloudUser = signal(null);  // { id, username, email } or null
 export const cloudAccessToken = signal('');
 export const cloudRefreshToken = signal('');
@@ -59,7 +60,7 @@ const PERSISTENT_KEYS = {
   volume, shuffle, repeat, musicOnly, autoplay,
   audioQuality, videoQuality, videoPremuxed,
   animations, effects, theme, discordRpc, country,
-  cloudSyncEnabled, cloudApiUrl, cloudUser,
+  cloudSyncEnabled, cloudApiUrl, cloudApiKey, cloudUser,
   cloudAccessToken, cloudRefreshToken, lastSyncAt
 };
 
@@ -128,6 +129,7 @@ export function loadState() {
       country.value = saved.country || '';
       cloudSyncEnabled.value = saved.cloudSyncEnabled ?? false;
       cloudApiUrl.value = saved.cloudApiUrl || '';
+      cloudApiKey.value = saved.cloudApiKey || '';
       cloudUser.value = saved.cloudUser || null;
       cloudAccessToken.value = saved.cloudAccessToken || '';
       cloudRefreshToken.value = saved.cloudRefreshToken || '';
