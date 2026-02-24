@@ -103,11 +103,14 @@ window.snowify = {
     apiFetch('/country', { method: 'POST', body: JSON.stringify({ code }) }).catch(() => {}),
 
   // ─── Stream ───
-  // Returns direct URL for <audio src>
-  getStreamUrl: (videoUrl, quality) => {
+  // Return direct stream URL with API key as query param and m4a format for Android compatibility
+  getStreamUrl: (videoUrl) => {
     const api = getApiUrl();
     const videoId = new URL(videoUrl).searchParams.get('v') || videoUrl;
-    return Promise.resolve(`${api}/stream/${videoId}?quality=${quality || 'bestaudio'}`);
+    const params = new URLSearchParams({ quality: 'm4a' });
+    const key = getApiKey();
+    if (key) params.set('key', key);
+    return Promise.resolve(`${api}/stream/${videoId}?${params}`);
   },
   getVideoStreamUrl: (videoId, quality, premuxed) =>
     apiFetch(`/stream/${videoId}/video?quality=${quality || 720}&premuxed=${premuxed || false}`),

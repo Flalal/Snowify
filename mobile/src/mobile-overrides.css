@@ -1,154 +1,466 @@
-/* ─── Mobile-specific CSS overrides ─── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SNOWIFY MOBILE OVERRIDES
+   Adapts the shared desktop renderer for Capacitor Android/iOS
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Hide desktop-only elements */
-.titlebar {
-  display: none !important;
-}
-
-/* Safe area insets for notched phones */
+/* ─── Variables & Safe Areas ─── */
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
+  --titlebar-height: 0px;
+  --mobile-nav-height: 64px;
 }
 
-body {
-  padding-top: var(--safe-top);
-  padding-bottom: var(--safe-bottom);
+html, body {
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
 
-/* Touch targets: minimum 44px */
+/* ═══════════════════════════════════════════════════════════════════════════
+   HIDE DESKTOP-ONLY ELEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#titlebar,
+.titlebar {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOUCH TARGETS (44px min — WCAG AA)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 button,
+.btn-primary,
 .btn-secondary,
-.sidebar-item,
-.nav-item,
+.nav-btn,
+.icon-btn,
 input[type="checkbox"],
+input[type="radio"],
 select {
   min-height: 44px;
   min-width: 44px;
 }
 
-/* ─── Bottom Navigation (replaces sidebar) ─── */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: auto;
-    width: 100% !important;
-    height: 64px;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0;
-    padding-bottom: var(--safe-bottom);
-    z-index: 100;
-    border-top: 1px solid var(--border);
-    border-right: none;
-    overflow: hidden;
-  }
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP LAYOUT
+   Desktop: #app (flex row) = #sidebar + #main-content
+   Mobile: full-width main + bottom nav
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-  .sidebar .sidebar-logo,
-  .sidebar .sidebar-section-title,
-  .sidebar .sidebar-playlists,
-  .sidebar .sidebar-bottom {
-    display: none !important;
-  }
-
-  .sidebar .sidebar-nav {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-around;
-    padding: 0;
-    gap: 0;
-  }
-
-  .sidebar .sidebar-item {
-    flex-direction: column;
-    font-size: 10px;
-    padding: 6px 4px;
-    gap: 2px;
-    flex: 1;
-    text-align: center;
-  }
-
-  .sidebar .sidebar-item svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  /* Main content adjustments */
-  .main-content {
-    margin-left: 0 !important;
-    padding-bottom: calc(64px + 70px + var(--safe-bottom)) !important;
-  }
-
-  /* Now Playing Bar */
-  .now-playing-bar {
-    bottom: calc(64px + var(--safe-bottom));
-    left: 0;
-    right: 0;
-    border-radius: 0;
-  }
-
-  .now-playing-bar .track-info {
-    max-width: 50%;
-  }
-
-  .now-playing-bar .player-controls {
-    gap: 8px;
-  }
-
-  .now-playing-bar .volume-control {
-    display: none !important;
-  }
-
-  /* Settings inputs */
-  .settings-input {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .settings-row {
-    flex-wrap: wrap;
-  }
-
-  /* Search bar */
-  .search-bar {
-    width: 100% !important;
-  }
-
-  /* Grid layouts: 2 columns on mobile */
-  .card-grid,
-  .album-grid,
-  .artist-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-  }
-
-  /* Track list: more compact */
-  .track-row {
-    padding: 8px 12px;
-  }
+#app {
+  top: var(--safe-top) !important;
 }
 
-/* Very small screens */
-@media (max-width: 400px) {
+#main-content {
+  flex: 1;
+  width: 100% !important;
+  margin-left: 0 !important;
+  padding-bottom: 16px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR → BOTTOM NAV BAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#sidebar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: auto !important;
+  width: 100% !important;
+  min-width: unset !important;
+  height: calc(var(--mobile-nav-height) + var(--safe-bottom));
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  padding-bottom: var(--safe-bottom);
+  gap: 0;
+  z-index: 100;
+  border-right: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+/* Hide playlists section */
+#sidebar .sidebar-section,
+#sidebar .sidebar-section-header,
+#sidebar .playlist-list {
+  display: none !important;
+}
+
+/* Nav row */
+#sidebar .sidebar-nav {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  gap: 0;
+}
+
+/* Nav buttons become vertical icon+label */
+#sidebar .nav-btn {
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  padding: 6px 4px;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+#sidebar .nav-btn.active {
+  color: var(--accent);
+}
+
+#sidebar .nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOW PLAYING BAR — above bottom nav
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#now-playing-bar {
+  bottom: calc(var(--mobile-nav-height) + var(--safe-bottom)) !important;
+  left: 0 !important;
+  right: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 8px !important;
+  z-index: 99;
+}
+
+/* Hide volume on mobile */
+.volume-control {
+  display: none !important;
+}
+
+.np-track-info {
+  max-width: 45%;
+}
+
+.np-controls .np-buttons {
+  gap: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOATING SEARCH
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.floating-search {
+  left: 12px !important;
+  right: 12px !important;
+  max-width: none !important;
+  width: auto !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEARCH VIEW
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.search-input-wrap {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+#search-input {
+  width: 100%;
+  font-size: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRIDS — 2 cols default, 1 col small screens
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card-grid,
+.card-row,
+.library-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+}
+
+.quick-picks {
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+.top-songs-grid {
+  grid-template-columns: 1fr !important;
+}
+
+.mood-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+}
+
+.top-artists-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 12px !important;
+}
+
+.trending-video-grid {
+  grid-template-columns: 1fr !important;
+}
+
+@media (max-width: 480px) {
   .card-grid,
-  .album-grid,
-  .artist-grid {
+  .card-row,
+  .library-grid {
     grid-template-columns: 1fr !important;
   }
+  .top-artists-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
-/* ─── Login screen (mobile-only) ─── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRACK LIST — compact
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.track-list-header {
+  display: none !important;
+}
+
+.track-row {
+  padding: 8px 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIEWS — adjust padding
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.view {
+  padding: 12px !important;
+}
+
+.view-header h1 {
+  font-size: 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLAYLIST / ALBUM / ARTIST HEADERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.playlist-header,
+.artist-header {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 16px;
+}
+
+.playlist-hero-cover {
+  width: 100% !important;
+  max-width: 200px !important;
+  margin: 0 auto !important;
+}
+
+.playlist-hero-name,
+.artist-name {
+  font-size: 24px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS — full width
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.settings-content {
+  max-width: 100% !important;
+  padding: 12px 0 !important;
+}
+
+.settings-row {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.settings-select,
+.settings-input {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODALS — near full-screen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.modal-overlay {
+  padding: 16px;
+}
+
+.modal-box {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  max-height: 90vh;
+  border-radius: 12px;
+  padding: 20px 16px;
+}
+
+.modal-box input {
+  font-size: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUEUE PANEL — full screen overlay
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.queue-panel {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  border-radius: 0 !important;
+  z-index: 200;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LYRICS PANEL — full screen overlay
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lyrics-panel {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  z-index: 200;
+}
+
+.lyrics-line {
+  font-size: 20px;
+  padding: 8px 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIDEO PLAYER — full screen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.video-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 300;
+}
+
+.video-container {
+  width: 100% !important;
+  border-radius: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTEXT MENU — mobile friendly
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.context-menu {
+  min-width: 180px;
+  max-width: 260px;
+  z-index: 400;
+}
+
+.context-menu-item {
+  padding: 12px;
+  min-height: 44px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOAST — above now playing + nav
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.toast {
+  bottom: calc(var(--now-playing-height, 72px) + var(--mobile-nav-height) + 16px + var(--safe-bottom)) !important;
+  left: 16px !important;
+  right: 16px !important;
+  max-width: 100% !important;
+  z-index: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PICKER MODAL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.picker-box {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.picker-item {
+  padding: 12px;
+  min-height: 44px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SPOTIFY IMPORT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.spotify-modal-content {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  max-height: 90vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR — minimal
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOVER → TAP (no hover on touch)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.track-card .card-play,
+.album-card .album-card-play {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01s !important;
+    transition-duration: 0.01s !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOGIN SCREEN (mobile-only)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .mobile-login {
   display: flex;
   flex-direction: column;

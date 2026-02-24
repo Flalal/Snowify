@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import {
   autoplay, audioQuality, videoQuality, videoPremuxed,
-  animations, effects, theme, discordRpc, country,
+  animations, effects, theme, discordRpc, country, volume,
   recentTracks, playlists, likedSongs, saveState,
   isPlaying, queue, queueIndex,
   cloudSyncEnabled, cloudApiUrl, cloudApiKey, cloudUser,
