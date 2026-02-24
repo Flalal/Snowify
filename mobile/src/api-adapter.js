@@ -174,6 +174,21 @@ window.snowify = {
     isAuthenticated: !!getAccessToken(),
     tokens: { accessToken: getAccessToken(), refreshToken: getRefreshToken() }
   }),
+  authLoadTokens: () => Promise.resolve({
+    accessToken: getAccessToken(),
+    refreshToken: getRefreshToken(),
+    apiKey: getApiKey()
+  }),
+  authSaveTokens: ({ accessToken, refreshToken, apiKey }) => {
+    if (accessToken) localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    if (apiKey !== undefined) localStorage.setItem(API_KEY_KEY, apiKey || '');
+    return Promise.resolve({ ok: true });
+  },
+  authClearTokens: () => {
+    clearTokens();
+    return Promise.resolve({ ok: true });
+  },
 
   // ─── Sync ───
   syncPush: (localState) => apiFetch('/sync/push', { method: 'POST', body: JSON.stringify(localState) }),

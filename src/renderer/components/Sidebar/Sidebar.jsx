@@ -7,7 +7,7 @@ import {
   saveState
 } from '../../state/index.js';
 import { PlaylistItem } from './PlaylistItem.jsx';
-import { showInputModal, showToast, showPlaylistContextMenu } from '../../state/ui.js';
+import { showInputModal, showToast, showPlaylistContextMenu, nowPlayingViewVisible } from '../../state/ui.js';
 
 export function Sidebar({ onNavigate, onShowPlaylist, onOpenSpotifyImport }) {
   const navItems = [
@@ -120,7 +120,10 @@ export function Sidebar({ onNavigate, onShowPlaylist, onOpenSpotifyImport }) {
             className={`nav-btn${currentView.value === item.view ? ' active' : ''}`}
             data-view={item.view}
             style={item.hidden ? { display: 'none' } : undefined}
-            onClick={() => onNavigate(item.view)}
+            onClick={() => {
+              nowPlayingViewVisible.value = false;
+              onNavigate(item.view);
+            }}
           >
             {item.icon}
             <span>{item.label}</span>

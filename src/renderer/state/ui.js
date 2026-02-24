@@ -42,6 +42,9 @@ export function toggleQueuePanel() {
   if (opening) lyricsVisible.value = false;
 }
 
+// ─── Now Playing view (mobile full-screen) ───
+export const nowPlayingViewVisible = signal(false);
+
 // ─── ContextMenu ───
 const menuVisible = signal(false);
 const menuX = signal(0);

@@ -138,8 +138,14 @@ input[type="checkbox"]:not(.settings-toggle) {
   height: 20px;
 }
 
+#sidebar .nav-btn span {
+  display: block !important;
+  font-size: 10px;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   NOW PLAYING BAR — above bottom nav
+   NOW PLAYING BAR — mini player (Spotify-style)
+   Layout: [Title - Artist] [♡] [▶/⏸]
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #now-playing-bar {
@@ -148,8 +154,13 @@ input[type="checkbox"]:not(.settings-toggle) {
   right: 0 !important;
   border-radius: 0 !important;
   padding: 0 8px !important;
+  height: 56px !important;
   z-index: 250;
-  grid-template-columns: 1fr auto 1fr !important;
+  cursor: pointer;
+  display: grid !important;
+  grid-template-columns: 1fr auto auto !important;
+  align-items: center;
+  gap: 0 !important;
 }
 
 /* Hide volume on mobile */
@@ -161,17 +172,77 @@ input[type="checkbox"]:not(.settings-toggle) {
   display: none !important;
 }
 
+/* Track info — text only, single line */
 .np-track-info {
   max-width: none;
   overflow: hidden;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
+.np-text {
+  flex: 1;
+  min-width: 0;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.np-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+.np-artist {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  opacity: 0.7;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Hide add-to-playlist button in mini bar */
+.np-track-info > .icon-btn:not(.np-like) {
+  display: none !important;
+}
+
+/* Like button visible in mini bar */
+.np-like {
+  order: 10;
+}
+
+/* Controls — only play button visible */
 .np-controls {
-  padding: 0 4px;
+  display: contents !important;
+  padding: 0;
 }
 
 .np-controls .np-buttons {
-  gap: 8px;
+  display: contents !important;
+}
+
+/* Hide shuffle, prev, next, repeat in mini bar */
+.np-buttons > .icon-btn {
+  display: none !important;
+}
+
+/* Play button stays */
+.np-buttons > .play-btn {
+  display: flex !important;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* Hide extras (lyrics, queue) in mini bar */
+.np-extras {
+  display: none !important;
 }
 
 /* Progress bar — thin strip at the top of the now playing bar, with large touch target */
@@ -196,10 +267,49 @@ input[type="checkbox"]:not(.settings-toggle) {
   border-radius: 0 !important;
 }
 
-.np-extras {
-  justify-content: flex-end !important;
-  align-items: center !important;
-  gap: 4px !important;
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOW PLAYING VIEW — mobile overrides
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.now-playing-view {
+  padding-top: var(--safe-top);
+  bottom: calc(var(--mobile-nav-height) + var(--safe-bottom)) !important;
+}
+
+.now-playing-view .np-view-content {
+  padding-top: calc(16px + var(--safe-top));
+  padding-bottom: 16px;
+}
+
+/* Make progress bar visible & styled in the full-screen view */
+.now-playing-view .np-progress {
+  position: static !important;
+  height: auto !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+.now-playing-view .np-progress .progress-bar {
+  height: 4px !important;
+  border-radius: 2px !important;
+}
+
+/* Ensure controls are full layout in the view */
+.now-playing-view .np-buttons {
+  display: flex !important;
+}
+
+.now-playing-view .np-buttons > .icon-btn {
+  display: flex !important;
+  padding: 0 !important;
+}
+
+.now-playing-view .np-buttons > .play-btn {
+  width: 56px !important;
+  height: 56px !important;
+  min-height: 56px !important;
+  min-width: 56px !important;
+  padding: 0 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

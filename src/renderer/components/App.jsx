@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'preact/hooks';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'preact/hooks';
 import { lazy, Suspense } from 'preact/compat';
 import { currentView, likedSongs, currentTrack, pendingRadioNav } from '../state/index.js';
 import {
@@ -7,7 +7,7 @@ import {
   playlistViewState,
   videoPlayerState
 } from '../state/navigation.js';
-import { lyricsVisible, queueVisible } from '../state/ui.js';
+import { lyricsVisible, queueVisible, nowPlayingViewVisible } from '../state/ui.js';
 
 import { Titlebar } from './Titlebar.jsx';
 import { Sidebar } from './Sidebar/Sidebar.jsx';
@@ -57,6 +57,9 @@ const VideoPlayer = lazy(() =>
 );
 const SpotifyImport = lazy(() =>
   import('./overlays/SpotifyImport.jsx').then((m) => ({ default: m.SpotifyImport }))
+);
+const NowPlayingView = lazy(() =>
+  import('./overlays/NowPlayingView.jsx').then((m) => ({ default: m.NowPlayingView }))
 );
 
 export function App() {
@@ -118,6 +121,17 @@ export function App() {
       delete window.__snowifyPlayback;
     };
   }, [togglePlay, playNext, playPrev, toggleLikeCurrentTrack]);
+
+  // ─── Auto-open Now Playing view on mobile (skip initial load) ───
+  const skipAutoOpen = useRef(true);
+  useEffect(() => {
+    if (!window.__mobileMediaSession) return;
+    if (skipAutoOpen.current) {
+      skipAutoOpen.current = false;
+      return;
+    }
+    if (currentTrack.value) nowPlayingViewVisible.value = true;
+  }, [currentTrack.value]);
 
   // ─── Keyboard shortcuts ───
   useKeyboardShortcuts({ getAudio, togglePlay, playNext, playPrev, setVolumeLevel, switchView });
@@ -264,6 +278,12 @@ export function App() {
                 }}
                 audio={getAudio()}
               />
+            </ViewErrorBoundary>
+          )}
+
+          {nowPlayingViewVisible.value && (
+            <ViewErrorBoundary>
+              <NowPlayingView visible={nowPlayingViewVisible.value} />
             </ViewErrorBoundary>
           )}
 

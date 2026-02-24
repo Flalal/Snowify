@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState, useRef } from 'preact/hooks';
 import { currentTrack, isCurrentLiked, isLoading } from '../../state/index.js';
-import { toggleLyricsPanel, toggleQueuePanel, showPlaylistPicker } from '../../state/ui.js';
+import { toggleLyricsPanel, toggleQueuePanel, showPlaylistPicker, nowPlayingViewVisible } from '../../state/ui.js';
 import { usePlaybackContext } from '../../hooks/usePlaybackContext.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { PlaybackControls } from './PlaybackControls.jsx';
@@ -32,8 +32,28 @@ export function NowPlayingBar() {
   const loading = isLoading.value;
 
   const toggleLike = useLikeTrack();
+  const barTouchRef = useRef({ startY: 0 });
 
   if (!track) return null;
+
+  const handleBarClick = (e) => {
+    if (!window.__mobileMediaSession) return;
+    if (e.target.closest('button') || e.target.closest('.progress-bar')) return;
+    nowPlayingViewVisible.value = true;
+  };
+
+  const handleBarTouchStart = (e) => {
+    if (!window.__mobileMediaSession) return;
+    barTouchRef.current.startY = e.touches[0].clientY;
+  };
+
+  const handleBarTouchEnd = (e) => {
+    if (!window.__mobileMediaSession) return;
+    const deltaY = e.changedTouches[0].clientY - barTouchRef.current.startY;
+    if (deltaY < -30) {
+      nowPlayingViewVisible.value = true;
+    }
+  };
 
   const handleSeek = (ratio) => {
     if (audio && audio.duration) {
@@ -52,7 +72,12 @@ export function NowPlayingBar() {
   };
 
   return (
-    <footer id="now-playing-bar">
+    <footer
+      id="now-playing-bar"
+      onClick={handleBarClick}
+      onTouchStart={handleBarTouchStart}
+      onTouchEnd={handleBarTouchEnd}
+    >
       <div className="np-track-info">
         <div className="np-thumbnail-wrap">
           <img id="np-thumbnail" src={track.thumbnail} alt={track.title} loading="lazy" />

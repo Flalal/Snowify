@@ -8,6 +8,7 @@ import './styles/global.css';
 import './styles/titlebar.css';
 import './styles/sidebar.css';
 import './styles/nowplaying.css';
+import './styles/nowplaying-view.css';
 import './styles/queue.css';
 import './styles/tracklist.css';
 import './styles/cards.css';

@@ -9,6 +9,7 @@ import '@renderer/styles/global.css';
 import '@renderer/styles/titlebar.css';
 import '@renderer/styles/sidebar.css';
 import '@renderer/styles/nowplaying.css';
+import '@renderer/styles/nowplaying-view.css';
 import '@renderer/styles/queue.css';
 import '@renderer/styles/tracklist.css';
 import '@renderer/styles/cards.css';
@@ -44,6 +45,18 @@ import { useState, useEffect } from 'preact/hooks';
 import { initMediaSession, updateMobileMediaSession, setMobileLiked, registerMobileMediaHandlers } from './media-session.js';
 import { initAudioFocus } from './audio-focus.js';
 window.__mobileMediaSession = { update: updateMobileMediaSession, setLiked: setMobileLiked };
+
+// Unlock AudioContext on first user gesture (Android WebView requires this)
+document.addEventListener('touchstart', function unlockAudio() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === 'suspended') ctx.resume();
+  const buf = ctx.createBuffer(1, 1, 22050);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  src.start();
+  document.removeEventListener('touchstart', unlockAudio);
+}, { once: true });
 
 // Import the main app (shared with desktop)
 import { App } from '@components/App.jsx';

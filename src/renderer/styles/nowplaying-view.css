@@ -1,0 +1,208 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOW PLAYING VIEW — full-screen mobile overlay
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.now-playing-view {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  transform: translateY(100%);
+  transition: transform 0.35s ease-out;
+  overflow: hidden;
+}
+
+.now-playing-view.visible {
+  transform: translateY(0);
+}
+
+/* ─── Blurred background ─── */
+.np-view-bg {
+  position: absolute;
+  inset: -20%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px) brightness(0.35) saturate(1.4);
+  z-index: 0;
+}
+
+/* ─── Dark overlay gradient ─── */
+.np-view-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+  z-index: 1;
+}
+
+/* ─── Content layout ─── */
+.np-view-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 28px 20px;
+}
+
+/* ─── Drag indicator (swipe hint) ─── */
+.np-view-drag {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.np-view-pill {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Artwork wrapper — takes available space ─── */
+.np-view-art-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 8px 0;
+}
+
+.np-view-art {
+  width: 100%;
+  max-width: 320px;
+  max-height: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Track info + like ─── */
+.np-view-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.np-view-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.np-view-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.np-view-artist {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.np-view-artist .artist-link {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.np-view-artist .artist-link:active {
+  color: white;
+}
+
+/* ─── Like button (inline with title) ─── */
+.np-view-like {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 8px;
+  flex-shrink: 0;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.np-view-like:active {
+  transform: scale(1.2);
+}
+
+.np-view-like.liked {
+  color: var(--accent);
+}
+
+.np-view-like.liked svg {
+  fill: var(--accent);
+}
+
+/* ─── Progress section ─── */
+.np-view-progress {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.np-view-progress .np-progress {
+  max-width: none;
+}
+
+.np-view-progress .np-progress .time {
+  display: none;
+}
+
+.np-view-progress .progress-bar {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.np-view-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Controls ─── */
+.np-view-controls {
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.np-view-controls .np-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.np-view-controls .play-btn {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  min-height: 56px;
+  min-width: 56px;
+}
+
+.np-view-controls .icon-btn {
+  padding: 0;
+}
+
+.np-view-controls .icon-btn svg {
+  width: 24px;
+  height: 24px;
+}
