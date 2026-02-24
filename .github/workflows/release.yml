@@ -107,8 +107,44 @@ jobs:
             dist/*.exe
             dist/latest.yml
 
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: mobile
+
+      - name: Build web assets
+        run: npm run build
+        working-directory: mobile
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+        working-directory: mobile
+
+      - name: Build debug APK
+        run: chmod +x gradlew && ./gradlew assembleDebug
+        working-directory: mobile/android
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+
   release:
-    needs: [build-linux, build-macos, build-windows]
+    needs: [build-linux, build-macos, build-windows, build-android]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -129,3 +165,4 @@ jobs:
             artifacts/linux-build/*
             artifacts/macos-build/*
             artifacts/windows-build/*
+            artifacts/android-build/*

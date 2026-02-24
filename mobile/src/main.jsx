@@ -3,8 +3,33 @@
 
 import './mobile-overrides.css';
 
-// Import shared renderer styles
-import '@renderer/styles/index.css';
+// Import shared renderer styles (same as desktop)
+import '@renderer/styles/variables.css';
+import '@renderer/styles/global.css';
+import '@renderer/styles/titlebar.css';
+import '@renderer/styles/sidebar.css';
+import '@renderer/styles/nowplaying.css';
+import '@renderer/styles/queue.css';
+import '@renderer/styles/tracklist.css';
+import '@renderer/styles/cards.css';
+import '@renderer/styles/search.css';
+import '@renderer/styles/context-menu.css';
+import '@renderer/styles/playlist.css';
+import '@renderer/styles/album.css';
+import '@renderer/styles/artist.css';
+import '@renderer/styles/explore.css';
+import '@renderer/styles/settings.css';
+import '@renderer/styles/library.css';
+import '@renderer/styles/modal.css';
+import '@renderer/styles/playlist-picker.css';
+import '@renderer/styles/spotify.css';
+import '@renderer/styles/lyrics.css';
+import '@renderer/styles/video.css';
+import '@renderer/styles/toast.css';
+import '@renderer/styles/scroll-arrows.css';
+import '@renderer/styles/animations.css';
+import '@renderer/styles/quickpicks.css';
+import '@renderer/styles/views.css';
 
 // Load state (from localStorage, same as desktop)
 import { loadState } from '@state/index.js';
@@ -16,7 +41,7 @@ import { render } from 'preact';
 import { useState } from 'preact/hooks';
 
 // Import the main app (shared with desktop)
-import { App } from '@renderer/App.jsx';
+import { App } from '@components/App.jsx';
 
 // Login screen component for mobile
 function MobileLogin({ onLogin }) {
