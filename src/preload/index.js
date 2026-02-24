@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('snowify', {
   // Logging
@@ -35,8 +35,7 @@ contextBridge.exposeInMainWorld('snowify', {
 
   // Spotify import (CSV)
   spotifyPickCsv: () => ipcRenderer.invoke('spotify:pickCsv'),
-  spotifyMatchTrack: (title, artist) =>
-    ipcRenderer.invoke('spotify:matchTrack', title, artist),
+  spotifyMatchTrack: (title, artist) => ipcRenderer.invoke('spotify:matchTrack', title, artist),
 
   // Discord RPC
   connectDiscord: () => ipcRenderer.invoke('discord:connect'),
@@ -71,11 +70,12 @@ contextBridge.exposeInMainWorld('snowify', {
   // Cloud Sync & Auth
   authConfigure: (config) => ipcRenderer.invoke('auth:configure', config),
   authLogin: (email, password) => ipcRenderer.invoke('auth:login', email, password),
-  authRegister: (username, email, password) => ipcRenderer.invoke('auth:register', username, email, password),
+  authRegister: (username, email, password) =>
+    ipcRenderer.invoke('auth:register', username, email, password),
   authLogout: () => ipcRenderer.invoke('auth:logout'),
   authGetState: () => ipcRenderer.invoke('auth:getState'),
   syncPush: (localState) => ipcRenderer.invoke('sync:push', localState),
   syncPull: () => ipcRenderer.invoke('sync:pull'),
   syncMerge: (local, remote) => ipcRenderer.invoke('sync:merge', local, remote),
-  onTokensUpdated: (cb) => ipcRenderer.on('auth:tokens-updated', (_, tokens) => cb(tokens)),
-})
+  onTokensUpdated: (cb) => ipcRenderer.on('auth:tokens-updated', (_, tokens) => cb(tokens))
+});

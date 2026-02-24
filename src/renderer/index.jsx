@@ -30,4 +30,9 @@ import './styles/animations.css';
 import './styles/quickpicks.css';
 import './styles/views.css';
 
-render(<ErrorBoundary><App /></ErrorBoundary>, document.getElementById('root'));
+render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>,
+  document.getElementById('root')
+);

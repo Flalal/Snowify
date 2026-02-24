@@ -1,8 +1,12 @@
 /* ═══════ Animations / Keyframes ═══════ */
 
 @keyframes viewEnter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ── Heart particle burst ── */
@@ -16,36 +20,71 @@
   animation: heartBurst 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes heartBurst {
-  0%   { opacity: 1; transform: translate(-50%, -50%) scale(var(--s, 1)) translate(0, 0); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(var(--s, 1)) translate(var(--dx), var(--dy)); }
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(var(--s, 1)) translate(0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(var(--s, 1)) translate(var(--dx), var(--dy));
+  }
 }
 
 @keyframes menuEnter {
-  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 @keyframes modalBgEnter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes modalEnter {
-  from { opacity: 0; transform: scale(0.92) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ── Shimmer loading effect ── */
 .shimmer {
   opacity: 1;
-  background: linear-gradient(90deg, var(--bg-elevated) 25%, rgba(255,255,255,0.06) 50%, var(--bg-elevated) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--bg-elevated) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -55,6 +94,10 @@
   background: var(--bg-elevated);
 }
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

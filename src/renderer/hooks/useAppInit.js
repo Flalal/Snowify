@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'preact/hooks';
 import {
-  volume, discordRpc, theme, animations, effects, country,
-  cloudAccessToken, cloudRefreshToken, cloudApiKey, saveState, saveStateNow, loadState
+  volume,
+  discordRpc,
+  theme,
+  animations,
+  effects,
+  country,
+  cloudAccessToken,
+  cloudRefreshToken,
+  cloudApiKey,
+  saveStateNow,
+  loadState
 } from '../state/index.js';
 import { showToast } from '../state/ui.js';
 import { api } from '../services/api.js';
@@ -27,10 +36,12 @@ export function useAppInit(getAudio) {
         // so next saveStateNow() will drop them)
         saveStateNow();
       }
-    } catch (_) { /* migration is best-effort */ }
+    } catch (_) {
+      /* migration is best-effort */
+    }
 
     // ─── Load tokens from secure store ───
-    window.snowify.authLoadTokens().then(tokens => {
+    window.snowify.authLoadTokens().then((tokens) => {
       if (tokens.accessToken) cloudAccessToken.value = tokens.accessToken;
       if (tokens.refreshToken) cloudRefreshToken.value = tokens.refreshToken;
       if (tokens.apiKey) cloudApiKey.value = tokens.apiKey;

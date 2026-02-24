@@ -43,7 +43,10 @@
   background: var(--bg-elevated);
   flex-shrink: 0;
   opacity: 0;
-  transition: transform var(--transition), box-shadow var(--transition), opacity 0.3s ease;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    opacity 0.3s ease;
 }
 .artist-avatar:hover {
   transform: scale(1.03);
@@ -96,7 +99,10 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: background var(--transition), border-color var(--transition), transform 0.15s;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform 0.15s;
   letter-spacing: 0.02em;
 }
 .follow-btn:hover {
@@ -242,7 +248,9 @@
   padding: 14px 8px;
   border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
+  transition:
+    background var(--transition),
+    transform var(--transition);
 }
 .similar-artist-card:hover {
   background: var(--bg-elevated);
@@ -271,13 +279,35 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .artist-avatar { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); }
-[data-theme="light"] .artist-avatar:hover { box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2); }
-[data-theme="light"] .show-more-btn { border-color: rgba(0, 0, 0, 0.12); }
-[data-theme="light"] .disco-filter { border-color: rgba(0, 0, 0, 0.12); color: var(--text-secondary); }
-[data-theme="light"] .disco-filter:hover { border-color: var(--text-secondary); color: var(--text-primary); }
-[data-theme="light"] .disco-filter.active { border-color: var(--accent); }
-[data-theme="light"] .similar-artists-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
-[data-theme="light"] .similar-artists-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
-[data-theme="light"] .similar-artist-avatar { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
-[data-theme="light"] .similar-artist-card:hover .similar-artist-avatar { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); }
+[data-theme='light'] .artist-avatar {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+[data-theme='light'] .artist-avatar:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+[data-theme='light'] .show-more-btn {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+[data-theme='light'] .disco-filter {
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-secondary);
+}
+[data-theme='light'] .disco-filter:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+[data-theme='light'] .disco-filter.active {
+  border-color: var(--accent);
+}
+[data-theme='light'] .similar-artists-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+[data-theme='light'] .similar-artists-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+[data-theme='light'] .similar-artist-avatar {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+[data-theme='light'] .similar-artist-card:hover .similar-artist-avatar {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}

@@ -11,7 +11,10 @@
   border-radius: var(--radius-lg);
   padding: 14px;
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition:
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 .lib-card:hover {
   background: var(--bg-elevated);
@@ -54,5 +57,10 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .lib-card { border-color: rgba(0, 0, 0, 0.06); }
-[data-theme="light"] .lib-card-cover { background: rgba(0, 0, 0, 0.04); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); }
+[data-theme='light'] .lib-card {
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme='light'] .lib-card-cover {
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}

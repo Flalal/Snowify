@@ -17,7 +17,9 @@
   justify-content: center;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
   overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 .playlist-hero-cover:hover {
   transform: scale(1.02);
@@ -71,7 +73,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-bounce), background var(--transition), box-shadow var(--transition);
+  transition:
+    transform var(--transition-bounce),
+    background var(--transition),
+    box-shadow var(--transition);
   box-shadow: 0 4px 20px var(--accent-glow);
 }
 .play-all-btn:hover {
@@ -81,16 +86,29 @@
 }
 
 /* ═══════ Playlist action buttons ═══════ */
-.playlist-actions-spacer { flex: 1; }
+.playlist-actions-spacer {
+  flex: 1;
+}
 .playlist-action-btn {
   width: 36px;
   height: 36px;
   color: var(--text-secondary);
-  transition: color var(--transition), transform var(--transition-bounce);
+  transition:
+    color var(--transition),
+    transform var(--transition-bounce);
 }
-.playlist-action-btn:hover { color: var(--text-primary); transform: scale(1.15); }
-.playlist-action-btn.btn-delete:hover { color: var(--red); }
+.playlist-action-btn:hover {
+  color: var(--text-primary);
+  transform: scale(1.15);
+}
+.playlist-action-btn.btn-delete:hover {
+  color: var(--red);
+}
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .playlist-hero-cover { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); }
-[data-theme="light"] .playlist-hero-cover:hover { box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2); }
+[data-theme='light'] .playlist-hero-cover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+[data-theme='light'] .playlist-hero-cover:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}

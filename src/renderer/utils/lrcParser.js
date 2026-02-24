@@ -6,7 +6,7 @@
 export function parseLRC(lrcText) {
   const lines = [];
   const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]\s*(.*)/;
-  lrcText.split('\n').forEach(line => {
+  lrcText.split('\n').forEach((line) => {
     const match = line.match(regex);
     if (match) {
       const min = parseInt(match[1]);

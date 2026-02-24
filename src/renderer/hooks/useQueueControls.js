@@ -1,14 +1,26 @@
 import { useCallback, useRef } from 'preact/hooks';
 import {
-  queue, originalQueue, queueIndex, isPlaying, isLoading,
-  shuffle, repeat, volume, autoplay, currentTrack, saveState
+  queue,
+  originalQueue,
+  queueIndex,
+  isPlaying,
+  isLoading,
+  shuffle,
+  repeat,
+  volume,
+  autoplay,
+  currentTrack,
+  saveState
 } from '../state/index.js';
 import { shuffleArray } from '../utils/shuffleArray.js';
 import { showToast } from '../state/ui.js';
 import { updateDiscordPresence, clearDiscordPresence } from '../utils/discordPresence.js';
 import {
-  VOLUME_SCALE, QUEUE_MAX_SIZE, AUTOPLAY_ADD_COUNT,
-  AUTOPLAY_MIN_POOL, RESTART_THRESHOLD_S
+  VOLUME_SCALE,
+  QUEUE_MAX_SIZE,
+  AUTOPLAY_ADD_COUNT,
+  AUTOPLAY_MIN_POOL,
+  RESTART_THRESHOLD_S
 } from '../../shared/constants.js';
 import { api } from '../services/api.js';
 
@@ -22,11 +34,11 @@ export function useQueueControls(getAudio, playTrack) {
     fillingRef.current = true;
     showToast('Autoplay: finding similar songs...');
     try {
-      const queueIds = new Set(queue.value.map(t => t.id));
+      const queueIds = new Set(queue.value.map((t) => t.id));
       const seen = new Set();
       let pool = [];
       const addToPool = (tracks) => {
-        tracks.forEach(t => {
+        tracks.forEach((t) => {
           if (!queueIds.has(t.id) && !seen.has(t.id)) {
             seen.add(t.id);
             pool.push(t);
@@ -47,7 +59,7 @@ export function useQueueControls(getAudio, playTrack) {
       pool = shuffleArray(pool);
       const maxAdd = Math.min(AUTOPLAY_ADD_COUNT, QUEUE_MAX_SIZE - queue.value.length);
       if (maxAdd <= 0) {
-        const trim = Math.min(queueIndex.value, queue.value.length - (QUEUE_MAX_SIZE / 2));
+        const trim = Math.min(queueIndex.value, queue.value.length - QUEUE_MAX_SIZE / 2);
         if (trim > 0) {
           queue.value = queue.value.slice(trim);
           queueIndex.value = queueIndex.value - trim;
@@ -72,7 +84,10 @@ export function useQueueControls(getAudio, playTrack) {
     if (!queue.value.length) return;
 
     if (repeat.value === 'one') {
-      if (audio) { audio.currentTime = 0; audio.play(); }
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+      }
       isPlaying.value = true;
       return;
     }
@@ -85,7 +100,7 @@ export function useQueueControls(getAudio, playTrack) {
       return;
     }
 
-    let nextIdx = queueIndex.value + 1;
+    const nextIdx = queueIndex.value + 1;
     if (nextIdx >= queue.value.length) {
       if (autoplay.value) {
         smartQueueFill();
@@ -146,7 +161,7 @@ export function useQueueControls(getAudio, playTrack) {
         queue.value = [current, ...shuffleArray(rest)];
         queueIndex.value = 0;
       } else {
-        const idx = originalQueue.value.findIndex(t => t.id === current?.id);
+        const idx = originalQueue.value.findIndex((t) => t.id === current?.id);
         queue.value = [...originalQueue.value];
         queueIndex.value = idx >= 0 ? idx : 0;
       }
@@ -162,7 +177,12 @@ export function useQueueControls(getAudio, playTrack) {
   }, []);
 
   return {
-    smartQueueFill, playNext, playPrev, togglePlay,
-    setVolumeLevel, toggleShuffle, toggleRepeat
+    smartQueueFill,
+    playNext,
+    playPrev,
+    togglePlay,
+    setVolumeLevel,
+    toggleShuffle,
+    toggleRepeat
   };
 }

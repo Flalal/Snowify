@@ -10,8 +10,13 @@ export async function connectDiscordRPC() {
   if (rpcClient) return;
   try {
     rpcClient = new Client({ clientId: DISCORD_CLIENT_ID });
-    rpcClient.on('ready', () => { rpcReady = true; });
-    rpcClient.on('disconnected', () => { rpcReady = false; rpcClient = null; });
+    rpcClient.on('ready', () => {
+      rpcReady = true;
+    });
+    rpcClient.on('disconnected', () => {
+      rpcReady = false;
+      rpcClient = null;
+    });
     await rpcClient.login();
   } catch (_) {
     rpcReady = false;

@@ -12,8 +12,8 @@ import { showContextMenu } from '../../state/ui.js';
 export function QueuePanel({ visible, onClose }) {
   const q = queue.value;
   const idx = queueIndex.value;
-  const current = (idx >= 0 && idx < q.length) ? q[idx] : null;
-  const upcoming = (idx >= 0) ? q.slice(idx + 1) : [];
+  const current = idx >= 0 && idx < q.length ? q[idx] : null;
+  const upcoming = idx >= 0 ? q.slice(idx + 1) : [];
 
   function handleContextMenu(e, track) {
     e.preventDefault();
@@ -25,7 +25,7 @@ export function QueuePanel({ visible, onClose }) {
     e.dataTransfer.setData('text/plain', track.title);
     const el = e.target.closest('.queue-item');
     if (el) el.classList.add('dragging');
-    document.querySelectorAll('.playlist-item').forEach(p => p.classList.add('drop-target'));
+    document.querySelectorAll('.playlist-item').forEach((p) => p.classList.add('drop-target'));
   }
 
   return (
@@ -37,8 +37,22 @@ export function QueuePanel({ visible, onClose }) {
     >
       <div className="queue-panel-header">
         <h3>Queue</h3>
-        <button id="btn-close-queue" className="icon-btn" aria-label="Close queue" onClick={onClose}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          id="btn-close-queue"
+          className="icon-btn"
+          aria-label="Close queue"
+          onClick={onClose}
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>

@@ -67,12 +67,12 @@ function createWindow() {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           "default-src 'self'; " +
-          "script-src 'self'; " +
-          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-          "font-src 'self' https://fonts.gstatic.com; " +
-          "img-src 'self' https: data: file:; " +
-          "media-src 'self' blob: https:; " +
-          "connect-src 'self' https: http:;"
+            "script-src 'self'; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+            "font-src 'self' https://fonts.gstatic.com; " +
+            "img-src 'self' https: data: file:; " +
+            "media-src 'self' blob: https:; " +
+            "connect-src 'self' https: http:;"
         ]
       }
     });
@@ -119,7 +119,7 @@ if (process.env.ELECTRON_RENDERER_URL) {
 app.whenReady().then(async () => {
   createWindow();
   initUpdater(mainWindow);
-  initYTMusic().catch(err => {
+  initYTMusic().catch((err) => {
     console.error('YTMusic init failed:', err);
     mainWindow?.webContents?.send('ytmusic-init-error');
   });

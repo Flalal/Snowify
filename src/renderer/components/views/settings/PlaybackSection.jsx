@@ -1,6 +1,14 @@
 import {
-  autoplay, audioQuality, videoQuality, videoPremuxed,
-  discordRpc, country, isPlaying, queue, queueIndex, saveState
+  autoplay,
+  audioQuality,
+  videoQuality,
+  videoPremuxed,
+  discordRpc,
+  country,
+  isPlaying,
+  queue,
+  queueIndex,
+  saveState
 } from '../../../state/index.js';
 import { showToast } from '../../../state/ui.js';
 import { invalidateExploreCache } from '../../../services/exploreCache.js';
@@ -173,7 +181,9 @@ export function PlaybackSection() {
           </select>
         </div>
         <div className="settings-row">
-          <label htmlFor="setting-video-premuxed">Use premuxed streams (faster, lower quality)</label>
+          <label htmlFor="setting-video-premuxed">
+            Use premuxed streams (faster, lower quality)
+          </label>
           <input
             id="setting-video-premuxed"
             type="checkbox"

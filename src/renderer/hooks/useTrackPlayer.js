@@ -1,7 +1,15 @@
 import { useRef, useCallback } from 'preact/hooks';
 import {
-  queue, originalQueue, queueIndex, isPlaying, isLoading,
-  shuffle, volume, audioQuality, recentTracks, saveState
+  queue,
+  originalQueue,
+  queueIndex,
+  isPlaying,
+  isLoading,
+  shuffle,
+  volume,
+  audioQuality,
+  recentTracks,
+  saveState
 } from '../state/index.js';
 import { shuffleArray } from '../utils/shuffleArray.js';
 import { showToast } from '../state/ui.js';
@@ -22,7 +30,10 @@ export function useTrackPlayer() {
   }, []);
 
   const addToRecent = useCallback((track) => {
-    recentTracks.value = [track, ...recentTracks.value.filter(t => t.id !== track.id)].slice(0, RECENT_TRACKS_MAX);
+    recentTracks.value = [track, ...recentTracks.value.filter((t) => t.id !== track.id)].slice(
+      0,
+      RECENT_TRACKS_MAX
+    );
     saveState();
   }, []);
 
@@ -57,7 +68,7 @@ export function useTrackPlayer() {
       onTrackPlayedRef.current?.(track);
     } catch (err) {
       console.error('Playback error:', err);
-      const msg = typeof err === 'string' ? err : (err.message || 'unknown error');
+      const msg = typeof err === 'string' ? err : err.message || 'unknown error';
       showToast('Playback failed: ' + msg);
       isPlaying.value = false;
       isLoading.value = false;
@@ -67,25 +78,30 @@ export function useTrackPlayer() {
         if (nextIdx < q.length) {
           skipAdvanceRef.current = true;
           queueIndex.value = nextIdx;
-          playTrack(q[nextIdx]).finally(() => { skipAdvanceRef.current = false; });
+          playTrack(q[nextIdx]).finally(() => {
+            skipAdvanceRef.current = false;
+          });
         }
       }
     }
   }, []);
 
-  const playFromList = useCallback((tracks, index) => {
-    originalQueue.value = [...tracks];
-    if (shuffle.value) {
-      const picked = tracks[index];
-      const rest = tracks.filter((_, i) => i !== index);
-      queue.value = [picked, ...shuffleArray(rest)];
-      queueIndex.value = 0;
-    } else {
-      queue.value = [...tracks];
-      queueIndex.value = index;
-    }
-    playTrack(queue.value[queueIndex.value]);
-  }, [playTrack]);
+  const playFromList = useCallback(
+    (tracks, index) => {
+      originalQueue.value = [...tracks];
+      if (shuffle.value) {
+        const picked = tracks[index];
+        const rest = tracks.filter((_, i) => i !== index);
+        queue.value = [picked, ...shuffleArray(rest)];
+        queueIndex.value = 0;
+      } else {
+        queue.value = [...tracks];
+        queueIndex.value = index;
+      }
+      playTrack(queue.value[queueIndex.value]);
+    },
+    [playTrack]
+  );
 
   return { getAudio, playTrack, playFromList, prefetchNextTrack, onTrackPlayedRef };
 }

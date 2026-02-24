@@ -1,8 +1,19 @@
 import { useState } from 'preact/hooks';
 import {
-  playlists, likedSongs, recentTracks, volume, theme, audioQuality,
-  cloudSyncEnabled, cloudApiUrl, cloudApiKey, cloudUser,
-  cloudAccessToken, cloudRefreshToken, lastSyncAt, saveState
+  playlists,
+  likedSongs,
+  recentTracks,
+  volume,
+  theme,
+  audioQuality,
+  cloudSyncEnabled,
+  cloudApiUrl,
+  cloudApiKey,
+  cloudUser,
+  cloudAccessToken,
+  cloudRefreshToken,
+  lastSyncAt,
+  saveState
 } from '../../../state/index.js';
 import { showToast } from '../../../state/ui.js';
 
@@ -44,9 +55,17 @@ export function CloudSyncSection() {
   async function handleAuthSubmit(e) {
     e.preventDefault();
     setAuthError('');
-    if (!cloudApiUrl.value) { setAuthError('Please set API URL first'); return; }
+    if (!cloudApiUrl.value) {
+      setAuthError('Please set API URL first');
+      return;
+    }
 
-    await window.snowify.authConfigure({ baseUrl: cloudApiUrl.value, accessToken: '', refreshToken: '', apiKey: cloudApiKey.value });
+    await window.snowify.authConfigure({
+      baseUrl: cloudApiUrl.value,
+      accessToken: '',
+      refreshToken: '',
+      apiKey: cloudApiKey.value
+    });
 
     let result;
     if (authMode === 'login') {
@@ -117,16 +136,21 @@ export function CloudSyncSection() {
       if (!pullResult.ok) throw new Error(pullResult.error || 'Pull failed');
       if (pullResult.data) {
         const merged = await window.snowify.syncMerge(
-          { playlists: playlists.value, likedSongs: likedSongs.value, recentTracks: recentTracks.value },
+          {
+            playlists: playlists.value,
+            likedSongs: likedSongs.value,
+            recentTracks: recentTracks.value
+          },
           pullResult.data
         );
         playlists.value = merged.playlists;
         likedSongs.value = merged.likedSongs;
         recentTracks.value = merged.recentTracks;
       }
-      lastSyncAt.value = (pullResult.data && pullResult.data.syncTimestamp)
-        || pushResult.syncTimestamp
-        || new Date().toISOString();
+      lastSyncAt.value =
+        (pullResult.data && pullResult.data.syncTimestamp) ||
+        pushResult.syncTimestamp ||
+        new Date().toISOString();
       saveState();
       setSyncStatus('done');
       showToast('Sync complete');
@@ -147,7 +171,11 @@ export function CloudSyncSection() {
       if (!pullResult.ok) throw new Error(pullResult.error || 'Pull failed');
       if (pullResult.data) {
         const merged = await window.snowify.syncMerge(
-          { playlists: playlists.value, likedSongs: likedSongs.value, recentTracks: recentTracks.value },
+          {
+            playlists: playlists.value,
+            likedSongs: likedSongs.value,
+            recentTracks: recentTracks.value
+          },
           pullResult.data
         );
         playlists.value = merged.playlists;
@@ -196,7 +224,9 @@ export function CloudSyncSection() {
         <>
           <div className="settings-row">
             <label>Account</label>
-            <span>{cloudUser.value.username} ({cloudUser.value.email})</span>
+            <span>
+              {cloudUser.value.username} ({cloudUser.value.email})
+            </span>
           </div>
           <div className="settings-row">
             <label htmlFor="setting-sync-enabled">Enable sync</label>
@@ -220,7 +250,11 @@ export function CloudSyncSection() {
               onClick={handleSyncNow}
               disabled={syncStatus === 'syncing'}
             >
-              {syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'done' ? 'Done!' : 'Sync now'}
+              {syncStatus === 'syncing'
+                ? 'Syncing...'
+                : syncStatus === 'done'
+                  ? 'Done!'
+                  : 'Sync now'}
             </button>
             <button
               className="btn-secondary"
@@ -242,18 +276,30 @@ export function CloudSyncSection() {
         <>
           {!authMode ? (
             <div className="settings-row" style={{ gap: '8px' }}>
-              <button className="btn-secondary" onClick={() => setAuthMode('login')}>Login</button>
-              <button className="btn-secondary" onClick={() => setAuthMode('register')}>Register</button>
+              <button className="btn-secondary" onClick={() => setAuthMode('login')}>
+                Login
+              </button>
+              <button className="btn-secondary" onClick={() => setAuthMode('register')}>
+                Register
+              </button>
             </div>
           ) : (
-            <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 16px 8px' }}>
+            <form
+              onSubmit={handleAuthSubmit}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                padding: '0 16px 8px'
+              }}
+            >
               {authMode === 'register' && (
                 <input
                   type="text"
                   className="settings-input"
                   placeholder="Username"
                   value={authUsername}
-                  onInput={e => setAuthUsername(e.currentTarget.value)}
+                  onInput={(e) => setAuthUsername(e.currentTarget.value)}
                   required
                 />
               )}
@@ -262,7 +308,7 @@ export function CloudSyncSection() {
                 className="settings-input"
                 placeholder="Email"
                 value={authEmail}
-                onInput={e => setAuthEmail(e.currentTarget.value)}
+                onInput={(e) => setAuthEmail(e.currentTarget.value)}
                 required
               />
               <input
@@ -270,15 +316,24 @@ export function CloudSyncSection() {
                 className="settings-input"
                 placeholder="Password"
                 value={authPassword}
-                onInput={e => setAuthPassword(e.currentTarget.value)}
+                onInput={(e) => setAuthPassword(e.currentTarget.value)}
                 required
               />
-              {authError && <span style={{ color: 'var(--red)', fontSize: '13px' }}>{authError}</span>}
+              {authError && (
+                <span style={{ color: 'var(--red)', fontSize: '13px' }}>{authError}</span>
+              )}
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button type="submit" className="btn-secondary">
                   {authMode === 'login' ? 'Login' : 'Register'}
                 </button>
-                <button type="button" className="btn-secondary" onClick={() => { setAuthMode(null); setAuthError(''); }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    setAuthMode(null);
+                    setAuthError('');
+                  }}
+                >
                   Cancel
                 </button>
               </div>

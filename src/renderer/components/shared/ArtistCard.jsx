@@ -21,9 +21,19 @@ export function ArtistCard({ artist, onClick, rank }) {
         data-artist-id={artist.artistId}
         tabIndex={0}
         onClick={handleClick}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
       >
-        <img className="top-artist-avatar" src={artist.thumbnail || ''} alt={artist.name} loading="lazy" />
+        <img
+          className="top-artist-avatar"
+          src={artist.thumbnail || ''}
+          alt={artist.name}
+          loading="lazy"
+        />
         <div className="top-artist-name">{artist.name}</div>
         <div className="top-artist-rank">#{rank}</div>
       </div>
@@ -37,10 +47,22 @@ export function ArtistCard({ artist, onClick, rank }) {
       data-artist-id={artist.artistId}
       tabIndex={0}
       onClick={handleClick}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
-      <img className="similar-artist-avatar" src={artist.thumbnail || ''} alt={artist.name} loading="lazy" />
-      <div className="similar-artist-name" title={artist.name}>{artist.name}</div>
+      <img
+        className="similar-artist-avatar"
+        src={artist.thumbnail || ''}
+        alt={artist.name}
+        loading="lazy"
+      />
+      <div className="similar-artist-name" title={artist.name}>
+        {artist.name}
+      </div>
     </div>
   );
 }

@@ -41,7 +41,14 @@ export function InputModal() {
   }
 
   return (
-    <div id="input-modal" className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="input-modal-title" onClick={onOverlay}>
+    <div
+      id="input-modal"
+      className="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="input-modal-title"
+      onClick={onOverlay}
+    >
       <div className="modal-box" ref={modalRef}>
         <h3 id="input-modal-title">{modalTitle.value}</h3>
         <input
@@ -49,7 +56,9 @@ export function InputModal() {
           id="input-modal-input"
           type="text"
           value={modalDefaultValue.value}
-          onInput={(e) => { modalDefaultValue.value = e.currentTarget.value; }}
+          onInput={(e) => {
+            modalDefaultValue.value = e.currentTarget.value;
+          }}
           onKeyDown={onKey}
         />
         <div className="modal-buttons">

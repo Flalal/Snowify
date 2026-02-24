@@ -23,16 +23,26 @@ const lyricsCacheProxy = {
     }
     _lyricsCache.set(key, value);
   },
-  has(key) { return _lyricsCache.has(key); },
-  delete(key) { return _lyricsCache.delete(key); },
-  clear() { _lyricsCache.clear(); },
-  get size() { return _lyricsCache.size; }
+  has(key) {
+    return _lyricsCache.has(key);
+  },
+  delete(key) {
+    return _lyricsCache.delete(key);
+  },
+  clear() {
+    _lyricsCache.clear();
+  },
+  get size() {
+    return _lyricsCache.size;
+  }
 };
 
 export const lyricsManager = new SyncLyrics({
   cache: lyricsCacheProxy,
   logLevel: 'none',
   sources: ['musixmatch', 'lrclib', 'netease'],
-  saveMusixmatchToken: (tokenData) => { _mxmTokenData = tokenData; },
-  getMusixmatchToken: () => _mxmTokenData,
+  saveMusixmatchToken: (tokenData) => {
+    _mxmTokenData = tokenData;
+  },
+  getMusixmatchToken: () => _mxmTokenData
 });

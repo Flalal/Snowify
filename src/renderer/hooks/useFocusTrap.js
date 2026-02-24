@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'preact/hooks';
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function useFocusTrap(ref, active) {
   const previousFocus = useRef(null);

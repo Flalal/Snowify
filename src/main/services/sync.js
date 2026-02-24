@@ -20,7 +20,7 @@ export async function syncPush(localState) {
   if (!isAuthenticated()) throw new Error('Not authenticated');
 
   const payload = {
-    playlists: (localState.playlists || []).map(p => ({
+    playlists: (localState.playlists || []).map((p) => ({
       id: p.id,
       name: p.name,
       description: p.description || '',
@@ -44,7 +44,7 @@ export async function syncPush(localState) {
       updated_at: p.updated_at || new Date().toISOString(),
       deleted_at: p.deleted_at || null
     })),
-    likedSongs: (localState.likedSongs || []).map(s => ({
+    likedSongs: (localState.likedSongs || []).map((s) => ({
       id: s.id,
       track_id: s.id,
       title: s.title,
@@ -59,7 +59,7 @@ export async function syncPush(localState) {
       url: s.url,
       liked_at: s.liked_at || new Date().toISOString()
     })),
-    history: (localState.recentTracks || []).map(h => ({
+    history: (localState.recentTracks || []).map((h) => ({
       id: h.id,
       track_id: h.id,
       title: h.title,

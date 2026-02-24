@@ -58,9 +58,12 @@ export function useVideoLoader(videoId, onClose) {
     }
 
     if (wasPlayingRef.current && mainAudio) {
-      mainAudio.play().then(() => {
-        isPlaying.value = true;
-      }).catch(() => {});
+      mainAudio
+        .play()
+        .then(() => {
+          isPlaying.value = true;
+        })
+        .catch(() => {});
     }
 
     if (onClose) onClose();
@@ -93,7 +96,11 @@ export function useVideoLoader(videoId, onClose) {
 
     (async () => {
       try {
-        const result = await api.getVideoStreamUrl(videoId, videoQuality.value, videoPremuxed.value);
+        const result = await api.getVideoStreamUrl(
+          videoId,
+          videoQuality.value,
+          videoPremuxed.value
+        );
         if (cancelled) return;
 
         videoEl.src = result.videoUrl;
@@ -133,7 +140,9 @@ export function useVideoLoader(videoId, onClose) {
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [videoId, syncVideoAudio, onVideoPause, onVideoPlay, doClose]);
 
   return { loading, videoRef, doClose };

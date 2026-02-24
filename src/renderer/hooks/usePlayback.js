@@ -8,10 +8,16 @@ import { useQueueControls } from './useQueueControls.js';
 import { usePlaybackWatchdog } from './usePlaybackWatchdog.js';
 
 export function usePlayback() {
-  const { getAudio, playTrack, playFromList, prefetchNextTrack, onTrackPlayedRef } = useTrackPlayer();
+  const { getAudio, playTrack, playFromList, prefetchNextTrack, onTrackPlayedRef } =
+    useTrackPlayer();
   const {
-    smartQueueFill, playNext, playPrev, togglePlay,
-    setVolumeLevel, toggleShuffle, toggleRepeat
+    smartQueueFill,
+    playNext,
+    playPrev,
+    togglePlay,
+    setVolumeLevel,
+    toggleShuffle,
+    toggleRepeat
   } = useQueueControls(getAudio, playTrack);
 
   // Fresh refs for use in effects with stable [] deps
@@ -72,9 +78,16 @@ export function usePlayback() {
 
   return {
     getAudio,
-    playTrack, playFromList, playNext, playPrev, togglePlay,
-    smartQueueFill, prefetchNextTrack,
-    setVolumeLevel, toggleShuffle, toggleRepeat,
+    playTrack,
+    playFromList,
+    playNext,
+    playPrev,
+    togglePlay,
+    smartQueueFill,
+    prefetchNextTrack,
+    setVolumeLevel,
+    toggleShuffle,
+    toggleRepeat,
     updateMediaSession: (track) => updateMediaSession(track, { getAudio, playPrev, playNext })
   };
 }

@@ -28,13 +28,17 @@
   border-radius: var(--radius);
   align-items: center;
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
+  transition:
+    background var(--transition),
+    transform var(--transition);
 }
 .track-row:hover {
   background: rgba(255, 255, 255, 0.04);
   transform: translateX(2px);
 }
-.track-row.playing { background: var(--accent-dim); }
+.track-row.playing {
+  background: var(--accent-dim);
+}
 
 .track-num {
   font-size: 14px;
@@ -42,15 +46,21 @@
   text-align: center;
   position: relative;
 }
-.track-row:hover .track-num-text { display: none; }
-.track-row:hover .track-num-play { display: flex !important; }
+.track-row:hover .track-num-text {
+  display: none;
+}
+.track-row:hover .track-num-play {
+  display: flex !important;
+}
 .track-num-play {
   display: none !important;
   align-items: center;
   justify-content: center;
   color: #fff;
 }
-.track-row.playing .track-num-text { color: var(--accent); }
+.track-row.playing .track-num-text {
+  color: var(--accent);
+}
 
 .track-main {
   display: flex;
@@ -77,7 +87,9 @@
   font-size: 14px;
   font-weight: 500;
 }
-.track-row.playing .track-title { color: var(--accent); }
+.track-row.playing .track-title {
+  color: var(--accent);
+}
 
 .track-artist-col {
   font-size: 13px;
@@ -105,7 +117,9 @@
 }
 .track-like-btn {
   opacity: 0;
-  transition: opacity var(--transition), transform 0.15s ease;
+  transition:
+    opacity var(--transition),
+    transform 0.15s ease;
   padding: 4px;
   background: none;
   border: none;
@@ -132,7 +146,9 @@
 }
 .track-add-btn {
   opacity: 0;
-  transition: opacity var(--transition), transform 0.15s ease;
+  transition:
+    opacity var(--transition),
+    transform 0.15s ease;
   padding: 4px;
   background: none;
   border: none;
@@ -153,8 +169,14 @@
   opacity: 0;
   transition: opacity var(--transition);
 }
-.track-row:hover .track-row-actions { opacity: 1; }
+.track-row:hover .track-row-actions {
+  opacity: 1;
+}
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .track-row:hover { background: rgba(0, 0, 0, 0.04); }
-[data-theme="light"] .track-row.playing { background: rgba(0, 0, 0, 0.06); }
+[data-theme='light'] .track-row:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+[data-theme='light'] .track-row.playing {
+  background: rgba(0, 0, 0, 0.06);
+}

@@ -19,6 +19,7 @@ export const api = {
   getPlaylistVideos: (id) => window.snowify.getPlaylistVideos(id),
   setCountry: (code) => window.snowify.setCountry(code),
   getStreamUrl: (url, quality) => window.snowify.getStreamUrl(url, quality),
-  getVideoStreamUrl: (id, quality, premuxed) => window.snowify.getVideoStreamUrl(id, quality, premuxed),
-  getLyrics: (...args) => window.snowify.getLyrics(...args),
+  getVideoStreamUrl: (id, quality, premuxed) =>
+    window.snowify.getVideoStreamUrl(id, quality, premuxed),
+  getLyrics: (...args) => window.snowify.getLyrics(...args)
 };

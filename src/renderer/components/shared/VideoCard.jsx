@@ -20,7 +20,12 @@ export function VideoCard({ video, onClick }) {
       data-video-id={videoId}
       tabIndex={0}
       onClick={handleClick}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       <img className="video-card-thumb" src={video.thumbnail} alt={displayName} loading="lazy" />
       <button className="video-card-play" title="Watch" aria-label="Watch video">
@@ -28,10 +33,10 @@ export function VideoCard({ video, onClick }) {
           <path d="M8 5v14l11-7L8 5z" />
         </svg>
       </button>
-      <div className="video-card-name" title={displayName}>{displayName}</div>
-      {video.duration && (
-        <div className="video-card-duration">{video.duration}</div>
-      )}
+      <div className="video-card-name" title={displayName}>
+        {displayName}
+      </div>
+      {video.duration && <div className="video-card-duration">{video.duration}</div>}
     </div>
   );
 }

@@ -94,9 +94,12 @@ export function SearchView() {
     if (inputRef.current) inputRef.current.focus();
   }
 
-  const handlePlay = useCallback((trackList, index) => {
-    playFromList(trackList, index);
-  }, [playFromList]);
+  const handlePlay = useCallback(
+    (trackList, index) => {
+      playFromList(trackList, index);
+    },
+    [playFromList]
+  );
 
   const topArtist = artists[0] || null;
   const trimmedQuery = query.trim();
@@ -104,9 +107,17 @@ export function SearchView() {
   return (
     <div>
       <div className="search-input-wrap">
-        <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <circle cx="11" cy="11" r="7"/>
-          <path d="M16 16l4.5 4.5" strokeLinecap="round"/>
+        <svg
+          className="search-icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="M16 16l4.5 4.5" strokeLinecap="round" />
         </svg>
         <input
           ref={inputRef}
@@ -131,7 +142,14 @@ export function SearchView() {
         {/* Empty state */}
         {!trimmedQuery && !loading && (
           <div className="empty-state search-empty">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#535353" strokeWidth="1.5">
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#535353"
+              strokeWidth="1.5"
+            >
               <circle cx="11" cy="11" r="7" />
               <path d="M16 16l4.5 4.5" strokeLinecap="round" />
             </svg>
@@ -165,7 +183,12 @@ export function SearchView() {
               data-artist-id={topArtist.artistId}
               tabIndex={0}
               onClick={() => openArtistPage(topArtist.artistId)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArtistPage(topArtist.artistId); } }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openArtistPage(topArtist.artistId);
+                }
+              }}
             >
               <img
                 className="artist-result-avatar"
@@ -187,12 +210,7 @@ export function SearchView() {
         {!loading && tracks.length > 0 && (
           <div>
             <h3 className="search-section-header">Songs</h3>
-            <TrackList
-              tracks={tracks}
-              context="search"
-              onPlay={handlePlay}
-              onLike={handleLike}
-            />
+            <TrackList tracks={tracks} context="search" onPlay={handlePlay} onLike={handleLike} />
           </div>
         )}
       </div>

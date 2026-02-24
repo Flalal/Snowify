@@ -29,11 +29,17 @@
   font-family: var(--font);
   cursor: pointer;
   border-radius: var(--radius);
-  transition: color var(--transition), background var(--transition), transform var(--transition);
+  transition:
+    color var(--transition),
+    background var(--transition),
+    transform var(--transition);
   white-space: nowrap;
   position: relative;
 }
-.nav-btn:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.04); }
+.nav-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
 .nav-btn.active {
   color: var(--text-primary);
   background: var(--accent-dim);
@@ -96,13 +102,17 @@
   padding: 8px 10px;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
+  transition:
+    background var(--transition),
+    transform var(--transition);
 }
 .playlist-item:hover {
   background: rgba(255, 255, 255, 0.05);
   transform: translateX(2px);
 }
-.playlist-item.active { background: rgba(255, 255, 255, 0.08); }
+.playlist-item.active {
+  background: rgba(255, 255, 255, 0.08);
+}
 
 .playlist-cover {
   width: 48px;
@@ -159,8 +169,8 @@
 }
 
 /* ── Drag & Drop ── */
-.track-row[draggable="true"],
-.track-card[draggable="true"] {
+.track-row[draggable='true'],
+.track-card[draggable='true'] {
   -webkit-user-drag: element;
 }
 .track-row.dragging,
@@ -171,7 +181,7 @@
   border: 1px dashed rgba(255, 255, 255, 0.15);
   border-radius: var(--radius);
 }
-[data-theme="light"] .playlist-item.drop-target {
+[data-theme='light'] .playlist-item.drop-target {
   border-color: rgba(0, 0, 0, 0.12);
 }
 .playlist-item.drag-over {
@@ -182,8 +192,18 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] #sidebar { border-right-color: rgba(0, 0, 0, 0.08); }
-[data-theme="light"] .nav-btn:hover { background: rgba(0, 0, 0, 0.04); }
-[data-theme="light"] .sidebar-divider { border-color: rgba(0, 0, 0, 0.06); }
-[data-theme="light"] .playlist-item:hover { background: rgba(0, 0, 0, 0.04); }
-[data-theme="light"] .playlist-item.active { background: rgba(0, 0, 0, 0.07); }
+[data-theme='light'] #sidebar {
+  border-right-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme='light'] .nav-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+[data-theme='light'] .sidebar-divider {
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme='light'] .playlist-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+[data-theme='light'] .playlist-item.active {
+  background: rgba(0, 0, 0, 0.07);
+}

@@ -12,17 +12,20 @@ export function LibraryView() {
 
   const allPlaylists = [
     { id: 'liked', name: 'Liked Songs', tracks: liked, isLiked: true },
-    ...playlistList.map(p => ({ ...p, isLiked: false }))
+    ...playlistList.map((p) => ({ ...p, isLiked: false }))
   ];
 
-  const handleCardClick = useCallback((pid) => {
-    if (pid === 'liked') {
-      showPlaylistDetail({ id: 'liked', name: 'Liked Songs', tracks: liked }, true);
-    } else {
-      const pl = playlistList.find(p => p.id === pid);
-      if (pl) showPlaylistDetail(pl, false);
-    }
-  }, [showPlaylistDetail, playlistList, liked]);
+  const handleCardClick = useCallback(
+    (pid) => {
+      if (pid === 'liked') {
+        showPlaylistDetail({ id: 'liked', name: 'Liked Songs', tracks: liked }, true);
+      } else {
+        const pl = playlistList.find((p) => p.id === pid);
+        if (pl) showPlaylistDetail(pl, false);
+      }
+    },
+    [showPlaylistDetail, playlistList, liked]
+  );
 
   async function handleCreatePlaylist() {
     const name = await showInputModal('Create playlist', 'My Playlist');
@@ -34,7 +37,7 @@ export function LibraryView() {
   }
 
   // Empty state: no playlists and no liked songs
-  const hasContent = allPlaylists.some(p => p.tracks.length) || playlistList.length > 0;
+  const hasContent = allPlaylists.some((p) => p.tracks.length) || playlistList.length > 0;
 
   if (!hasContent) {
     return (
@@ -56,7 +59,7 @@ export function LibraryView() {
   return (
     <div id="library-content">
       <div className="library-grid">
-        {allPlaylists.map(p => {
+        {allPlaylists.map((p) => {
           const coverContent = p.isLiked ? (
             <div className="lib-card-cover liked-cover">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">

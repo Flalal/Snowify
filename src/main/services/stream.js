@@ -1,6 +1,5 @@
 // ─── Stream URL Cache & yt-dlp path resolution ───
 
-import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { STREAM_CACHE_TTL, STREAM_CACHE_MAX_SIZE } from '../../shared/constants.js';

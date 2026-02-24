@@ -1,7 +1,7 @@
 # Snowify Frontend — Pending Improvements
 
 Stack audit: 2026-02-24 on v1.4.8. Global score: **7.1/10**.
-Updated: 2026-02-24 on v1.4.9 — items 1, 2, 3 resolved.
+Updated: 2026-02-24 on v1.4.9 — items 1, 2, 3, 4 resolved.
 
 Scores by category:
 
@@ -10,7 +10,7 @@ Scores by category:
 | Architecture | 8/10 | Good main/renderer/preload separation |
 | Performance | 7/10 | Good caches, but watchdog too frequent |
 | Security | 8.5/10 | Sandbox good, tokens encrypted via safeStorage |
-| Code Quality | 6/10 | Duplication, no linting, no tests |
+| Code Quality | 6.5/10 | Duplication, no tests (linting added) |
 | State Management | 8/10 | Signals excellent, IPC middleware in place |
 | Error Handling | 7.5/10 | Centralized IPC middleware + structured logging |
 | CSS | 7/10 | Well organized, but not scoped |
@@ -36,9 +36,9 @@ Scores by category:
 
 ## Important (before v1.5)
 
-### 4. No linting or formatting
-- **Problem:** No ESLint, no Prettier
-- **Fix:** Add `eslint` + `@preact/eslint-plugin` + `prettier`
+### ~~4. No linting or formatting~~ DONE
+- **Fix applied:** ESLint 9 (flat config) + Prettier. `eslint-plugin-react` (jsx-uses-vars only) + `eslint-plugin-react-hooks`. Strict `no-unused-vars`, `eqeqeq`, `prefer-const`, `no-var`. Prettier: single quotes, semicolons, no trailing commas, 100 printWidth.
+- **Files:** `eslint.config.js` (new), `.prettierrc.json` (new), `.prettierignore` (new), `package.json` (scripts + devDeps), ~99 source files reformatted
 
 ### 5. Zero test coverage
 - **Problem:** No test framework at all

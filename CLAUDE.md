@@ -8,7 +8,8 @@ Version: 1.4.9 | Repo: github.com/Flalal/Snowify
 - **Runtime:** Electron 33, Preact 10.28, @preact/signals 2.8
 - **Build:** electron-vite 5, electron-builder 26.7, @preact/preset-vite
 - **Services:** ytmusic-api 5.3.1, @stef-0012/synclyrics 2.5.10, @xhayper/discord-rpc 1.3, electron-updater 6.8, electron-log 5
-- **No:** React, jQuery, lodash, TypeScript, CSS-in-JS, test framework, linter
+- **Linting:** ESLint 9 (flat config), Prettier, eslint-plugin-react-hooks
+- **No:** React, jQuery, lodash, TypeScript, CSS-in-JS, test framework
 
 ## Architecture
 
@@ -60,6 +61,14 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 - `npm run build:linux` — Linux AppImage
 - `npm run build:mac` — macOS
 - `npm run build:all` — all platforms
+
+## Lint & format
+- `npm run lint` — ESLint check
+- `npm run lint:fix` — ESLint auto-fix
+- `npm run format` — Prettier write
+- `npm run format:check` — Prettier check
+- Config: `eslint.config.js` (flat config), `.prettierrc.json`
+- 18 `react-hooks/exhaustive-deps` warnings are expected (Preact signals as deps + stable refs)
 
 ## Conventions
 - Language: French (conversations), English (code/commits)

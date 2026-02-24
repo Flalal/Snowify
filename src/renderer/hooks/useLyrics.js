@@ -19,7 +19,7 @@ export function useLyrics(visible, audio) {
   const currentTrack = (() => {
     const q = queue.value;
     const idx = queueIndex.value;
-    return (idx >= 0 && idx < q.length) ? q[idx] : null;
+    return idx >= 0 && idx < q.length ? q[idx] : null;
   })();
 
   // ── Sync lyrics with audio playback ──
@@ -58,60 +58,68 @@ export function useLyrics(visible, audio) {
   }
 
   // ── Fetch and display lyrics ──
-  const fetchAndShowLyrics = useCallback(async (track) => {
-    if (!track) return;
+  const fetchAndShowLyrics = useCallback(
+    async (track) => {
+      if (!track) return;
 
-    // Abort previous fetch
-    if (abortRef.current) abortRef.current.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
+      // Abort previous fetch
+      if (abortRef.current) abortRef.current.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
 
-    trackIdRef.current = track.id;
-    lyricsLinesRef.current = [];
-    lastActiveIdxRef.current = -1;
-    setLyricsLines([]);
-    setActiveIdx(-1);
-    setLyricsType('loading');
+      trackIdRef.current = track.id;
+      lyricsLinesRef.current = [];
+      lastActiveIdxRef.current = -1;
+      setLyricsLines([]);
+      setActiveIdx(-1);
+      setLyricsType('loading');
 
-    let durationSec = null;
-    if (audio && audio.duration && !isNaN(audio.duration) && audio.duration > 0) {
-      durationSec = Math.round(audio.duration);
-    } else if (track.duration) {
-      const parts = track.duration.split(':');
-      if (parts.length === 2) durationSec = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-    }
-
-    try {
-      const result = await api.getLyrics(track.title, track.artist, track.album || '', durationSec);
-
-      if (controller.signal.aborted) return;
-
-      if (!result) {
-        setLyricsType('empty');
-        return;
+      let durationSec = null;
+      if (audio && audio.duration && !isNaN(audio.duration) && audio.duration > 0) {
+        durationSec = Math.round(audio.duration);
+      } else if (track.duration) {
+        const parts = track.duration.split(':');
+        if (parts.length === 2) durationSec = parseInt(parts[0]) * 60 + parseInt(parts[1]);
       }
 
-      if (result.synced) {
-        const parsed = parseLRC(result.synced);
-        lyricsLinesRef.current = parsed;
-        setLyricsLines(parsed);
-        setLyricsType('synced');
-        startLyricsSync();
-      } else if (result.plain) {
-        setPlainText(result.plain);
-        setLyricsType('plain');
-        showToast('Synced lyrics not available for this song');
-      } else {
-        setLyricsType('empty');
+      try {
+        const result = await api.getLyrics(
+          track.title,
+          track.artist,
+          track.album || '',
+          durationSec
+        );
+
+        if (controller.signal.aborted) return;
+
+        if (!result) {
+          setLyricsType('empty');
+          return;
+        }
+
+        if (result.synced) {
+          const parsed = parseLRC(result.synced);
+          lyricsLinesRef.current = parsed;
+          setLyricsLines(parsed);
+          setLyricsType('synced');
+          startLyricsSync();
+        } else if (result.plain) {
+          setPlainText(result.plain);
+          setLyricsType('plain');
+          showToast('Synced lyrics not available for this song');
+        } else {
+          setLyricsType('empty');
+        }
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        console.error('Lyrics error:', err);
+        if (trackIdRef.current === track.id) {
+          setLyricsType('error');
+        }
       }
-    } catch (err) {
-      if (controller.signal.aborted) return;
-      console.error('Lyrics error:', err);
-      if (trackIdRef.current === track.id) {
-        setLyricsType('error');
-      }
-    }
-  }, [audio, startLyricsSync]);
+    },
+    [audio, startLyricsSync]
+  );
 
   // ── Fetch lyrics when panel becomes visible or track changes ──
   useEffect(() => {
@@ -143,15 +151,18 @@ export function useLyrics(visible, audio) {
   }, []);
 
   // ── Click on synced line seeks audio ──
-  const handleLineClick = useCallback((time) => {
-    if (audio && audio.duration && !isNaN(time)) {
-      audio.currentTime = time;
-      if (audio.paused) {
-        audio.play();
-        isPlaying.value = true;
+  const handleLineClick = useCallback(
+    (time) => {
+      if (audio && audio.duration && !isNaN(time)) {
+        audio.currentTime = time;
+        if (audio.paused) {
+          audio.play();
+          isPlaying.value = true;
+        }
       }
-    }
-  }, [audio]);
+    },
+    [audio]
+  );
 
   return { lyricsLines, lyricsType, plainText, activeIdx, handleLineClick };
 }

@@ -1,7 +1,9 @@
 /* ═══════ Title Bar ═══════ */
 #titlebar {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--titlebar-height);
   display: flex;
   align-items: center;
@@ -48,12 +50,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
-.tb-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
-.tb-close:hover { background: #e81123; color: #fff; }
+.tb-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.tb-close:hover {
+  background: #e81123;
+  color: #fff;
+}
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] #titlebar { border-bottom-color: rgba(0, 0, 0, 0.08); }
-[data-theme="light"] .tb-btn:hover { background: rgba(0, 0, 0, 0.06); color: var(--text-primary); }
-[data-theme="light"] .tb-close:hover { background: #e81123; color: #fff; }
+[data-theme='light'] #titlebar {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme='light'] .tb-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+}
+[data-theme='light'] .tb-close:hover {
+  background: #e81123;
+  color: #fff;
+}

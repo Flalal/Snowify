@@ -14,9 +14,12 @@ export function register(ipcMain, deps) {
   });
   ipcMain.on('window:close', () => getMainWindow()?.close());
 
-  ipcMain.handle('shell:openExternal', createHandler('shell:openExternal', async (_event, url) => {
-    if (typeof url === 'string' && (url.startsWith('https://') || url.startsWith('http://'))) {
-      await shell.openExternal(url);
-    }
-  }));
+  ipcMain.handle(
+    'shell:openExternal',
+    createHandler('shell:openExternal', async (_event, url) => {
+      if (typeof url === 'string' && (url.startsWith('https://') || url.startsWith('http://'))) {
+        await shell.openExternal(url);
+      }
+    })
+  );
 }

@@ -1,7 +1,12 @@
 import { useEffect, useState, useCallback } from 'preact/hooks';
 import { lazy, Suspense } from 'preact/compat';
 import { currentView, likedSongs, currentTrack, pendingRadioNav } from '../state/index.js';
-import { albumViewState, artistViewState, playlistViewState, videoPlayerState } from '../state/navigation.js';
+import {
+  albumViewState,
+  artistViewState,
+  playlistViewState,
+  videoPlayerState
+} from '../state/navigation.js';
 
 import { Titlebar } from './Titlebar.jsx';
 import { Sidebar } from './Sidebar/Sidebar.jsx';
@@ -24,15 +29,33 @@ import { useAppNavigation } from '../hooks/useAppNavigation.js';
 import { NavigationProvider } from '../hooks/useNavigation.js';
 
 // ─── Lazy-loaded views & overlays ───
-const ExploreView = lazy(() => import('./views/ExploreView.jsx').then(m => ({ default: m.ExploreView })));
-const LibraryView = lazy(() => import('./views/LibraryView.jsx').then(m => ({ default: m.LibraryView })));
-const PlaylistView = lazy(() => import('./views/PlaylistView.jsx').then(m => ({ default: m.PlaylistView })));
-const AlbumView = lazy(() => import('./views/AlbumView.jsx').then(m => ({ default: m.AlbumView })));
-const ArtistView = lazy(() => import('./views/ArtistView.jsx').then(m => ({ default: m.ArtistView })));
-const SettingsView = lazy(() => import('./views/SettingsView.jsx').then(m => ({ default: m.SettingsView })));
-const LyricsPanel = lazy(() => import('./overlays/LyricsPanel.jsx').then(m => ({ default: m.LyricsPanel })));
-const VideoPlayer = lazy(() => import('./overlays/VideoPlayer.jsx').then(m => ({ default: m.VideoPlayer })));
-const SpotifyImport = lazy(() => import('./overlays/SpotifyImport.jsx').then(m => ({ default: m.SpotifyImport })));
+const ExploreView = lazy(() =>
+  import('./views/ExploreView.jsx').then((m) => ({ default: m.ExploreView }))
+);
+const LibraryView = lazy(() =>
+  import('./views/LibraryView.jsx').then((m) => ({ default: m.LibraryView }))
+);
+const PlaylistView = lazy(() =>
+  import('./views/PlaylistView.jsx').then((m) => ({ default: m.PlaylistView }))
+);
+const AlbumView = lazy(() =>
+  import('./views/AlbumView.jsx').then((m) => ({ default: m.AlbumView }))
+);
+const ArtistView = lazy(() =>
+  import('./views/ArtistView.jsx').then((m) => ({ default: m.ArtistView }))
+);
+const SettingsView = lazy(() =>
+  import('./views/SettingsView.jsx').then((m) => ({ default: m.SettingsView }))
+);
+const LyricsPanel = lazy(() =>
+  import('./overlays/LyricsPanel.jsx').then((m) => ({ default: m.LyricsPanel }))
+);
+const VideoPlayer = lazy(() =>
+  import('./overlays/VideoPlayer.jsx').then((m) => ({ default: m.VideoPlayer }))
+);
+const SpotifyImport = lazy(() =>
+  import('./overlays/SpotifyImport.jsx').then((m) => ({ default: m.SpotifyImport }))
+);
 
 export function App() {
   const [queueVisible, setQueueVisible] = useState(false);
@@ -40,15 +63,19 @@ export function App() {
   const [spotifyVisible, setSpotifyVisible] = useState(false);
 
   const {
-    getAudio, playFromList, playNext, playPrev, togglePlay,
-    setVolumeLevel, toggleShuffle, toggleRepeat
+    getAudio,
+    playFromList,
+    playNext,
+    playPrev,
+    togglePlay,
+    setVolumeLevel,
+    toggleShuffle,
+    toggleRepeat
   } = usePlayback();
 
   const initialized = useAppInit(getAudio);
-  const {
-    switchView, showPlaylistDetail, showAlbumDetail,
-    openVideoPlayer, closeVideoPlayer, nav
-  } = useAppNavigation(playFromList, getAudio, lyricsVisible, setLyricsVisible);
+  const { switchView, showPlaylistDetail, showAlbumDetail, closeVideoPlayer, nav } =
+    useAppNavigation(playFromList, getAudio, lyricsVisible, setLyricsVisible);
 
   // ─── Like / Unlike (for mobile media session only) ───
   const handleLikeToggle = useLikeTrack();
@@ -59,15 +86,22 @@ export function App() {
       handleLikeToggle(track);
       // Sync liked state to mobile notification
       if (window.__mobileMediaSession) {
-        const isLiked = likedSongs.value.some(t => t.id === track.id);
+        const isLiked = likedSongs.value.some((t) => t.id === track.id);
         window.__mobileMediaSession.setLiked(isLiked);
       }
     }
   }, [handleLikeToggle]);
 
   useEffect(() => {
-    window.__snowifyPlayback = { togglePlay, playNext, playPrev, toggleLike: toggleLikeCurrentTrack };
-    return () => { delete window.__snowifyPlayback; };
+    window.__snowifyPlayback = {
+      togglePlay,
+      playNext,
+      playPrev,
+      toggleLike: toggleLikeCurrentTrack
+    };
+    return () => {
+      delete window.__snowifyPlayback;
+    };
   }, [togglePlay, playNext, playPrev, toggleLikeCurrentTrack]);
 
   // ─── Keyboard shortcuts ───
@@ -83,17 +117,19 @@ export function App() {
   }, [pendingRadioNav.value, showPlaylistDetail]);
 
   const toggleLyrics = useCallback(() => {
-    setLyricsVisible(v => !v);
+    setLyricsVisible((v) => !v);
     if (!lyricsVisible) setQueueVisible(false);
   }, [lyricsVisible]);
 
   const toggleQueue = useCallback(() => {
-    setQueueVisible(v => !v);
+    setQueueVisible((v) => !v);
     if (!queueVisible) setLyricsVisible(false);
   }, [queueVisible]);
 
   // ─── Floating search ───
-  const showFloatingSearch = ['home', 'explore', 'library', 'artist', 'album', 'playlist'].includes(currentView.value);
+  const showFloatingSearch = ['home', 'explore', 'library', 'artist', 'album', 'playlist'].includes(
+    currentView.value
+  );
 
   const view = currentView.value;
   const track = currentTrack.value;
@@ -113,7 +149,18 @@ export function App() {
         <main id="main-content">
           {showFloatingSearch && (
             <div className="floating-search" onClick={() => switchView('search')}>
-              <svg className="floating-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="7"/><path d="M16 16l4.5 4.5" strokeLinecap="round"/></svg>
+              <svg
+                className="floating-search-icon"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M16 16l4.5 4.5" strokeLinecap="round" />
+              </svg>
               <span className="floating-search-text">Search</span>
             </div>
           )}
@@ -176,9 +223,7 @@ export function App() {
             <section className={`view${view === 'artist' ? ' active' : ''}`} id="view-artist">
               {view === 'artist' && artistViewState.value && (
                 <ViewErrorBoundary>
-                  <ArtistView
-                    artistId={artistViewState.value.artistId}
-                  />
+                  <ArtistView artistId={artistViewState.value.artistId} />
                 </ViewErrorBoundary>
               )}
             </section>
@@ -214,7 +259,11 @@ export function App() {
       <Suspense fallback={null}>
         {lyricsVisible && (
           <ViewErrorBoundary>
-            <LyricsPanel visible={lyricsVisible} onClose={() => setLyricsVisible(false)} audio={getAudio()} />
+            <LyricsPanel
+              visible={lyricsVisible}
+              onClose={() => setLyricsVisible(false)}
+              audio={getAudio()}
+            />
           </ViewErrorBoundary>
         )}
 

@@ -13,8 +13,12 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
-.picker-list::-webkit-scrollbar { width: 6px; }
-.picker-list::-webkit-scrollbar-track { background: transparent; }
+.picker-list::-webkit-scrollbar {
+  width: 6px;
+}
+.picker-list::-webkit-scrollbar-track {
+  background: transparent;
+}
 .picker-list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
@@ -76,7 +80,16 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .picker-item:hover { background: rgba(0, 0, 0, 0.04); }
-[data-theme="light"] .picker-new { border-color: rgba(0, 0, 0, 0.1); }
-[data-theme="light"] .picker-new:hover { background: rgba(0, 0, 0, 0.04); border-color: rgba(0, 0, 0, 0.2); }
-[data-theme="light"] .picker-list::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
+[data-theme='light'] .picker-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+[data-theme='light'] .picker-new {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme='light'] .picker-new:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+[data-theme='light'] .picker-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}

@@ -19,10 +19,10 @@ export function useContextMenu(menuRef, visible, x, y, onClose) {
     if (!visible || !menuRef.current) return;
     const rect = menuRef.current.getBoundingClientRect();
     if (rect.right > window.innerWidth) {
-      menuRef.current.style.left = (window.innerWidth - rect.width - 8) + 'px';
+      menuRef.current.style.left = window.innerWidth - rect.width - 8 + 'px';
     }
     if (rect.bottom > window.innerHeight) {
-      menuRef.current.style.top = (window.innerHeight - rect.height - 8) + 'px';
+      menuRef.current.style.top = window.innerHeight - rect.height - 8 + 'px';
     }
   }, [visible, x, y]);
 }

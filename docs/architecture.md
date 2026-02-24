@@ -3,7 +3,7 @@
 ## Project metrics
 - **Source:** 612 KB across 96 JS/JSX files
 - **CSS:** 30+ files, 6 theme palettes
-- **Dependencies:** 5 runtime + 4 dev (minimalist stack)
+- **Dependencies:** 5 runtime + 12 dev (minimalist stack + ESLint/Prettier)
 - **node_modules:** ~669 MB
 
 ## Directory structure
@@ -105,6 +105,9 @@ snowify-front/
 ├── resources/                       # yt-dlp binaries, icons
 ├── docs/                            # Project documentation
 ├── CLAUDE.md                        # Claude Code instructions
+├── eslint.config.js                 # ESLint 9 flat config
+├── .prettierrc.json                 # Prettier config
+├── .prettierignore                  # Prettier ignore patterns
 ├── electron-vite.config.mjs         # Build config (main + preload + renderer)
 ├── electron-builder.yml             # Packaging config
 └── package.json

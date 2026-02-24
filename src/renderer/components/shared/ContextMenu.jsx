@@ -1,8 +1,23 @@
 import { useRef, useEffect } from 'preact/hooks';
 import { useContextMenu } from '../../hooks/useContextMenu.js';
-import { playlists, likedSongs, recentTracks, queue, queueIndex, pendingRadioNav, saveState } from '../../state/index.js';
-import { showToast, menuVisible, menuX, menuY, menuTrack, menuOptions, removeContextMenu } from '../../state/ui.js';
-import { escapeHtml } from '../../utils/escapeHtml.js';
+import {
+  playlists,
+  likedSongs,
+  recentTracks,
+  queue,
+  queueIndex,
+  pendingRadioNav,
+  saveState
+} from '../../state/index.js';
+import {
+  showToast,
+  menuVisible,
+  menuX,
+  menuY,
+  menuTrack,
+  menuOptions,
+  removeContextMenu
+} from '../../state/ui.js';
 import { api } from '../../services/api.js';
 
 export { showContextMenu, removeContextMenu } from '../../state/ui.js';
@@ -27,8 +42,8 @@ export function ContextMenu() {
 
   if (!visible || !track) return null;
 
-  const isLiked = likedSongs.value.some(t => t.id === track.id);
-  const isRecent = recentTracks.value.some(t => t.id === track.id);
+  const isLiked = likedSongs.value.some((t) => t.id === track.id);
+  const isRecent = recentTracks.value.some((t) => t.id === track.id);
   const playlistList = playlists.value;
 
   function handleMenuKeyDown(e) {
@@ -94,28 +109,31 @@ export function ContextMenu() {
         break;
       case 'start-radio': {
         const radioName = `Radio: ${track.title}`;
-        const existing = playlists.value.find(p => p.name === radioName);
+        const existing = playlists.value.find((p) => p.name === radioName);
         if (existing) {
           pendingRadioNav.value = existing;
         } else {
           showToast('Creating radio...');
-          api.getUpNexts(track.id).then(upNexts => {
-            const newPlaylist = {
-              id: 'pl_' + Date.now(),
-              name: radioName,
-              tracks: [track, ...upNexts].slice(0, 21),
-            };
-            playlists.value = [...playlists.value, newPlaylist];
-            saveState();
-            pendingRadioNav.value = newPlaylist;
-          }).catch(() => {
-            showToast('Failed to create radio');
-          });
+          api
+            .getUpNexts(track.id)
+            .then((upNexts) => {
+              const newPlaylist = {
+                id: 'pl_' + Date.now(),
+                name: radioName,
+                tracks: [track, ...upNexts].slice(0, 21)
+              };
+              playlists.value = [...playlists.value, newPlaylist];
+              saveState();
+              pendingRadioNav.value = newPlaylist;
+            })
+            .catch(() => {
+              showToast('Failed to create radio');
+            });
         }
         break;
       }
       case 'remove-from-recent':
-        recentTracks.value = recentTracks.value.filter(t => t.id !== track.id);
+        recentTracks.value = recentTracks.value.filter((t) => t.id !== track.id);
         saveState();
         showToast('Removed from Recently Played');
         break;
@@ -149,7 +167,7 @@ export function ContextMenu() {
           <span>Add to playlist</span>
           <span className="sub-arrow">{'\u25B8'}</span>
           <div className="context-submenu" role="menu">
-            {playlistList.map(p => (
+            {playlistList.map((p) => (
               <div
                 key={p.id}
                 className="context-menu-item context-sub-item"
@@ -157,7 +175,10 @@ export function ContextMenu() {
                 tabIndex={-1}
                 data-action="add-to-playlist"
                 data-pid={p.id}
-                onClick={(e) => { e.stopPropagation(); handleAction('add-to-playlist', p.id); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAction('add-to-playlist', p.id);
+                }}
               >
                 {p.name}
               </div>
@@ -170,7 +191,7 @@ export function ContextMenu() {
     playlistSection = (
       <>
         <div className="context-menu-divider" role="separator" />
-        {playlistList.map(p => (
+        {playlistList.map((p) => (
           <div
             key={p.id}
             className="context-menu-item"
@@ -195,33 +216,81 @@ export function ContextMenu() {
       style={{ left: menuX.value + 'px', top: menuY.value + 'px' }}
       onKeyDown={handleMenuKeyDown}
     >
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="play" onClick={() => handleAction('play')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="play"
+        onClick={() => handleAction('play')}
+      >
         Play
       </div>
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="play-next" onClick={() => handleAction('play-next')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="play-next"
+        onClick={() => handleAction('play-next')}
+      >
         Play Next
       </div>
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="add-queue" onClick={() => handleAction('add-queue')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="add-queue"
+        onClick={() => handleAction('add-queue')}
+      >
         Add to Queue
       </div>
       <div className="context-menu-divider" role="separator" />
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="watch-video" onClick={() => handleAction('watch-video')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="watch-video"
+        onClick={() => handleAction('watch-video')}
+      >
         Watch Video
       </div>
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="like" onClick={() => handleAction('like')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="like"
+        onClick={() => handleAction('like')}
+      >
         {isLiked ? 'Unlike' : 'Like'}
       </div>
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="start-radio" onClick={() => handleAction('start-radio')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="start-radio"
+        onClick={() => handleAction('start-radio')}
+      >
         Start Radio
       </div>
       {playlistSection}
       <div className="context-menu-divider" role="separator" />
       {isRecent && (
-        <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="remove-from-recent" onClick={() => handleAction('remove-from-recent')}>
+        <div
+          className="context-menu-item"
+          role="menuitem"
+          tabIndex={-1}
+          data-action="remove-from-recent"
+          onClick={() => handleAction('remove-from-recent')}
+        >
           Remove from Recently Played
         </div>
       )}
-      <div className="context-menu-item" role="menuitem" tabIndex={-1} data-action="share" onClick={() => handleAction('share')}>
+      <div
+        className="context-menu-item"
+        role="menuitem"
+        tabIndex={-1}
+        data-action="share"
+        onClick={() => handleAction('share')}
+      >
         Copy Link
       </div>
     </div>

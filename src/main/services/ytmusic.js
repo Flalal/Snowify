@@ -12,10 +12,13 @@ export async function initYTMusic() {
       await ytmusic.initialize();
       return;
     } catch (err) {
-      console.error(`YTMusic init attempt ${attempt + 1}/${YTMUSIC_MAX_RETRIES} failed:`, err.message);
+      console.error(
+        `YTMusic init attempt ${attempt + 1}/${YTMUSIC_MAX_RETRIES} failed:`,
+        err.message
+      );
       ytmusic = null;
       if (attempt < YTMUSIC_MAX_RETRIES - 1) {
-        await new Promise(r => setTimeout(r, YTMUSIC_RETRY_DELAYS[attempt]));
+        await new Promise((r) => setTimeout(r, YTMUSIC_RETRY_DELAYS[attempt]));
       }
     }
   }

@@ -40,7 +40,7 @@
 }
 
 /* ═══════ Themes ═══════ */
-[data-theme="light"] {
+[data-theme='light'] {
   --bg-base: #f0f0f0;
   --bg-surface: #fafafa;
   --bg-elevated: #ffffff;
@@ -65,7 +65,7 @@
   --shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.15);
 }
 
-[data-theme="ocean"] {
+[data-theme='ocean'] {
   --bg-base: #0b0e14;
   --bg-surface: rgba(16, 20, 30, 0.85);
   --bg-elevated: rgba(28, 34, 50, 0.72);
@@ -86,7 +86,7 @@
   --accent-border: rgba(91, 141, 238, 0.3);
 }
 
-[data-theme="forest"] {
+[data-theme='forest'] {
   --bg-base: #0a120e;
   --bg-surface: rgba(14, 22, 18, 0.88);
   --bg-elevated: rgba(24, 40, 32, 0.75);
@@ -107,7 +107,7 @@
   --accent-border: rgba(72, 187, 120, 0.3);
 }
 
-[data-theme="sunset"] {
+[data-theme='sunset'] {
   --bg-base: #12090e;
   --bg-surface: rgba(22, 14, 18, 0.88);
   --bg-elevated: rgba(40, 24, 32, 0.75);
@@ -128,7 +128,7 @@
   --accent-border: rgba(237, 100, 80, 0.3);
 }
 
-[data-theme="rose"] {
+[data-theme='rose'] {
   --bg-base: #100a10;
   --bg-surface: rgba(20, 14, 20, 0.88);
   --bg-elevated: rgba(36, 26, 38, 0.75);
@@ -149,7 +149,7 @@
   --accent-border: rgba(219, 112, 147, 0.3);
 }
 
-[data-theme="midnight"] {
+[data-theme='midnight'] {
   --bg-base: #08080f;
   --bg-surface: rgba(12, 12, 22, 0.9);
   --bg-elevated: rgba(22, 22, 40, 0.75);

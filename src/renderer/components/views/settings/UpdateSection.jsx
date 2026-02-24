@@ -66,9 +66,7 @@ export function UpdateSection() {
             Check for updates
           </button>
         )}
-        {updateStatus === 'checking' && (
-          <span>Checking for updates...</span>
-        )}
+        {updateStatus === 'checking' && <span>Checking for updates...</span>}
         {updateStatus === 'available' && (
           <>
             <span>v{updateVersion} available</span>
@@ -77,9 +75,7 @@ export function UpdateSection() {
             </button>
           </>
         )}
-        {updateStatus === 'downloading' && (
-          <span>Downloading... {downloadPercent}%</span>
-        )}
+        {updateStatus === 'downloading' && <span>Downloading... {downloadPercent}%</span>}
         {updateStatus === 'ready' && (
           <button className="btn-secondary" onClick={() => window.snowify.installUpdate()}>
             Restart & Update

@@ -13,7 +13,8 @@ export function useKeyboardShortcuts(callbacks) {
         if (e.key === 'Escape') e.target.blur();
         return;
       }
-      const { getAudio, togglePlay, playNext, playPrev, setVolumeLevel, switchView } = cbRef.current;
+      const { getAudio, togglePlay, playNext, playPrev, setVolumeLevel, switchView } =
+        cbRef.current;
       const audio = getAudio();
       switch (e.key) {
         case ' ':
@@ -22,11 +23,13 @@ export function useKeyboardShortcuts(callbacks) {
           break;
         case 'ArrowRight':
           if (e.ctrlKey) playNext();
-          else if (audio?.duration) audio.currentTime = Math.min(audio.duration, audio.currentTime + SEEK_STEP_S);
+          else if (audio?.duration)
+            audio.currentTime = Math.min(audio.duration, audio.currentTime + SEEK_STEP_S);
           break;
         case 'ArrowLeft':
           if (e.ctrlKey) playPrev();
-          else if (audio?.duration) audio.currentTime = Math.max(0, audio.currentTime - SEEK_STEP_S);
+          else if (audio?.duration)
+            audio.currentTime = Math.max(0, audio.currentTime - SEEK_STEP_S);
           break;
         case 'ArrowUp':
           e.preventDefault();

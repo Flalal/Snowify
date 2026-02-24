@@ -10,7 +10,10 @@ import { useLyrics } from '../../hooks/useLyrics.js';
  *   - audio: the HTML audio element used for playback
  */
 export function LyricsPanel({ visible, onClose, audio }) {
-  const { lyricsLines, lyricsType, plainText, activeIdx, handleLineClick } = useLyrics(visible, audio);
+  const { lyricsLines, lyricsType, plainText, activeIdx, handleLineClick } = useLyrics(
+    visible,
+    audio
+  );
   const bodyRef = useRef(null);
 
   // ── Auto-scroll active line to center ──
@@ -44,7 +47,16 @@ export function LyricsPanel({ visible, onClose, audio }) {
     if (lyricsType === 'empty' || (!lyricsType && !lyricsLines.length)) {
       return (
         <div className="lyrics-empty">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-subdued)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--text-subdued)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M9 18V5l12-2v13" />
             <circle cx="6" cy="18" r="3" />
             <circle cx="18" cy="16" r="3" />
@@ -90,12 +102,14 @@ export function LyricsPanel({ visible, onClose, audio }) {
     }
 
     if (lyricsType === 'plain') {
-      const lines = plainText.split('\n').filter(l => l.trim());
+      const lines = plainText.split('\n').filter((l) => l.trim());
       return (
         <div className="lyrics-content plain">
           <div className="lyrics-spacer"></div>
           {lines.map((l, i) => (
-            <div key={i} className="lyrics-line plain-line">{l}</div>
+            <div key={i} className="lyrics-line plain-line">
+              {l}
+            </div>
           ))}
           <div className="lyrics-spacer"></div>
         </div>
@@ -114,8 +128,22 @@ export function LyricsPanel({ visible, onClose, audio }) {
     >
       <div className="lyrics-header">
         <h3>Lyrics</h3>
-        <button id="btn-close-lyrics" className="icon-btn" aria-label="Close lyrics" onClick={onClose}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button
+          id="btn-close-lyrics"
+          className="icon-btn"
+          aria-label="Close lyrics"
+          onClick={onClose}
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>

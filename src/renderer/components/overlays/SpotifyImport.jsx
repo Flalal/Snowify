@@ -17,10 +17,24 @@ export function SpotifyImport({ visible, onClose }) {
   useFocusTrap(trapRef, visible);
 
   const {
-    step, error, pendingPlaylists, modalTitle, startDisabled, startText,
-    progressFill, progressText, progressCount, trackItems, showDoneButtons,
-    cleanup, handleOverlayClick, handleExportifyLink,
-    handlePickFiles, handleRemoveFile, handleStart, handleDone
+    step,
+    error,
+    pendingPlaylists,
+    modalTitle,
+    startDisabled,
+    startText,
+    progressFill,
+    progressText,
+    progressCount,
+    trackItems,
+    showDoneButtons,
+    cleanup,
+    handleOverlayClick,
+    handleExportifyLink,
+    handlePickFiles,
+    handleRemoveFile,
+    handleStart,
+    handleDone
   } = useSpotifyImport(onClose);
 
   if (!visible) return null;
@@ -38,7 +52,16 @@ export function SpotifyImport({ visible, onClose }) {
         <div className="spotify-modal-header">
           <h2 id="spotify-modal-title">{modalTitle}</h2>
           <button id="spotify-cancel" className="icon-btn" aria-label="Close" onClick={cleanup}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -50,11 +73,7 @@ export function SpotifyImport({ visible, onClose }) {
           <div id="spotify-step-url">
             <p className="spotify-instructions">
               Export your Spotify playlists as CSV files using{' '}
-              <a
-                id="spotify-exportify-link"
-                href="#"
-                onClick={handleExportifyLink}
-              >
+              <a id="spotify-exportify-link" href="#" onClick={handleExportifyLink}>
                 PlaylistExport.com
               </a>
               , then select the files below.
@@ -70,15 +89,29 @@ export function SpotifyImport({ visible, onClose }) {
                   <div key={i} className="spotify-file-item">
                     <span className="spotify-file-name">{p.name}</span>
                     <span className="spotify-file-count">{p.tracks.length} tracks</span>
-                    <button className="spotify-file-remove" onClick={() => handleRemoveFile(i)} title="Remove">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    <button
+                      className="spotify-file-remove"
+                      onClick={() => handleRemoveFile(i)}
+                      title="Remove"
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
                       </svg>
                     </button>
                   </div>
                 ))}
                 <div className="spotify-file-summary">
-                  {pendingPlaylists.length} playlist{pendingPlaylists.length > 1 ? 's' : ''} — {pendingPlaylists.reduce((s, p) => s + p.tracks.length, 0)} tracks total
+                  {pendingPlaylists.length} playlist{pendingPlaylists.length > 1 ? 's' : ''} —{' '}
+                  {pendingPlaylists.reduce((s, p) => s + p.tracks.length, 0)} tracks total
                 </div>
               </div>
             )}
@@ -142,7 +175,11 @@ export function SpotifyImport({ visible, onClose }) {
 
 function SpotifyTrackItem({ item, style }) {
   if (item.status === 'header') {
-    return <div className="spotify-failed-header" style={style}>{item.title}</div>;
+    return (
+      <div className="spotify-failed-header" style={style}>
+        {item.title}
+      </div>
+    );
   }
   return (
     <div className={`spotify-track-item ${item.status}`} style={style}>
@@ -155,7 +192,13 @@ function SpotifyTrackItem({ item, style }) {
         )}
         {item.status === 'unmatched' && (
           <svg className="cross" width="16" height="16" viewBox="0 0 16 16">
-            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
+            <path
+              d="M4 4l8 8M12 4l-8 8"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
           </svg>
         )}
       </span>
@@ -179,7 +222,7 @@ function VirtualTrackItems({ items }) {
       const start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN);
       const visible = Math.ceil(viewHeight / ITEM_HEIGHT) + 2 * OVERSCAN;
       const end = Math.min(items.length, start + visible);
-      setRange(prev => (prev.start === start && prev.end === end) ? prev : { start, end });
+      setRange((prev) => (prev.start === start && prev.end === end ? prev : { start, end }));
     }
 
     update();
@@ -205,7 +248,7 @@ function VirtualTrackItems({ items }) {
                 left: 0,
                 right: 0,
                 height: ITEM_HEIGHT + 'px',
-                top: i * ITEM_HEIGHT + 'px',
+                top: i * ITEM_HEIGHT + 'px'
               }}
             />
           );

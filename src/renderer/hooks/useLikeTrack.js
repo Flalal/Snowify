@@ -11,9 +11,9 @@ import { spawnHeartParticles } from '../utils/spawnHeartParticles.js';
  */
 export function useLikeTrack() {
   return useCallback((track, buttonEl) => {
-    const idx = likedSongs.value.findIndex(t => t.id === track.id);
+    const idx = likedSongs.value.findIndex((t) => t.id === track.id);
     if (idx >= 0) {
-      likedSongs.value = likedSongs.value.filter(t => t.id !== track.id);
+      likedSongs.value = likedSongs.value.filter((t) => t.id !== track.id);
       showToast('Removed from Liked Songs');
     } else {
       likedSongs.value = [...likedSongs.value, track];

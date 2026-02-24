@@ -89,7 +89,15 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .video-overlay { background: rgba(0, 0, 0, 0.85); }
-[data-theme="light"] .video-overlay-header { background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent); }
-[data-theme="light"] .video-container { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
-[data-theme="light"] .video-loading { background: rgba(0, 0, 0, 0.5); }
+[data-theme='light'] .video-overlay {
+  background: rgba(0, 0, 0, 0.85);
+}
+[data-theme='light'] .video-overlay-header {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+}
+[data-theme='light'] .video-container {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+[data-theme='light'] .video-loading {
+  background: rgba(0, 0, 0, 0.5);
+}

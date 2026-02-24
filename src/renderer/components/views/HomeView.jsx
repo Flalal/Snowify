@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { recentTracks, followedArtists, likedSongs, saveState } from '../../state/index.js';
 import { TrackCard } from '../shared/TrackCard.jsx';
-import { showToast } from '../../state/ui.js';
-import { ArtistLink } from '../shared/ArtistLink.jsx';
 import { AlbumCard } from '../shared/AlbumCard.jsx';
 import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
@@ -11,7 +9,7 @@ import { getCachedReleases, setCachedReleases } from '../../services/releasesCac
 import { api } from '../../services/api.js';
 
 export function HomeView() {
-  const { playFromList, showAlbumDetail, openArtistPage, playAlbum } = useNavigation();
+  const { playFromList, showAlbumDetail, playAlbum } = useNavigation();
 
   const [greeting, setGreeting] = useState('');
   const [releases, setReleases] = useState(null);
@@ -32,12 +30,12 @@ export function HomeView() {
   // Backfill missing artistIds in recent tracks
   useEffect(() => {
     async function backfillArtistIds() {
-      const needsId = recent.filter(t => t.artist && !t.artistId);
+      const needsId = recent.filter((t) => t.artist && !t.artistId);
       if (!needsId.length) return;
 
-      const uniqueNames = [...new Set(needsId.map(t => t.artist))];
+      const uniqueNames = [...new Set(needsId.map((t) => t.artist))];
       const lookups = await Promise.all(
-        uniqueNames.map(n => api.searchArtists(n).catch(() => []))
+        uniqueNames.map((n) => api.searchArtists(n).catch(() => []))
       );
       const nameToId = {};
       uniqueNames.forEach((name, i) => {
@@ -45,7 +43,7 @@ export function HomeView() {
       });
 
       let changed = false;
-      const updated = recent.map(t => {
+      const updated = recent.map((t) => {
         if (!t.artistId && nameToId[t.artist]) {
           changed = true;
           return { ...t, artistId: nameToId[t.artist] };
@@ -79,9 +77,7 @@ export function HomeView() {
       setReleasesLoading(true);
       try {
         const currentYear = new Date().getFullYear();
-        const results = await Promise.allSettled(
-          followed.map(a => api.artistInfo(a.artistId))
-        );
+        const results = await Promise.allSettled(followed.map((a) => api.artistInfo(a.artistId)));
 
         if (cancelled) return;
 
@@ -93,7 +89,7 @@ export function HomeView() {
           const info = r.value;
           const followedArtistId = followed[i].artistId;
           const all = [...(info.topAlbums || []), ...(info.topSingles || [])];
-          all.forEach(rel => {
+          all.forEach((rel) => {
             if (rel.year >= currentYear && !seen.has(rel.albumId)) {
               seen.add(rel.albumId);
               releasesList.push({ ...rel, artistName: info.name, artistId: followedArtistId });
@@ -113,7 +109,9 @@ export function HomeView() {
     }
 
     fetchNewReleases();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [followed]);
 
   // Fetch recommendations based on top listened artists
@@ -128,13 +126,16 @@ export function HomeView() {
       }
 
       const artistCounts = {};
-      allTracks.forEach(t => {
+      allTracks.forEach((t) => {
         const trackArtists = t.artists?.length
           ? t.artists
-          : (t.artistId ? [{ name: t.artist, id: t.artistId }] : []);
-        trackArtists.forEach(a => {
+          : t.artistId
+            ? [{ name: t.artist, id: t.artistId }]
+            : [];
+        trackArtists.forEach((a) => {
           if (a.id) {
-            if (!artistCounts[a.id]) artistCounts[a.id] = { name: a.name, artistId: a.id, count: 0 };
+            if (!artistCounts[a.id])
+              artistCounts[a.id] = { name: a.name, artistId: a.id, count: 0 };
             artistCounts[a.id].count++;
           }
         });
@@ -149,19 +150,17 @@ export function HomeView() {
         return;
       }
 
-      const knownTrackIds = new Set(allTracks.map(t => t.id));
+      const knownTrackIds = new Set(allTracks.map((t) => t.id));
       const songs = [];
 
-      const results = await Promise.allSettled(
-        topArtists.map(a => api.artistInfo(a.artistId))
-      );
+      const results = await Promise.allSettled(topArtists.map((a) => api.artistInfo(a.artistId)));
 
       if (cancelled) return;
 
-      results.forEach(r => {
+      results.forEach((r) => {
         if (r.status !== 'fulfilled' || !r.value) return;
         const info = r.value;
-        (info.topSongs || []).forEach(song => {
+        (info.topSongs || []).forEach((song) => {
           if (!knownTrackIds.has(song.id) && songs.length < 8) {
             songs.push(song);
             knownTrackIds.add(song.id);
@@ -173,20 +172,31 @@ export function HomeView() {
     }
 
     fetchRecommendations();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [recent, liked]);
 
-  const handleTrackPlay = useCallback((track) => {
-    playFromList([track], 0);
-  }, [playFromList]);
+  const handleTrackPlay = useCallback(
+    (track) => {
+      playFromList([track], 0);
+    },
+    [playFromList]
+  );
 
-  const handleAlbumClick = useCallback((albumId, album) => {
-    showAlbumDetail(albumId, album);
-  }, [showAlbumDetail]);
+  const handleAlbumClick = useCallback(
+    (albumId, album) => {
+      showAlbumDetail(albumId, album);
+    },
+    [showAlbumDetail]
+  );
 
-  const handleAlbumPlayClick = useCallback((albumId) => {
-    playAlbum(albumId);
-  }, [playAlbum]);
+  const handleAlbumPlayClick = useCallback(
+    (albumId) => {
+      playAlbum(albumId);
+    },
+    [playAlbum]
+  );
 
   const quickPicks = recent.slice(0, 6);
   const recentCards = recent.slice(0, 8);
@@ -201,7 +211,7 @@ export function HomeView() {
       {/* Quick Picks */}
       {quickPicks.length > 0 && (
         <div id="quick-picks" className="quick-picks">
-          {quickPicks.map(track => (
+          {quickPicks.map((track) => (
             <div
               key={track.id}
               className="quick-pick-card"
@@ -209,7 +219,12 @@ export function HomeView() {
               draggable="true"
               tabIndex={0}
               onClick={() => handleTrackPlay(track)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleTrackPlay(track); } }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleTrackPlay(track);
+                }
+              }}
             >
               <img src={track.thumbnail} alt={track.title} loading="lazy" />
               <span>{track.title}</span>
@@ -217,7 +232,10 @@ export function HomeView() {
                 className="qp-play"
                 title="Play"
                 aria-label="Play"
-                onClick={(e) => { e.stopPropagation(); handleTrackPlay(track); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTrackPlay(track);
+                }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7L8 5z" />
@@ -238,12 +256,8 @@ export function HomeView() {
               <p>Start by searching for something!</p>
             </div>
           ) : (
-            recentCards.map(track => (
-              <TrackCard
-                key={track.id}
-                track={track}
-                onPlay={handleTrackPlay}
-              />
+            recentCards.map((track) => (
+              <TrackCard key={track.id} track={track} onPlay={handleTrackPlay} />
             ))
           )}
         </div>
@@ -253,7 +267,7 @@ export function HomeView() {
       {followed.length > 0 && (
         <div
           id="new-releases-section"
-          style={{ display: releases && releases.length > 0 ? '' : (releasesLoading ? '' : 'none') }}
+          style={{ display: releases && releases.length > 0 ? '' : releasesLoading ? '' : 'none' }}
         >
           <h2>New Releases</h2>
           <div id="new-releases" className="album-scroll">
@@ -263,7 +277,7 @@ export function HomeView() {
               </div>
             ) : releases && releases.length > 0 ? (
               <ScrollContainer>
-                {releases.map(album => (
+                {releases.map((album) => (
                   <AlbumCard
                     key={album.albumId}
                     album={album}
@@ -282,12 +296,8 @@ export function HomeView() {
         <div id="recommended-songs-section">
           <h2>Recommended For You</h2>
           <div id="recommended-songs" className="card-grid">
-            {recommendedSongs.map(track => (
-              <TrackCard
-                key={track.id}
-                track={track}
-                onPlay={handleTrackPlay}
-              />
+            {recommendedSongs.map((track) => (
+              <TrackCard key={track.id} track={track} onPlay={handleTrackPlay} />
             ))}
           </div>
         </div>

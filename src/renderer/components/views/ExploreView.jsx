@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'preact/hooks';
 import { country } from '../../state/index.js';
 import { ArtistCard } from '../shared/ArtistCard.jsx';
-import { VideoCard } from '../shared/VideoCard.jsx';
 import { ScrollContainer } from '../shared/ScrollContainer.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
 import { ArtistLink } from '../shared/ArtistLink.jsx';
@@ -12,21 +11,55 @@ import { api } from '../../services/api.js';
 import { fetchExploreData, fetchChartsData } from '../../services/exploreCache.js';
 
 const MOOD_COLORS = [
-  '#1db954', '#e13300', '#8c67ab', '#e8115b', '#1e90ff',
-  '#f59b23', '#158a43', '#ba55d3', '#e05050', '#509bf5',
-  '#ff6437', '#7358ff', '#27856a', '#e91e63', '#1db4e8',
-  '#af2896', '#148a08', '#dc5b2e', '#5080ff', '#d84000',
+  '#1db954',
+  '#e13300',
+  '#8c67ab',
+  '#e8115b',
+  '#1e90ff',
+  '#f59b23',
+  '#158a43',
+  '#ba55d3',
+  '#e05050',
+  '#509bf5',
+  '#ff6437',
+  '#7358ff',
+  '#27856a',
+  '#e91e63',
+  '#1db4e8',
+  '#af2896',
+  '#148a08',
+  '#dc5b2e',
+  '#5080ff',
+  '#d84000'
 ];
 
 const POPULAR_MOODS = new Set([
-  'pop', 'hip-hop', 'r&b', 'rock', 'chill', 'workout', 'party',
-  'focus', 'romance', 'sad', 'feel good', 'jazz', 'classical',
-  'country', 'electronic', 'indie', 'sleep', 'energy booster',
-  'commute', 'latin', 'k-pop', 'metal',
+  'pop',
+  'hip-hop',
+  'r&b',
+  'rock',
+  'chill',
+  'workout',
+  'party',
+  'focus',
+  'romance',
+  'sad',
+  'feel good',
+  'jazz',
+  'classical',
+  'country',
+  'electronic',
+  'indie',
+  'sleep',
+  'energy booster',
+  'commute',
+  'latin',
+  'k-pop',
+  'metal'
 ]);
 
 export function ExploreView() {
-  const { playFromList, showAlbumDetail, openArtistPage, openVideoPlayer, playAlbum } = useNavigation();
+  const { playFromList, openArtistPage } = useNavigation();
 
   const [moodPlaylists, setMoodPlaylists] = useState(null);
   const [moodLabel, setMoodLabel] = useState('');
@@ -42,32 +75,27 @@ export function ExploreView() {
   const exploreData = exploreAndCharts?.explore || null;
   const chartsData = exploreAndCharts?.charts || null;
 
-  const handleAlbumClick = useCallback((albumId, album) => {
-    showAlbumDetail(albumId, album);
-  }, [showAlbumDetail]);
+  const handleArtistClick = useCallback(
+    (artistId) => {
+      openArtistPage(artistId);
+    },
+    [openArtistPage]
+  );
 
-  const handleAlbumPlayClick = useCallback((albumId) => {
-    playAlbum(albumId);
-  }, [playAlbum]);
+  const handleTopSongClick = useCallback(
+    (track, index, topSongsList) => {
+      playFromList(topSongsList, index);
+    },
+    [playFromList]
+  );
 
-  const handleArtistClick = useCallback((artistId) => {
-    openArtistPage(artistId);
-  }, [openArtistPage]);
-
-  const handleVideoClick = useCallback((video) => {
-    const id = video.videoId || video.id;
-    const name = video.name || video.title;
-    openVideoPlayer(id, name, video.artist);
-  }, [openVideoPlayer]);
-
-  const handleTopSongClick = useCallback((track, index, topSongsList) => {
-    playFromList(topSongsList, index);
-  }, [playFromList]);
-
-  const handleMusicVideoClick = useCallback((video) => {
-    // Explore music videos play as audio via playFromList
-    playFromList([video], 0);
-  }, [playFromList]);
+  const handleMusicVideoClick = useCallback(
+    (video) => {
+      // Explore music videos play as audio via playFromList
+      playFromList([video], 0);
+    },
+    [playFromList]
+  );
 
   async function handleMoodClick(browseId, params, label) {
     setMoodLoading(true);
@@ -116,7 +144,9 @@ export function ExploreView() {
   if (!exploreData && !chartsData) {
     return (
       <div id="explore-content">
-        <div className="empty-state"><p>Could not load explore data.</p></div>
+        <div className="empty-state">
+          <p>Could not load explore data.</p>
+        </div>
       </div>
     );
   }
@@ -126,7 +156,7 @@ export function ExploreView() {
   const newMusicVideos = (exploreData?.newMusicVideos || []).slice(0, 15);
   const moods = exploreData?.moods || [];
 
-  const filteredMoods = moods.filter(m => POPULAR_MOODS.has(m.label.toLowerCase()));
+  const filteredMoods = moods.filter((m) => POPULAR_MOODS.has(m.label.toLowerCase()));
   const displayMoods = filteredMoods.length ? filteredMoods : moods.slice(0, 16);
 
   return (
@@ -137,9 +167,7 @@ export function ExploreView() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
           </svg>
-          <span>
-            Set your country in Settings for more relevant recommendations
-          </span>
+          <span>Set your country in Settings for more relevant recommendations</span>
         </div>
       )}
 
@@ -183,12 +211,7 @@ export function ExploreView() {
           <ScrollContainer>
             <div className="album-scroll top-artists-scroll">
               {topArtists.map((a, i) => (
-                <ArtistCard
-                  key={a.artistId}
-                  artist={a}
-                  rank={i + 1}
-                  onClick={handleArtistClick}
-                />
+                <ArtistCard key={a.artistId} artist={a} rank={i + 1} onClick={handleArtistClick} />
               ))}
             </div>
           </ScrollContainer>
@@ -201,7 +224,7 @@ export function ExploreView() {
           <h2>New Music Videos</h2>
           <ScrollContainer>
             <div className="album-scroll music-video-scroll">
-              {newMusicVideos.map(v => {
+              {newMusicVideos.map((v) => {
                 const videoId = v.videoId || v.id;
                 return (
                   <div
@@ -214,13 +237,18 @@ export function ExploreView() {
                     <button
                       className="video-card-play"
                       title="Watch"
-                      onClick={(e) => { e.stopPropagation(); handleMusicVideoClick(v); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMusicVideoClick(v);
+                      }}
                     >
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8 5v14l11-7L8 5z" />
                       </svg>
                     </button>
-                    <div className="video-card-name" title={v.title || v.name}>{v.title || v.name}</div>
+                    <div className="video-card-name" title={v.title || v.name}>
+                      {v.title || v.name}
+                    </div>
                     <div className="video-card-duration">
                       <ArtistLink track={v} />
                     </div>
@@ -243,7 +271,7 @@ export function ExploreView() {
               </button>
               <ScrollContainer>
                 <div className="album-scroll">
-                  {moodPlaylists.map(p => (
+                  {moodPlaylists.map((p) => (
                     <div
                       key={p.playlistId}
                       className="album-card"
@@ -251,7 +279,9 @@ export function ExploreView() {
                       onClick={() => handleMoodPlaylistClick(p.playlistId)}
                     >
                       <img className="album-card-cover" src={p.thumbnail} alt="" loading="lazy" />
-                      <div className="album-card-name" title={p.name}>{p.name}</div>
+                      <div className="album-card-name" title={p.name}>
+                        {p.name}
+                      </div>
                       <div className="album-card-meta">{p.subtitle || ''}</div>
                     </div>
                   ))}
@@ -286,9 +316,10 @@ export function ExploreView() {
       )}
 
       {/* Fallback if absolutely nothing loaded */}
-      {!topSongs.length && !topArtists.length &&
-       !newMusicVideos.length && !displayMoods.length && (
-        <div className="empty-state"><p>No explore data available.</p></div>
+      {!topSongs.length && !topArtists.length && !newMusicVideos.length && !displayMoods.length && (
+        <div className="empty-state">
+          <p>No explore data available.</p>
+        </div>
       )}
     </div>
   );

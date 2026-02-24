@@ -7,15 +7,21 @@ export function updateMediaSession(track, { getAudio, playPrev, playNext }) {
       artist: track.artist,
       artwork: [{ src: track.thumbnail, sizes: '512x512', type: 'image/jpeg' }]
     });
-    navigator.mediaSession.setActionHandler('play', () => { getAudio()?.play(); isPlaying.value = true; });
-    navigator.mediaSession.setActionHandler('pause', () => { getAudio()?.pause(); isPlaying.value = false; });
+    navigator.mediaSession.setActionHandler('play', () => {
+      getAudio()?.play();
+      isPlaying.value = true;
+    });
+    navigator.mediaSession.setActionHandler('pause', () => {
+      getAudio()?.pause();
+      isPlaying.value = false;
+    });
     navigator.mediaSession.setActionHandler('previoustrack', playPrev);
     navigator.mediaSession.setActionHandler('nexttrack', playNext);
   }
   // Native mobile media session (Android notification controls)
   if (window.__mobileMediaSession) {
     window.__mobileMediaSession.update(track);
-    const isLiked = likedSongs.value.some(t => t.id === track.id);
+    const isLiked = likedSongs.value.some((t) => t.id === track.id);
     window.__mobileMediaSession.setLiked(isLiked);
   }
 }

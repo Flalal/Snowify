@@ -5,7 +5,9 @@
   min-height: 100%;
   animation: viewEnter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.view.active { display: block; }
+.view.active {
+  display: block;
+}
 
 /* ═══════ View Error Boundary ═══════ */
 .view-error {
@@ -39,7 +41,9 @@
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.view-error button:hover { opacity: 0.85; }
+.view-error button:hover {
+  opacity: 0.85;
+}
 
 .view-header {
   margin-bottom: 28px;
@@ -75,8 +79,14 @@
   text-align: center;
   color: var(--text-subdued);
 }
-.empty-state h3 { color: var(--text-primary); font-size: 20px; }
-.empty-state p { font-size: 14px; max-width: 400px; }
+.empty-state h3 {
+  color: var(--text-primary);
+  font-size: 20px;
+}
+.empty-state p {
+  font-size: 14px;
+  max-width: 400px;
+}
 
 /* ═══════ Loading spinner ═══════ */
 .loading {
@@ -95,5 +105,10 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .spinner { border-color: rgba(0, 0, 0, 0.08); border-top-color: var(--accent); }
-[data-theme="light"] .view-error button { color: #fff; }
+[data-theme='light'] .spinner {
+  border-color: rgba(0, 0, 0, 0.08);
+  border-top-color: var(--accent);
+}
+[data-theme='light'] .view-error button {
+  color: #fff;
+}

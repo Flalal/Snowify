@@ -2,8 +2,13 @@ import { useRef, useEffect } from 'preact/hooks';
 import { useContextMenu } from '../../hooks/useContextMenu.js';
 import { playlists, currentView, currentPlaylistId, saveState } from '../../state/index.js';
 import {
-  showInputModal, removeContextMenu,
-  plMenuVisible, plMenuX, plMenuY, plMenuPlaylist, plMenuIndex, plMenuTotal,
+  showInputModal,
+  plMenuVisible,
+  plMenuX,
+  plMenuY,
+  plMenuPlaylist,
+  plMenuIndex,
+  plMenuTotal,
   removePlaylistContextMenu
 } from '../../state/ui.js';
 
@@ -47,7 +52,7 @@ export function PlaylistContextMenu() {
   function handleDelete() {
     const ok = confirm(`Delete "${playlist.name}"?`);
     if (ok) {
-      playlists.value = playlists.value.filter(p => p.id !== playlist.id);
+      playlists.value = playlists.value.filter((p) => p.id !== playlist.id);
       saveState();
       if (currentPlaylistId.value === playlist.id) {
         currentView.value = 'library';
@@ -76,7 +81,9 @@ export function PlaylistContextMenu() {
   }
 
   function handleMenuKeyDown(e) {
-    const items = menuRef.current?.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])');
+    const items = menuRef.current?.querySelectorAll(
+      '[role="menuitem"]:not([aria-disabled="true"])'
+    );
     if (!items?.length) return;
     const focused = document.activeElement;
     const idx = Array.from(items).indexOf(focused);

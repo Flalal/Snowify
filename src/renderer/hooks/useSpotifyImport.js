@@ -5,7 +5,7 @@ import { showToast } from '../state/ui.js';
 const BATCH_SIZE = 3;
 
 const initialState = {
-  step: 'select',        // 'select' | 'progress'
+  step: 'select', // 'select' | 'progress'
   error: '',
   pendingPlaylists: null,
   modalTitle: 'Import Spotify Playlists',
@@ -15,7 +15,7 @@ const initialState = {
   progressText: '',
   progressCount: '',
   trackItems: [],
-  showDoneButtons: false,
+  showDoneButtons: false
 };
 
 function reducer(state, action) {
@@ -35,7 +35,13 @@ function reducer(state, action) {
         : { ...state, pendingPlaylists: null, startDisabled: true };
     }
     case 'START_IMPORT':
-      return { ...state, error: '', startDisabled: true, startText: 'Importing...', step: 'progress' };
+      return {
+        ...state,
+        error: '',
+        startDisabled: true,
+        startText: 'Importing...',
+        step: 'progress'
+      };
     case 'SET_PROGRESS':
       return { ...state, ...action.payload };
     case 'UPDATE_TRACK_ITEMS':
@@ -68,9 +74,12 @@ export function useSpotifyImport(onClose) {
     if (onClose) onClose();
   }, [onClose]);
 
-  const handleOverlayClick = useCallback((e) => {
-    if (e.target === e.currentTarget) cleanup();
-  }, [cleanup]);
+  const handleOverlayClick = useCallback(
+    (e) => {
+      if (e.target === e.currentTarget) cleanup();
+    },
+    [cleanup]
+  );
 
   const handleExportifyLink = useCallback((e) => {
     e.preventDefault();
@@ -81,12 +90,15 @@ export function useSpotifyImport(onClose) {
     const result = await window.snowify.spotifyPickCsv();
     if (!result || !result.length) return;
 
-    dispatch({ type: 'SET_PENDING', payload: (prev => {
-      const existing = prev || [];
-      const existingNames = new Set(existing.map(p => p.name));
-      const newOnes = result.filter(p => !existingNames.has(p.name));
-      return [...existing, ...newOnes];
-    })(state.pendingPlaylists) });
+    dispatch({
+      type: 'SET_PENDING',
+      payload: ((prev) => {
+        const existing = prev || [];
+        const existingNames = new Set(existing.map((p) => p.name));
+        const newOnes = result.filter((p) => !existingNames.has(p.name));
+        return [...existing, ...newOnes];
+      })(state.pendingPlaylists)
+    });
   }, [state.pendingPlaylists]);
 
   const handleRemoveFile = useCallback((index) => {
@@ -111,17 +123,25 @@ export function useSpotifyImport(onClose) {
       if (cancelledRef.current) break;
 
       const pl = pending[pi];
-      const title = pending.length > 1
-        ? `Importing ${pi + 1} of ${pending.length}: ${pl.name}`
-        : pl.name;
+      const title =
+        pending.length > 1 ? `Importing ${pi + 1} of ${pending.length}: ${pl.name}` : pl.name;
 
-      dispatch({ type: 'SET_PROGRESS', payload: {
-        modalTitle: title, progressFill: 0, progressCount: '', progressText: 'Matching tracks...'
-      }});
+      dispatch({
+        type: 'SET_PROGRESS',
+        payload: {
+          modalTitle: title,
+          progressFill: 0,
+          progressCount: '',
+          progressText: 'Matching tracks...'
+        }
+      });
 
       const total = pl.tracks.length;
       const initialItems = pl.tracks.map((t, i) => ({
-        id: i, title: t.title, artist: t.artist, status: 'pending'
+        id: i,
+        title: t.title,
+        artist: t.artist,
+        status: 'pending'
       }));
       dispatch({ type: 'SET_TRACK_ITEMS', payload: initialItems });
 
@@ -136,9 +156,10 @@ export function useSpotifyImport(onClose) {
         const batch = pl.tracks.slice(i, Math.min(i + BATCH_SIZE, total));
         const promises = batch.map((t, bi) => {
           const idx = i + bi;
-          return window.snowify.spotifyMatchTrack(t.title, t.artist)
+          return window.snowify
+            .spotifyMatchTrack(t.title, t.artist)
             .catch(() => null)
-            .then(result => ({ idx, result }));
+            .then((result) => ({ idx, result }));
         });
 
         const results = await Promise.all(promises);
@@ -157,29 +178,36 @@ export function useSpotifyImport(onClose) {
           }
         }
 
-        dispatch({ type: 'UPDATE_TRACK_ITEMS', payload: prev => {
-          const updated = [...prev];
-          for (const [idx, status] of Object.entries(statusUpdates)) {
-            updated[idx] = { ...updated[idx], status };
+        dispatch({
+          type: 'UPDATE_TRACK_ITEMS',
+          payload: (prev) => {
+            const updated = [...prev];
+            for (const [idx, status] of Object.entries(statusUpdates)) {
+              updated[idx] = { ...updated[idx], status };
+            }
+            return updated;
           }
-          return updated;
-        }});
+        });
 
         const done = Math.min(i + BATCH_SIZE, total);
-        dispatch({ type: 'SET_PROGRESS', payload: {
-          progressCount: `${done} / ${total}`,
-          progressFill: (done / total) * 100,
-          progressText: pending.length > 1
-            ? `Playlist ${pi + 1}/${pending.length} \u2014 Matching tracks...`
-            : 'Matching tracks...'
-        }});
+        dispatch({
+          type: 'SET_PROGRESS',
+          payload: {
+            progressCount: `${done} / ${total}`,
+            progressFill: (done / total) * 100,
+            progressText:
+              pending.length > 1
+                ? `Playlist ${pi + 1}/${pending.length} \u2014 Matching tracks...`
+                : 'Matching tracks...'
+          }
+        });
       }
 
       if (cancelledRef.current) {
         if (matchedTracks.length) {
           const playlist = createPlaylist(pl.name);
           playlist.tracks = matchedTracks;
-          playlists.value = playlists.value.map(p => p.id === playlist.id ? playlist : p);
+          playlists.value = playlists.value.map((p) => (p.id === playlist.id ? playlist : p));
           saveState();
         }
         break;
@@ -188,16 +216,19 @@ export function useSpotifyImport(onClose) {
       if (matchedTracks.length) {
         const playlist = createPlaylist(pl.name);
         playlist.tracks = matchedTracks;
-        playlists.value = playlists.value.map(p => p.id === playlist.id ? playlist : p);
+        playlists.value = playlists.value.map((p) => (p.id === playlist.id ? playlist : p));
         saveState();
         totalImported += matched;
         totalPlaylistCount++;
       }
 
       allFailedTracks.push(...failedTracks);
-      dispatch({ type: 'SET_PROGRESS', payload: {
-        progressText: `Matched ${matched} of ${total}` + (failed ? ` (${failed} not found)` : '')
-      }});
+      dispatch({
+        type: 'SET_PROGRESS',
+        payload: {
+          progressText: `Matched ${matched} of ${total}` + (failed ? ` (${failed} not found)` : '')
+        }
+      });
     }
 
     if (cancelledRef.current) {
@@ -209,7 +240,9 @@ export function useSpotifyImport(onClose) {
     if (pending.length > 1) {
       finalTitle = 'Import Complete';
       finalText = `Imported ${totalPlaylistCount} playlist${totalPlaylistCount !== 1 ? 's' : ''} \u2014 ${totalImported} tracks total`;
-      showToast(`Imported ${totalPlaylistCount} playlist${totalPlaylistCount !== 1 ? 's' : ''} \u2014 ${totalImported} tracks`);
+      showToast(
+        `Imported ${totalPlaylistCount} playlist${totalPlaylistCount !== 1 ? 's' : ''} \u2014 ${totalImported} tracks`
+      );
     } else if (totalPlaylistCount) {
       finalTitle = state.modalTitle;
       finalText = `Imported ${totalImported} tracks`;
@@ -223,23 +256,38 @@ export function useSpotifyImport(onClose) {
     let finalItems = [];
     if (allFailedTracks.length) {
       finalItems = [
-        { id: 'failed-header', title: `Failed to match (${allFailedTracks.length})`, artist: '', status: 'header' },
-        ...allFailedTracks.map((t, i) => ({ id: `failed-${i}`, title: t.title, artist: t.artist, status: 'unmatched' }))
+        {
+          id: 'failed-header',
+          title: `Failed to match (${allFailedTracks.length})`,
+          artist: '',
+          status: 'header'
+        },
+        ...allFailedTracks.map((t, i) => ({
+          id: `failed-${i}`,
+          title: t.title,
+          artist: t.artist,
+          status: 'unmatched'
+        }))
       ];
     }
 
-    dispatch({ type: 'IMPORT_DONE', payload: {
-      modalTitle: finalTitle,
-      progressText: finalText,
-      progressFill: 100,
-      progressCount: '',
-      trackItems: finalItems,
-    }});
+    dispatch({
+      type: 'IMPORT_DONE',
+      payload: {
+        modalTitle: finalTitle,
+        progressText: finalText,
+        progressFill: 100,
+        progressCount: '',
+        trackItems: finalItems
+      }
+    });
   }, [state.pendingPlaylists]);
 
   // Cancel in-flight import on unmount
   useEffect(() => {
-    return () => { cancelledRef.current = true; };
+    return () => {
+      cancelledRef.current = true;
+    };
   }, []);
 
   const handleDone = useCallback(() => {
@@ -248,7 +296,12 @@ export function useSpotifyImport(onClose) {
 
   return {
     ...state,
-    cleanup, handleOverlayClick, handleExportifyLink,
-    handlePickFiles, handleRemoveFile, handleStart, handleDone
+    cleanup,
+    handleOverlayClick,
+    handleExportifyLink,
+    handlePickFiles,
+    handleRemoveFile,
+    handleStart,
+    handleDone
   };
 }

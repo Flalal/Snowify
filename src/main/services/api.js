@@ -56,7 +56,8 @@ async function refreshAccessToken() {
   const data = await res.json();
   _accessToken = data.accessToken;
   _refreshToken = data.refreshToken;
-  if (_onTokensUpdated) _onTokensUpdated({ accessToken: _accessToken, refreshToken: _refreshToken });
+  if (_onTokensUpdated)
+    _onTokensUpdated({ accessToken: _accessToken, refreshToken: _refreshToken });
   return _accessToken;
 }
 
@@ -102,7 +103,8 @@ export async function register(username, email, password) {
   const data = await res.json();
   _accessToken = data.accessToken;
   _refreshToken = data.refreshToken;
-  if (_onTokensUpdated) _onTokensUpdated({ accessToken: _accessToken, refreshToken: _refreshToken });
+  if (_onTokensUpdated)
+    _onTokensUpdated({ accessToken: _accessToken, refreshToken: _refreshToken });
   return data;
 }
 
@@ -119,7 +121,8 @@ export async function login(email, password) {
   const data = await res.json();
   _accessToken = data.accessToken;
   _refreshToken = data.refreshToken;
-  if (_onTokensUpdated) _onTokensUpdated({ accessToken: _accessToken, refreshToken: _refreshToken });
+  if (_onTokensUpdated)
+    _onTokensUpdated({ accessToken: _accessToken, refreshToken: _refreshToken });
   return data;
 }
 

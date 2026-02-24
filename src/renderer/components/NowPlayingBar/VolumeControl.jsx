@@ -18,8 +18,14 @@ export function VolumeControl({ onSetVolume }) {
   const onMouseDown = (e) => {
     dragging.current = true;
     updateVol(e);
-    const onMove = (e) => { if (dragging.current) updateVol(e); };
-    const onUp = () => { dragging.current = false; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    const onMove = (e) => {
+      if (dragging.current) updateVol(e);
+    };
+    const onUp = () => {
+      dragging.current = false;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   };
@@ -48,9 +54,34 @@ export function VolumeControl({ onSetVolume }) {
     <div className="volume-control">
       <button className="icon-btn" onClick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
         {isMuted ? (
-          <svg className="vol-mute-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/></svg>
+          <svg
+            className="vol-mute-icon"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M3 9v6h4l5 5V4L7 9H3z" />
+            <path
+              d="M16 9l6 6M22 9l-6 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </svg>
         ) : (
-          <svg className="vol-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path className="vol-wave" d="M14 9.64a3.99 3.99 0 010 4.72M16.5 7a7.97 7.97 0 010 10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+          <svg className="vol-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 9v6h4l5 5V4L7 9H3z" />
+            <path
+              className="vol-wave"
+              d="M14 9.64a3.99 3.99 0 010 4.72M16.5 7a7.97 7.97 0 010 10"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
         )}
       </button>
       <div
@@ -65,7 +96,7 @@ export function VolumeControl({ onSetVolume }) {
         onMouseDown={onMouseDown}
         onKeyDown={onKeyDown}
       >
-        <div className="volume-fill" style={{ width: (vol * 100) + '%' }}>
+        <div className="volume-fill" style={{ width: vol * 100 + '%' }}>
           <div className="volume-handle"></div>
         </div>
       </div>

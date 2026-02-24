@@ -29,9 +29,12 @@ export function VideoPlayer({ videoId, title, artist, onClose }) {
   }, [doClose]);
 
   // ── Click overlay background to close ──
-  const handleOverlayClick = useCallback((e) => {
-    if (e.target === overlayRef.current) doClose();
-  }, [doClose]);
+  const handleOverlayClick = useCallback(
+    (e) => {
+      if (e.target === overlayRef.current) doClose();
+    },
+    [doClose]
+  );
 
   return (
     <div
@@ -49,19 +52,29 @@ export function VideoPlayer({ videoId, title, artist, onClose }) {
             <span id="video-overlay-title">{title || 'Music Video'}</span>
             <span id="video-overlay-artist">{artist || ''}</span>
           </div>
-          <button id="btn-close-video" className="icon-btn" aria-label="Close video" onClick={doClose}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <button
+            id="btn-close-video"
+            className="icon-btn"
+            aria-label="Close video"
+            onClick={doClose}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
 
-        <video
-          id="video-player"
-          ref={videoRef}
-          controls
-        />
+        <video id="video-player" ref={videoRef} controls />
 
         {loading && (
           <div id="video-loading" className="video-loading">

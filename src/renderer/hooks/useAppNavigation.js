@@ -1,31 +1,48 @@
 import { useCallback, useMemo } from 'preact/hooks';
 import { currentView, isPlaying, currentPlaylistId } from '../state/index.js';
-import { albumViewState, artistViewState, playlistViewState, videoPlayerState } from '../state/navigation.js';
+import {
+  albumViewState,
+  artistViewState,
+  playlistViewState,
+  videoPlayerState
+} from '../state/navigation.js';
 import { showToast } from '../state/ui.js';
 import { api } from '../services/api.js';
 
 export function useAppNavigation(playFromList, getAudio, lyricsVisible, setLyricsVisible) {
-  const switchView = useCallback((name) => {
-    currentView.value = name;
-    if (lyricsVisible) setLyricsVisible(false);
-  }, [lyricsVisible]);
+  const switchView = useCallback(
+    (name) => {
+      currentView.value = name;
+      if (lyricsVisible) setLyricsVisible(false);
+    },
+    [lyricsVisible]
+  );
 
-  const showPlaylistDetail = useCallback((playlist, isLiked) => {
-    currentPlaylistId.value = playlist.id;
-    playlistViewState.value = { playlist, isLiked };
-    switchView('playlist');
-  }, [switchView]);
+  const showPlaylistDetail = useCallback(
+    (playlist, isLiked) => {
+      currentPlaylistId.value = playlist.id;
+      playlistViewState.value = { playlist, isLiked };
+      switchView('playlist');
+    },
+    [switchView]
+  );
 
-  const showAlbumDetail = useCallback((albumId, albumMeta) => {
-    albumViewState.value = { albumId, albumMeta };
-    switchView('album');
-  }, [switchView]);
+  const showAlbumDetail = useCallback(
+    (albumId, albumMeta) => {
+      albumViewState.value = { albumId, albumMeta };
+      switchView('album');
+    },
+    [switchView]
+  );
 
-  const openArtistPage = useCallback((artistId) => {
-    if (!artistId) return;
-    artistViewState.value = { artistId };
-    switchView('artist');
-  }, [switchView]);
+  const openArtistPage = useCallback(
+    (artistId) => {
+      if (!artistId) return;
+      artistViewState.value = { artistId };
+      switchView('artist');
+    },
+    [switchView]
+  );
 
   const openVideoPlayer = useCallback((videoId, title, artist) => {
     const audio = getAudio();
@@ -40,25 +57,42 @@ export function useAppNavigation(playFromList, getAudio, lyricsVisible, setLyric
     videoPlayerState.value = null;
   }, []);
 
-  const playAlbum = useCallback(async (albumId) => {
-    try {
-      showToast('Loading album...');
-      const tracks = await api.albumTracks(albumId);
-      if (tracks?.length) {
-        playFromList(tracks, 0);
-      } else {
-        showToast('Could not load album tracks');
+  const playAlbum = useCallback(
+    async (albumId) => {
+      try {
+        showToast('Loading album...');
+        const tracks = await api.albumTracks(albumId);
+        if (tracks?.length) {
+          playFromList(tracks, 0);
+        } else {
+          showToast('Could not load album tracks');
+        }
+      } catch (err) {
+        console.error('Album play error:', err);
+        showToast('Could not load album');
       }
-    } catch (err) {
-      console.error('Album play error:', err);
-      showToast('Could not load album');
-    }
-  }, [playFromList]);
+    },
+    [playFromList]
+  );
 
-  const nav = useMemo(() => ({
-    playFromList, playAlbum, showAlbumDetail,
-    openArtistPage, openVideoPlayer, showPlaylistDetail
-  }), [playFromList, playAlbum, showAlbumDetail, openArtistPage, openVideoPlayer, showPlaylistDetail]);
+  const nav = useMemo(
+    () => ({
+      playFromList,
+      playAlbum,
+      showAlbumDetail,
+      openArtistPage,
+      openVideoPlayer,
+      showPlaylistDetail
+    }),
+    [playFromList, playAlbum, showAlbumDetail, openArtistPage, openVideoPlayer, showPlaylistDetail]
+  );
 
-  return { switchView, showPlaylistDetail, showAlbumDetail, openVideoPlayer, closeVideoPlayer, nav };
+  return {
+    switchView,
+    showPlaylistDetail,
+    showAlbumDetail,
+    openVideoPlayer,
+    closeVideoPlayer,
+    nav
+  };
 }

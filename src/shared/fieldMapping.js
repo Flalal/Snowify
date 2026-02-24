@@ -33,7 +33,7 @@ export function mapPlaylist(rp) {
     coverImage: rp.coverImage || '',
     position: rp.position ?? 0,
     updated_at: rp.updated_at,
-    tracks: (rp.tracks || []).map(t => mapTrack(t))
+    tracks: (rp.tracks || []).map((t) => mapTrack(t))
   };
 }
 

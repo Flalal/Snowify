@@ -88,7 +88,9 @@
   outline: none;
   width: 280px;
   flex-shrink: 0;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 .settings-input::placeholder {
   color: var(--text-subdued, rgba(255, 255, 255, 0.35));
@@ -120,13 +122,17 @@
   flex-shrink: 0;
   min-width: 0;
   width: auto;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 .settings-select option {
   background: var(--bg-base, #1a1a2e);
   color: var(--text-primary);
 }
-.settings-select:hover { border-color: rgba(255, 255, 255, 0.2); }
+.settings-select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
 .settings-select:focus {
   border-color: var(--accent);
   box-shadow: var(--shadow-focus);
@@ -167,12 +173,36 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] .settings-section { background: rgba(0, 0, 0, 0.02); border-color: rgba(0, 0, 0, 0.06); }
-[data-theme="light"] .settings-section:hover { border-color: rgba(0, 0, 0, 0.1); }
-[data-theme="light"] .settings-section h2 { border-bottom-color: rgba(0, 0, 0, 0.06); }
-[data-theme="light"] .settings-toggle { background: rgba(0, 0, 0, 0.18); }
-[data-theme="light"] .settings-input { background: rgba(0, 0, 0, 0.04); border-color: rgba(0, 0, 0, 0.12); color: var(--text-primary); }
-[data-theme="light"] .settings-input::placeholder { color: rgba(0, 0, 0, 0.4); }
-[data-theme="light"] .settings-select { background: rgba(0, 0, 0, 0.04); border-color: rgba(0, 0, 0, 0.12); }
-[data-theme="light"] .btn-secondary { border-color: rgba(0, 0, 0, 0.15); color: var(--text-primary); }
-[data-theme="light"] .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+[data-theme='light'] .settings-section {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme='light'] .settings-section:hover {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme='light'] .settings-section h2 {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme='light'] .settings-toggle {
+  background: rgba(0, 0, 0, 0.18);
+}
+[data-theme='light'] .settings-input {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-primary);
+}
+[data-theme='light'] .settings-input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+[data-theme='light'] .settings-select {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+[data-theme='light'] .btn-secondary {
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+[data-theme='light'] .btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}

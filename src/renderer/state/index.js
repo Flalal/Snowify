@@ -24,7 +24,7 @@ export const country = signal('');
 export const cloudSyncEnabled = signal(false);
 export const cloudApiUrl = signal('');
 export const cloudApiKey = signal('');
-export const cloudUser = signal(null);  // { id, username, email } or null
+export const cloudUser = signal(null); // { id, username, email } or null
 export const cloudAccessToken = signal('');
 export const cloudRefreshToken = signal('');
 export const lastSyncAt = signal('');
@@ -44,10 +44,10 @@ export const currentPlaylistId = signal(null);
 export const currentTrack = computed(() => {
   const q = queue.value;
   const idx = queueIndex.value;
-  return (idx >= 0 && idx < q.length) ? q[idx] : null;
+  return idx >= 0 && idx < q.length ? q[idx] : null;
 });
 
-export const likedSongsSet = computed(() => new Set(likedSongs.value.map(t => t.id)));
+export const likedSongsSet = computed(() => new Set(likedSongs.value.map((t) => t.id)));
 
 export const isCurrentLiked = computed(() => {
   const track = currentTrack.value;
@@ -58,11 +58,27 @@ export const isCurrentLiked = computed(() => {
 // ─── State persistence ───
 
 const PERSISTENT_KEYS = {
-  playlists, likedSongs, recentTracks, followedArtists,
-  volume, shuffle, repeat, musicOnly, autoplay,
-  audioQuality, videoQuality, videoPremuxed,
-  animations, effects, theme, discordRpc, country,
-  cloudSyncEnabled, cloudApiUrl, cloudUser, lastSyncAt
+  playlists,
+  likedSongs,
+  recentTracks,
+  followedArtists,
+  volume,
+  shuffle,
+  repeat,
+  musicOnly,
+  autoplay,
+  audioQuality,
+  videoQuality,
+  videoPremuxed,
+  animations,
+  effects,
+  theme,
+  discordRpc,
+  country,
+  cloudSyncEnabled,
+  cloudApiUrl,
+  cloudUser,
+  lastSyncAt
 };
 
 function _writeState() {
@@ -103,7 +119,10 @@ export function loadState() {
       localStorage.setItem('snowify_state', localStorage.getItem('snowfy_state'));
       localStorage.removeItem('snowfy_state');
     }
-    if (localStorage.getItem('snowfy_migrated_v2') && !localStorage.getItem('snowify_migrated_v2')) {
+    if (
+      localStorage.getItem('snowfy_migrated_v2') &&
+      !localStorage.getItem('snowify_migrated_v2')
+    ) {
       localStorage.setItem('snowify_migrated_v2', localStorage.getItem('snowfy_migrated_v2'));
       localStorage.removeItem('snowfy_migrated_v2');
     }

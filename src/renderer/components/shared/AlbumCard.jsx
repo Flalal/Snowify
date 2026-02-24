@@ -41,7 +41,12 @@ export function AlbumCard({ album, onPlay, onClick, onContextMenu }) {
       data-album-id={album.albumId}
       tabIndex={0}
       onClick={handleClick}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
       onContextMenu={handleContextMenu}
     >
       <img className="album-card-cover" src={album.thumbnail} alt={album.name} loading="lazy" />
@@ -50,12 +55,14 @@ export function AlbumCard({ album, onPlay, onClick, onContextMenu }) {
           <path d="M8 5v14l11-7L8 5z" />
         </svg>
       </button>
-      <div className="album-card-name" title={album.name}>{album.name}</div>
+      <div className="album-card-name" title={album.name}>
+        {album.name}
+      </div>
       <div className="album-card-meta">
         {hasArtistLink && (
           <>
             <ArtistLink track={album} />
-            {metaParts.length > 0 && (' \u00B7 ' + metaParts.join(' \u00B7 '))}
+            {metaParts.length > 0 && ' \u00B7 ' + metaParts.join(' \u00B7 ')}
           </>
         )}
         {!hasArtistLink && metaParts.join(' \u00B7 ')}

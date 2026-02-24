@@ -16,7 +16,10 @@
   border-radius: var(--radius);
   overflow: hidden;
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition:
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
   position: relative;
 }
 .quick-pick-card:hover {
@@ -50,7 +53,9 @@
   cursor: pointer;
   opacity: 0;
   transform: translateY(6px) scale(0.9);
-  transition: opacity 0.25s, transform var(--transition-bounce);
+  transition:
+    opacity 0.25s,
+    transform var(--transition-bounce);
   box-shadow: var(--shadow-accent-sm);
 }
 .quick-pick-card:hover .qp-play {

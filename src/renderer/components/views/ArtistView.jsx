@@ -14,11 +14,12 @@ import { invalidateReleasesCache } from '../../services/releasesCache.js';
 import { api } from '../../services/api.js';
 
 export function ArtistView({ artistId }) {
-  const { playFromList, showAlbumDetail, openVideoPlayer, openArtistPage, playAlbum } = useNavigation();
+  const { playFromList, showAlbumDetail, openVideoPlayer, openArtistPage, playAlbum } =
+    useNavigation();
   const handleLike = useLikeTrack();
 
   const { data: info, loading } = useAsyncData(
-    () => artistId ? api.artistInfo(artistId) : Promise.resolve(null),
+    () => (artistId ? api.artistInfo(artistId) : Promise.resolve(null)),
     [artistId]
   );
 
@@ -33,11 +34,11 @@ export function ArtistView({ artistId }) {
 
   const followed = followedArtists.value;
 
-  const isFollowed = followed.some(a => a.artistId === artistId);
+  const isFollowed = followed.some((a) => a.artistId === artistId);
 
   function handleFollow() {
     if (isFollowed) {
-      followedArtists.value = followedArtists.value.filter(a => a.artistId !== artistId);
+      followedArtists.value = followedArtists.value.filter((a) => a.artistId !== artistId);
       showToast(`Unfollowed ${info?.name || 'artist'}`);
     } else {
       followedArtists.value = [
@@ -64,13 +65,19 @@ export function ArtistView({ artistId }) {
     playFromList(tracks, index);
   }
 
-  const handleAlbumClick = useCallback((albumId, album) => {
-    showAlbumDetail(albumId, album);
-  }, [showAlbumDetail]);
+  const handleAlbumClick = useCallback(
+    (albumId, album) => {
+      showAlbumDetail(albumId, album);
+    },
+    [showAlbumDetail]
+  );
 
-  const handleAlbumPlayClick = useCallback((albumId) => {
-    playAlbum(albumId);
-  }, [playAlbum]);
+  const handleAlbumPlayClick = useCallback(
+    (albumId) => {
+      playAlbum(albumId);
+    },
+    [playAlbum]
+  );
 
   function handleVideoClick(video) {
     const id = video.videoId || video.id;
@@ -109,20 +116,20 @@ export function ArtistView({ artistId }) {
           <h1 id="artist-name">Artist not found</h1>
         </div>
         <div id="artist-popular-tracks">
-          <div className="empty-state"><p>Could not load artist info.</p></div>
+          <div className="empty-state">
+            <p>Could not load artist info.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   const popular = (info.topSongs || []).slice(0, 5);
-  const allReleases = [
-    ...(info.topAlbums || []),
-    ...(info.topSingles || [])
-  ].sort((a, b) => (b.year || 0) - (a.year || 0));
-  const filteredReleases = discoFilter === 'all'
-    ? allReleases
-    : allReleases.filter(a => a.type === discoFilter);
+  const allReleases = [...(info.topAlbums || []), ...(info.topSingles || [])].sort(
+    (a, b) => (b.year || 0) - (a.year || 0)
+  );
+  const filteredReleases =
+    discoFilter === 'all' ? allReleases : allReleases.filter((a) => a.type === discoFilter);
   const topVideos = info.topVideos || [];
   const livePerfs = info.livePerformances || [];
   const fansAlsoLike = info.fansAlsoLike || [];
@@ -141,7 +148,10 @@ export function ArtistView({ artistId }) {
         <img
           id="artist-avatar"
           className={`artist-avatar${avatarLoaded ? ' loaded' : ' shimmer'}`}
-          src={info.avatar || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
+          src={
+            info.avatar ||
+            'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+          }
           alt=""
           onLoad={() => setAvatarLoaded(true)}
         />
@@ -165,7 +175,16 @@ export function ArtistView({ artistId }) {
           {isFollowed ? 'Following' : 'Follow'}
         </button>
         <button id="btn-artist-share" className="btn-secondary" onClick={handleShare}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="18" cy="5" r="3" />
             <circle cx="6" cy="12" r="3" />
             <circle cx="18" cy="19" r="3" />
@@ -175,8 +194,18 @@ export function ArtistView({ artistId }) {
           Share
         </button>
         <button className="btn-secondary" onClick={() => showPlaylistPicker(popular)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
           Add to Playlist
         </button>
@@ -194,7 +223,9 @@ export function ArtistView({ artistId }) {
               onLike={handleLike}
             />
           ) : (
-            <div className="empty-state"><p>No tracks found for this artist.</p></div>
+            <div className="empty-state">
+              <p>No tracks found for this artist.</p>
+            </div>
           )}
         </div>
       </div>
@@ -204,7 +235,7 @@ export function ArtistView({ artistId }) {
         <div className="artist-section">
           <h2>Discography</h2>
           <div id="disco-filters" className="disco-filters">
-            {['all', 'Album', 'Single'].map(filter => (
+            {['all', 'Album', 'Single'].map((filter) => (
               <button
                 key={filter}
                 className={`disco-filter${discoFilter === (filter === 'all' ? 'all' : filter) ? ' active' : ''}`}
@@ -219,7 +250,7 @@ export function ArtistView({ artistId }) {
             {filteredReleases.length > 0 ? (
               <ScrollContainer>
                 <div className="album-scroll">
-                  {filteredReleases.map(album => (
+                  {filteredReleases.map((album) => (
                     <AlbumCard
                       key={album.albumId}
                       album={album}
@@ -230,7 +261,9 @@ export function ArtistView({ artistId }) {
                 </div>
               </ScrollContainer>
             ) : (
-              <div className="empty-state"><p>No releases found.</p></div>
+              <div className="empty-state">
+                <p>No releases found.</p>
+              </div>
             )}
           </div>
         </div>
@@ -242,12 +275,8 @@ export function ArtistView({ artistId }) {
           <h2>Music Videos</h2>
           <ScrollContainer>
             <div id="artist-videos" className="album-scroll">
-              {topVideos.map(v => (
-                <VideoCard
-                  key={v.videoId}
-                  video={v}
-                  onClick={handleVideoClick}
-                />
+              {topVideos.map((v) => (
+                <VideoCard key={v.videoId} video={v} onClick={handleVideoClick} />
               ))}
             </div>
           </ScrollContainer>
@@ -260,12 +289,8 @@ export function ArtistView({ artistId }) {
           <h2>Live Performances</h2>
           <ScrollContainer>
             <div id="artist-live" className="album-scroll">
-              {livePerfs.map(v => (
-                <VideoCard
-                  key={v.videoId}
-                  video={v}
-                  onClick={handleVideoClick}
-                />
+              {livePerfs.map((v) => (
+                <VideoCard key={v.videoId} video={v} onClick={handleVideoClick} />
               ))}
             </div>
           </ScrollContainer>
@@ -278,12 +303,8 @@ export function ArtistView({ artistId }) {
           <h2>Fans might also like</h2>
           <ScrollContainer>
             <div id="artist-fans" className="album-scroll similar-artists-scroll">
-              {fansAlsoLike.map(a => (
-                <ArtistCard
-                  key={a.artistId}
-                  artist={a}
-                  onClick={handleSimilarArtistClick}
-                />
+              {fansAlsoLike.map((a) => (
+                <ArtistCard key={a.artistId} artist={a} onClick={handleSimilarArtistClick} />
               ))}
             </div>
           </ScrollContainer>

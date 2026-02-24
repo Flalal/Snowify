@@ -4,25 +4,27 @@ import { formatDuration, getSquareThumbnail } from './format.js';
 
 export function parseArtistsFromRuns(runs) {
   if (!runs?.length) return [];
-  const artistRuns = runs.filter(r => {
-    const pageType = r.navigationEndpoint?.browseEndpoint
-      ?.browseEndpointContextSupportedConfigs
-      ?.browseEndpointContextMusicConfig?.pageType;
+  const artistRuns = runs.filter((r) => {
+    const pageType =
+      r.navigationEndpoint?.browseEndpoint?.browseEndpointContextSupportedConfigs
+        ?.browseEndpointContextMusicConfig?.pageType;
     return pageType === 'MUSIC_PAGE_TYPE_ARTIST';
   });
   if (artistRuns.length > 0) {
-    return artistRuns.map(r => ({
+    return artistRuns.map((r) => ({
       name: r.text,
       id: r.navigationEndpoint.browseEndpoint.browseId
     }));
   }
   // Fallback: plain text with no browseIds
   if (runs.length >= 1 && !runs[0].navigationEndpoint) {
-    const text = runs.map(r => r.text).join('');
+    const text = runs.map((r) => r.text).join('');
     const dotIdx = text.indexOf(' \u2022 ');
     const artistText = dotIdx >= 0 ? text.slice(0, dotIdx) : text;
-    return artistText.split(/,\s*|\s*&\s*/).filter(Boolean)
-      .map(name => ({ name: name.trim(), id: null }));
+    return artistText
+      .split(/,\s*|\s*&\s*/)
+      .filter(Boolean)
+      .map((name) => ({ name: name.trim(), id: null }));
   }
   return [];
 }
@@ -30,7 +32,7 @@ export function parseArtistsFromRuns(runs) {
 export function buildArtistFields(artists) {
   if (!artists?.length) return { artist: 'Unknown Artist', artistId: null, artists: [] };
   return {
-    artist: artists.map(a => a.name).join(', '),
+    artist: artists.map((a) => a.name).join(', '),
     artistId: artists[0].id || null,
     artists
   };
@@ -67,11 +69,12 @@ export function extractArtistMap(shelfContents) {
     const r = entry?.musicResponsiveListItemRenderer;
     if (!r) continue;
     const cols = r.flexColumns || [];
-    const videoId = cols[0]?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.[0]
-      ?.navigationEndpoint?.watchEndpoint?.videoId;
+    const videoId =
+      cols[0]?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.[0]?.navigationEndpoint
+        ?.watchEndpoint?.videoId;
     if (!videoId) continue;
     const allRuns = cols[1]?.musicResponsiveListItemFlexColumnRenderer?.text?.runs || [];
-    const dotIdx = allRuns.findIndex(run => run.text === ' \u2022 ');
+    const dotIdx = allRuns.findIndex((run) => run.text === ' \u2022 ');
     const artistRuns = dotIdx >= 0 ? allRuns.slice(0, dotIdx) : allRuns;
     const artists = parseArtistsFromRuns(artistRuns);
     if (artists.length) map[videoId] = artists;

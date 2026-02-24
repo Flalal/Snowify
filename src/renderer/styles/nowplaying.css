@@ -1,7 +1,9 @@
 /* ═══════ Now Playing Bar ═══════ */
 #now-playing-bar {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: var(--now-playing-height);
   background: var(--bg-surface);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -58,7 +60,9 @@
   flex-shrink: 0;
   transition: transform var(--transition-bounce);
 }
-.np-like:hover { transform: scale(1.2); }
+.np-like:hover {
+  transform: scale(1.2);
+}
 .np-like.liked svg {
   fill: var(--accent);
   stroke: var(--accent);
@@ -86,10 +90,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--transition), transform var(--transition-bounce);
+  transition:
+    color var(--transition),
+    transform var(--transition-bounce);
 }
-.icon-btn:hover { color: #fff; transform: scale(1.15); }
-.icon-btn.active { color: var(--accent); }
+.icon-btn:hover {
+  color: #fff;
+  transform: scale(1.15);
+}
+.icon-btn.active {
+  color: var(--accent);
+}
 
 .play-btn {
   width: 36px;
@@ -102,7 +113,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-bounce), box-shadow var(--transition);
+  transition:
+    transform var(--transition-bounce),
+    box-shadow var(--transition);
   box-shadow: 0 2px 12px rgba(255, 255, 255, 0.15);
 }
 .play-btn:hover {
@@ -171,7 +184,9 @@
   position: relative;
   transition: height var(--transition);
 }
-.progress-bar:hover { height: 6px; }
+.progress-bar:hover {
+  height: 6px;
+}
 .progress-fill {
   height: 100%;
   background: var(--accent);
@@ -189,7 +204,9 @@
   top: 50%;
   right: -6px;
   transform: translateY(-50%) scale(0);
-  transition: transform var(--transition-bounce), opacity 0.15s;
+  transition:
+    transform var(--transition-bounce),
+    opacity 0.15s;
   opacity: 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
   pointer-events: none;
@@ -237,7 +254,9 @@
   right: -6px;
   transform: translateY(-50%) scale(0);
   opacity: 0;
-  transition: transform var(--transition-bounce), opacity 0.15s;
+  transition:
+    transform var(--transition-bounce),
+    opacity 0.15s;
   pointer-events: none;
 }
 .volume-slider:hover .volume-handle {
@@ -246,7 +265,15 @@
 }
 
 /* ── Light-mode overrides ── */
-[data-theme="light"] #now-playing-bar { border-top-color: rgba(0, 0, 0, 0.08); }
-[data-theme="light"] .progress-bar { background: rgba(0, 0, 0, 0.1); }
-[data-theme="light"] .volume-slider { background: rgba(0, 0, 0, 0.1); }
-[data-theme="light"] .icon-btn:hover { color: var(--text-primary); }
+[data-theme='light'] #now-playing-bar {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme='light'] .progress-bar {
+  background: rgba(0, 0, 0, 0.1);
+}
+[data-theme='light'] .volume-slider {
+  background: rgba(0, 0, 0, 0.1);
+}
+[data-theme='light'] .icon-btn:hover {
+  color: var(--text-primary);
+}
