@@ -4,7 +4,7 @@ import { signal } from '@preact/signals';
 import {
   currentView, queue, originalQueue, queueIndex, isPlaying, isLoading,
   shuffle, repeat, volume, autoplay, audioQuality, discordRpc,
-  recentTracks, playlists, followedArtists,
+  recentTracks, playlists, followedArtists, likedSongs,
   currentTrack, currentPlaylistId, animations, effects, theme, country,
   pendingRadioNav, cloudAccessToken, cloudRefreshToken,
   saveState, saveStateNow, loadState
@@ -121,16 +121,32 @@ export function App() {
         const track = currentTrack.value;
         if (track) updateDiscordPresence(track);
       }
+      syncPositionState();
     };
+    const syncPositionState = () => {
+      if ('mediaSession' in navigator && audio.duration && isFinite(audio.duration)) {
+        navigator.mediaSession.setPositionState({
+          duration: audio.duration,
+          playbackRate: audio.playbackRate,
+          position: audio.currentTime
+        });
+      }
+    };
+    const onDurationChange = () => syncPositionState();
+    const onTimeUpdate = () => syncPositionState();
 
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onError);
     audio.addEventListener('seeked', onSeeked);
+    audio.addEventListener('durationchange', onDurationChange);
+    audio.addEventListener('timeupdate', onTimeUpdate);
 
     return () => {
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
       audio.removeEventListener('seeked', onSeeked);
+      audio.removeEventListener('durationchange', onDurationChange);
+      audio.removeEventListener('timeupdate', onTimeUpdate);
     };
   }, []);
 
@@ -313,6 +329,9 @@ export function App() {
       isPlaying.value = false;
       clearDiscordPresence();
     }
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = audio.paused ? 'paused' : 'playing';
+    }
   }, []);
 
   const smartQueueFill = useCallback(async () => {
@@ -437,10 +456,34 @@ export function App() {
       navigator.mediaSession.setActionHandler('previoustrack', playPrev);
       navigator.mediaSession.setActionHandler('nexttrack', playNext);
     }
+    // Native mobile media session (Android notification controls)
+    if (window.__mobileMediaSession) {
+      window.__mobileMediaSession.update(track);
+      const isLiked = likedSongs.value.some(t => t.id === track.id);
+      window.__mobileMediaSession.setLiked(isLiked);
+    }
   }, [playPrev, playNext, updateDiscordPresence, clearDiscordPresence]);
 
   // ─── Like / Unlike ───
   const handleLikeToggle = useLikeTrack();
+
+  // ─── Expose playback controls for mobile media session ───
+  const toggleLikeCurrentTrack = useCallback(() => {
+    const track = currentTrack.value;
+    if (track) {
+      handleLikeToggle(track);
+      // Sync liked state to mobile notification
+      if (window.__mobileMediaSession) {
+        const isLiked = likedSongs.value.some(t => t.id === track.id);
+        window.__mobileMediaSession.setLiked(isLiked);
+      }
+    }
+  }, [handleLikeToggle]);
+
+  useEffect(() => {
+    window.__snowifyPlayback = { togglePlay, playNext, playPrev, toggleLike: toggleLikeCurrentTrack };
+    return () => { delete window.__snowifyPlayback; };
+  }, [togglePlay, playNext, playPrev, toggleLikeCurrentTrack]);
 
   // ─── Navigation ───
   const switchView = useCallback((name) => {

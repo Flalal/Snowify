@@ -38,7 +38,12 @@ loadState();
 // Check auth before rendering
 import { isLoggedIn, getApiUrl } from './auth.js';
 import { render } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
+
+// Mobile media session (Android notification controls)
+import { initMediaSession, updateMobileMediaSession, setMobileLiked, registerMobileMediaHandlers } from './media-session.js';
+import { initAudioFocus } from './audio-focus.js';
+window.__mobileMediaSession = { update: updateMobileMediaSession, setLiked: setMobileLiked };
 
 // Import the main app (shared with desktop)
 import { App } from '@components/App.jsx';
@@ -150,6 +155,13 @@ function MobileLogin({ onLogin }) {
 // Root wrapper: show login if not authenticated, app otherwise
 function MobileRoot() {
   const [loggedIn, setLoggedIn] = useState(isLoggedIn());
+
+  useEffect(() => {
+    // Init native media session once the audio element exists
+    initMediaSession();
+    registerMobileMediaHandlers();
+    initAudioFocus();
+  }, []);
 
   if (!loggedIn) {
     return <MobileLogin onLogin={() => setLoggedIn(true)} />;
