@@ -151,6 +151,10 @@ select {
   display: none !important;
 }
 
+.np-thumbnail-wrap {
+  display: none !important;
+}
+
 .np-track-info {
   max-width: 45%;
 }
@@ -166,8 +170,13 @@ select {
 .floating-search {
   left: 12px !important;
   right: 12px !important;
+  transform: none !important;
   max-width: none !important;
   width: auto !important;
+}
+
+.floating-search:active {
+  transform: scale(0.97) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
