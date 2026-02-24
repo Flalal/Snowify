@@ -50,7 +50,7 @@ export function NowPlayingBar({ audio, onTogglePlay, onNext, onPrev, onToggleShu
     <footer id="now-playing-bar">
       <div className="np-track-info">
         <div className="np-thumbnail-wrap">
-          <img id="np-thumbnail" src={track.thumbnail} alt={track.title} />
+          <img id="np-thumbnail" src={track.thumbnail} alt={track.title} loading="lazy" />
           {loading && (
             <div className="np-loading-overlay">
               <div className="np-spinner"></div>

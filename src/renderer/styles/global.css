@@ -171,8 +171,38 @@ html, body {
 [data-theme="light"] .btn-primary { color: #fff; }
 
 /* ═══════ Responsive ═══════ */
+@media (max-width: 1200px) {
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .top-songs-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .mood-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
 @media (max-width: 1000px) {
   .playlist-hero-name { font-size: 32px; }
   .playlist-hero-cover { width: 150px; height: 150px; }
   .artist-name { font-size: 40px !important; }
+}
+@media (max-width: 900px) {
+  :root { --sidebar-width: 200px; }
+  .nav-btn span { font-size: 13px; }
+  .library-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .view { padding: 20px 20px; }
+  .artist-banner { height: 200px; }
+  .artist-avatar { width: 120px; height: 120px; }
+}
+@media (max-width: 600px) {
+  :root { --sidebar-width: 60px; }
+  .nav-btn span { display: none; }
+  .nav-btn { justify-content: center; padding: 10px; }
+  .sidebar-section-header h3 { display: none; }
+  .playlist-info { display: none; }
+  .playlist-cover { width: 36px; height: 36px; }
+  .view { padding: 16px 12px; }
+  .playlist-header { flex-direction: column; align-items: center; text-align: center; }
+  .playlist-hero-cover { width: 120px; height: 120px; }
+  .playlist-hero-name { font-size: 24px; }
+  .artist-header { flex-direction: column; align-items: center; text-align: center; }
+  .artist-name { font-size: 28px !important; }
+  .artist-avatar { width: 100px; height: 100px; }
+  .modal-box { min-width: 0; max-width: 90vw; padding: 20px; }
+  .queue-panel { width: 100%; }
 }

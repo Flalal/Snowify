@@ -1,6 +1,9 @@
-import { useRef } from 'preact/hooks';
+import { useRef, useState, useEffect } from 'preact/hooks';
 import { useSpotifyImport } from '../../hooks/useSpotifyImport.js';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+
+const ITEM_HEIGHT = 38; // 36px min-height + 2px gap
+const OVERSCAN = 5;
 
 /**
  * SpotifyImport -- Modal overlay for importing Spotify playlists from CSV files.
@@ -121,43 +124,7 @@ export function SpotifyImport({ visible, onClose }) {
               <span id="spotify-progress-count">{progressCount}</span>
             </div>
 
-            <div id="spotify-track-list" className="spotify-track-list">
-              {trackItems.map((item) => {
-                if (item.status === 'header') {
-                  return (
-                    <div key={item.id} className="spotify-failed-header">
-                      {item.title}
-                    </div>
-                  );
-                }
-
-                return (
-                  <div
-                    key={item.id}
-                    id={`sp-track-${item.id}`}
-                    className={`spotify-track-item ${item.status}`}
-                  >
-                    <span className="spotify-track-status">
-                      {item.status === 'pending' && (
-                        <span className="dots">{'\u2022\u2022\u2022'}</span>
-                      )}
-                      {item.status === 'matched' && (
-                        <svg className="check" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M6.5 12.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4-7 7z" />
-                        </svg>
-                      )}
-                      {item.status === 'unmatched' && (
-                        <svg className="cross" width="16" height="16" viewBox="0 0 16 16">
-                          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
-                        </svg>
-                      )}
-                    </span>
-                    <span className="spotify-track-title">{item.title}</span>
-                    <span className="spotify-track-artist">{item.artist}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <VirtualTrackItems items={trackItems} />
 
             {showDoneButtons && (
               <div id="spotify-done-buttons" className="spotify-done-buttons">
@@ -168,6 +135,81 @@ export function SpotifyImport({ visible, onClose }) {
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function SpotifyTrackItem({ item, style }) {
+  if (item.status === 'header') {
+    return <div className="spotify-failed-header" style={style}>{item.title}</div>;
+  }
+  return (
+    <div className={`spotify-track-item ${item.status}`} style={style}>
+      <span className="spotify-track-status">
+        {item.status === 'pending' && <span className="dots">{'\u2022\u2022\u2022'}</span>}
+        {item.status === 'matched' && (
+          <svg className="check" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M6.5 12.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4-7 7z" />
+          </svg>
+        )}
+        {item.status === 'unmatched' && (
+          <svg className="cross" width="16" height="16" viewBox="0 0 16 16">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
+        )}
+      </span>
+      <span className="spotify-track-title">{item.title}</span>
+      <span className="spotify-track-artist">{item.artist}</span>
+    </div>
+  );
+}
+
+function VirtualTrackItems({ items }) {
+  const containerRef = useRef(null);
+  const [range, setRange] = useState({ start: 0, end: 20 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    function update() {
+      const scrollTop = el.scrollTop;
+      const viewHeight = el.clientHeight;
+      const start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN);
+      const visible = Math.ceil(viewHeight / ITEM_HEIGHT) + 2 * OVERSCAN;
+      const end = Math.min(items.length, start + visible);
+      setRange(prev => (prev.start === start && prev.end === end) ? prev : { start, end });
+    }
+
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    return () => el.removeEventListener('scroll', update);
+  }, [items.length]);
+
+  const totalHeight = items.length * ITEM_HEIGHT;
+
+  return (
+    <div id="spotify-track-list" className="spotify-track-list" ref={containerRef}>
+      <div style={{ position: 'relative', height: totalHeight + 'px' }}>
+        {Array.from({ length: range.end - range.start }, (_, j) => {
+          const i = range.start + j;
+          const item = items[i];
+          if (!item) return null;
+          return (
+            <SpotifyTrackItem
+              key={item.id}
+              item={item}
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                height: ITEM_HEIGHT + 'px',
+                top: i * ITEM_HEIGHT + 'px',
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -92,7 +92,7 @@ function QueueItem({ track, isActive, onContextMenu, onDragStart }) {
       onContextMenu={(e) => onContextMenu(e, track)}
       onDragStart={(e) => onDragStart(e, track)}
     >
-      <img src={track.thumbnail} alt={track.title} />
+      <img src={track.thumbnail} alt={track.title} loading="lazy" />
       <div className="queue-item-info">
         <div className="queue-item-title">{track.title}</div>
         <div className="queue-item-artist">

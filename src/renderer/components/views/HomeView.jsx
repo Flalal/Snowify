@@ -211,7 +211,7 @@ export function HomeView() {
               onClick={() => handleTrackPlay(track)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleTrackPlay(track); } }}
             >
-              <img src={track.thumbnail} alt={track.title} />
+              <img src={track.thumbnail} alt={track.title} loading="lazy" />
               <span>{track.title}</span>
               <button
                 className="qp-play"

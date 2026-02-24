@@ -80,9 +80,7 @@
 
 - [x] **9 CSS files missing light theme overrides** — Fixed: `[data-theme="light"]` overrides added to all 9 files (artist, explore, library, lyrics, modal, playlist, scroll-arrows, video, views)
 
-- [ ] **Only 1 @media query for 3,339 lines of CSS**
-  - global.css:146-150 (max-width: 1000px) is the only breakpoint
-  - Fix: add breakpoints at 1200px, 900px, 600px for sidebar collapse, card grid columns, modal widths, queue panel
+- [x] **Only 1 @media query for 3,339 lines of CSS** — Fixed: added breakpoints at 1200px, 900px, 600px (sidebar collapse, card grids, view padding, modal widths, queue panel)
 
 #### MEDIUM
 
@@ -153,22 +151,11 @@
 
 #### MEDIUM
 
-- [ ] **`loading="lazy"` missing on 4 image groups**
-  - NowPlayingBar.jsx:53 — now-playing thumbnail
-  - QueuePanel.jsx:95 — queue item thumbnails
-  - SearchView.jsx:170 — artist result avatar
-  - HomeView.jsx:212 — quick pick card images
-  - Fix: add `loading="lazy"` attribute
+- [x] **`loading="lazy"` missing on 4 image groups** — Fixed: added to NowPlayingBar, QueuePanel, SearchView, HomeView
 
-- [ ] **SpotifyImport track list not virtualized**
-  - SpotifyImport.jsx:119-154 — renders all items in DOM
-  - Can have hundreds/thousands of tracks
-  - Fix: use same VirtualTrackList pattern or simple windowing
+- [x] **SpotifyImport track list not virtualized** — Fixed: virtualized with scroll-based windowing (38px rows, 5-item overscan)
 
-- [ ] **Missing `useCallback` on view handlers**
-  - SearchView.jsx:32-60 — `performSearch` recreated each render
-  - HomeView.jsx — some inline callbacks
-  - Fix: wrap with `useCallback` and proper deps
+- [x] **Missing `useCallback` on view handlers** — Fixed: SearchView `handlePlay` wrapped; `performSearch` and HomeView handlers were already wrapped
 
 #### LOW
 
@@ -210,8 +197,8 @@
 16. ~~Refactor `useSpotifyImport` to `useReducer`~~ ✅
 17. ~~Extract VideoPlayer loading logic to hook~~ ✅
 
-### Phase 5 — Performance polish
-18. Add `loading="lazy"` to remaining images
-19. Virtualize SpotifyImport track list
-20. Add responsive breakpoints (1200/900/600px)
-21. Wrap view handlers in `useCallback`
+### Phase 5 — Performance polish ✅ DONE
+18. ~~Add `loading="lazy"` to remaining images~~ ✅
+19. ~~Virtualize SpotifyImport track list~~ ✅
+20. ~~Add responsive breakpoints (1200/900/600px)~~ ✅
+21. ~~Wrap view handlers in `useCallback`~~ ✅

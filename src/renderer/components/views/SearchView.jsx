@@ -94,9 +94,9 @@ export function SearchView() {
     if (inputRef.current) inputRef.current.focus();
   }
 
-  function handlePlay(trackList, index) {
+  const handlePlay = useCallback((trackList, index) => {
     playFromList(trackList, index);
-  }
+  }, [playFromList]);
 
   const topArtist = artists[0] || null;
   const trimmedQuery = query.trim();
@@ -171,6 +171,7 @@ export function SearchView() {
                 className="artist-result-avatar"
                 src={topArtist.thumbnail || ''}
                 alt={topArtist.name}
+                loading="lazy"
               />
               <div className="artist-result-info">
                 <div className="artist-result-name">{topArtist.name}</div>
