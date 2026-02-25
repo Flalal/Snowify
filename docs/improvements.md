@@ -4,6 +4,7 @@ Stack audit: 2026-02-24 on v1.4.8. Global score: **7.1/10**.
 Updated: 2026-02-24 on v1.4.9 — items 1–8, 10, 14, 16 resolved.
 Updated: 2026-02-25 on v1.6.4 — App.jsx refactored from god component to orchestrator.
 Updated: 2026-02-25 on v1.7.0 — Navigation history (back button) + search history implemented.
+Updated: 2026-02-25 on v1.8.0 — Chromecast support (desktop mDNS + mobile native Cast SDK).
 
 Scores by category:
 
@@ -88,7 +89,11 @@ Scores by category:
 - **Fix applied:** "System" theme option added. `applyThemeToDOM` resolves `'system'` to dark/light via `prefers-color-scheme`. Live listener in `useAppInit` auto-switches when OS preference changes.
 - **Files:** `src/renderer/utils/applyThemeToDOM.js`, `src/renderer/hooks/useAppInit.js`, `src/renderer/components/views/settings/AppearanceSection.jsx`
 
-### 15. No request batching
+### ~~15. Chromecast / Cast support~~ DONE (v1.8.0)
+- **Fix applied:** Desktop: mDNS discovery via `chromecast-api`, local HTTP proxy (castProxy.js, port 45100), CastPicker modal, useCast hook. Mobile: native Google Cast SDK via `capacitor-chromecast` Capacitor plugin (git submodule), native picker dialog, JS polling fallback for progress. Cast signals in `state/ui.js`.
+- **Files:** `src/main/services/cast.js`, `src/main/services/castProxy.js`, `src/main/ipc/cast.handlers.js`, `src/renderer/hooks/useCast.js`, `src/renderer/components/shared/CastPicker.jsx`, `src/renderer/styles/cast.css`, `capacitor-chromecast/`, `mobile/src/api-adapter.js`
+
+### 16. No request batching
 - 100 tracks searched = 100 parallel requests
 - **Fix:** Batch API on server side, or client-side request queue with concurrency limit
 

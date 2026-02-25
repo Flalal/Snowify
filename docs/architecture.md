@@ -15,6 +15,7 @@ snowify-front/
 │   │   ├── ipc/                     # 10 IPC handler modules
 │   │   │   ├── middleware.js         # createHandler / createOkHandler wrappers
 │   │   │   ├── auth.handlers.js     # Login, register, logout, sync, secure tokens
+│   │   │   ├── cast.handlers.js    # Chromecast: discover, connect, media, status
 │   │   │   ├── discord.handlers.js  # Discord RPC
 │   │   │   ├── explore.handlers.js  # Home/explore data (heaviest)
 │   │   │   ├── lyrics.handlers.js   # Lyrics fetching
@@ -33,6 +34,8 @@ snowify-front/
 │   │   │   ├── discord.js           # Discord RPC (lazy-loaded)
 │   │   │   ├── sync.js              # Cloud sync push/pull/merge
 │   │   │   ├── api.js               # Backend API client + token refresh
+│   │   │   ├── cast.js              # mDNS Chromecast discovery + control
+│   │   │   ├── castProxy.js         # HTTP proxy server for cast streams (port 45100)
 │   │   │   └── updater.js           # electron-updater config
 │   │   └── utils/
 │   │       └── parse.js             # mapSongToTrack, extractArtistMap
@@ -70,11 +73,12 @@ snowify-front/
 │   │   │   │   ├── Spinner.jsx
 │   │   │   │   ├── ContextMenu.jsx
 │   │   │   │   ├── ViewErrorBoundary.jsx
+│   │   │   │   ├── CastPicker.jsx       # Cast device picker (desktop) + native dialog trigger (mobile)
 │   │   │   │   └── ...modals
 │   │   │   ├── NowPlayingBar/       # Playback control bar
 │   │   │   ├── Sidebar/             # Sidebar + PlaylistItem
 │   │   │   └── Titlebar.jsx
-│   │   ├── hooks/                   # 18 custom hooks
+│   │   ├── hooks/                   # 19 custom hooks
 │   │   │   ├── usePlayback.js       # Orchestrator (play, pause, next, prev)
 │   │   │   ├── useTrackPlayer.js    # Audio element management
 │   │   │   ├── useQueueControls.js  # Queue manipulation
@@ -88,6 +92,7 @@ snowify-front/
 │   │   │   ├── useVideoLoader.js    # Video player loading
 │   │   │   ├── useFocusTrap.js      # Modal focus trap (a11y)
 │   │   │   ├── useSpotifyImport.js  # Spotify import with useReducer
+│   │   │   ├── useCast.js          # Chromecast discovery, connect, disconnect, status
 │   │   │   └── ...
 │   │   ├── services/
 │   │   │   ├── api.js               # dedup() pattern, inflight Map
@@ -109,8 +114,9 @@ snowify-front/
 │       ├── constants.js             # STREAM_CACHE_TTL, QUEUE_MAX_SIZE, NAV_HISTORY_MAX, SEARCH_HISTORY_MAX...
 │       └── fieldMapping.js          # Sync field mapping (client ↔ server)
 │
+├── capacitor-chromecast/             # Capacitor Chromecast plugin (git submodule)
 ├── mobile/                          # Capacitor mobile app
-│   └── src/api-adapter.js           # Bridges renderer to mobile APIs
+│   └── src/api-adapter.js           # Bridges renderer to mobile APIs (incl. native cast)
 │
 ├── resources/                       # yt-dlp binaries, icons
 ├── docs/                            # Project documentation
@@ -195,6 +201,12 @@ Token storage:
 - **Bottom nav Search button:** Search is hidden in JSX (`hidden: true`) but shown on mobile via CSS override (`display: flex !important`) in `mobile/src/mobile-overrides.css`. The floating search pill is hidden on mobile; the bottom nav Search button replaces it.
 - **Action buttons:** Artist/album/playlist page action buttons are icon-only on mobile (text hidden via CSS).
 - **Loading spinner:** Scaled down for mobile play button context.
+
+## Chromecast patterns
+- **Desktop:** mDNS discovery via `chromecast-api` in main process. Local HTTP proxy (castProxy.js, port 45100) pipes yt-dlp streams to Chromecast (workaround for IP-bound URLs). CastPicker modal shows discovered devices.
+- **Mobile:** Native Google Cast SDK via `capacitor-chromecast` plugin. CastPicker detects `window.Capacitor?.isNativePlatform?.()` and delegates to native `MediaRouteChooserDialog`. JS polling fallback (1s interval) for progress bar updates.
+- **Shared hook:** `useCast.js` handles discovery, connection (captures position + play state), media loading with position resume, disconnect (resumes local audio at cast position).
+- **State:** 6 cast signals in `state/ui.js`: `isCasting`, `castDevice`, `castDevices`, `castPickerVisible`, `castPosition`, `castDuration`.
 
 ## Context menu patterns
 - **`onRemove` callback:** `ContextMenu` accepts an optional `onRemove` prop. When provided, a "Remove from playlist" action appears in the menu. Currently used by `PlaylistView.jsx` which passes a `handleRemoveTrack` function.
