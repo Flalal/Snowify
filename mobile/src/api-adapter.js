@@ -239,6 +239,7 @@ window.snowify = {
       contentType: 'audio/mp4',
       streamType: 'buffered',
       autoPlay: true,
+      currentTime: meta?.currentTime || 0,
       metadata: {
         title: meta?.title || '',
         artist: meta?.artist || '',

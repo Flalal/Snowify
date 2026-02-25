@@ -47,9 +47,9 @@ export function useCast() {
         await window.snowify.castLoadMedia(directUrl, {
           title: track.title,
           artist: track.artist,
-          thumbnail: track.thumbnail
+          thumbnail: track.thumbnail,
+          currentTime: position
         });
-        if (position > 1) await window.snowify.castSeek(position);
         if (!wasPlaying) await window.snowify.castPause();
       }
     } catch (err) {
