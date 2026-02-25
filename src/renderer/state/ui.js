@@ -45,6 +45,9 @@ export function toggleQueuePanel() {
 // ─── Now Playing view (mobile full-screen) ───
 export const nowPlayingViewVisible = signal(false);
 
+// ─── Spotify import overlay ───
+export const spotifyImportVisible = signal(false);
+
 // ─── ContextMenu ───
 const menuVisible = signal(false);
 const menuX = signal(0);

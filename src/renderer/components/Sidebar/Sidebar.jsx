@@ -7,9 +7,15 @@ import {
   saveState
 } from '../../state/index.js';
 import { PlaylistItem } from './PlaylistItem.jsx';
-import { showInputModal, showToast, showPlaylistContextMenu, nowPlayingViewVisible } from '../../state/ui.js';
+import {
+  showInputModal,
+  showToast,
+  showPlaylistContextMenu,
+  nowPlayingViewVisible,
+  spotifyImportVisible
+} from '../../state/ui.js';
 
-export function Sidebar({ onNavigate, onShowPlaylist, onOpenSpotifyImport }) {
+export function Sidebar({ onNavigate, onShowPlaylist }) {
   const navItems = [
     {
       view: 'home',
@@ -137,7 +143,7 @@ export function Sidebar({ onNavigate, onShowPlaylist, onOpenSpotifyImport }) {
           <div className="sidebar-header-actions">
             <button
               className="icon-btn"
-              onClick={onOpenSpotifyImport}
+              onClick={() => { spotifyImportVisible.value = true; }}
               title="Import from Spotify"
               aria-label="Import from Spotify"
             >

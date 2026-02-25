@@ -2,6 +2,7 @@
 
 Stack audit: 2026-02-24 on v1.4.8. Global score: **7.1/10**.
 Updated: 2026-02-24 on v1.4.9 — items 1–8, 10, 14, 16 resolved.
+Updated: 2026-02-25 on v1.6.4 — App.jsx refactored from god component to orchestrator.
 
 Scores by category:
 

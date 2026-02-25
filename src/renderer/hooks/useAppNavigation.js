@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'preact/hooks';
-import { currentView, isPlaying, currentPlaylistId } from '../state/index.js';
+import { useCallback, useEffect, useMemo } from 'preact/hooks';
+import { currentView, isPlaying, currentPlaylistId, pendingRadioNav } from '../state/index.js';
 import {
   albumViewState,
   artistViewState,
@@ -24,6 +24,15 @@ export function useAppNavigation(playFromList, getAudio) {
     },
     [switchView]
   );
+
+  // ─── Radio navigation (from ContextMenu) ───
+  useEffect(() => {
+    const pl = pendingRadioNav.value;
+    if (pl) {
+      pendingRadioNav.value = null;
+      showPlaylistDetail(pl, false);
+    }
+  }, [pendingRadioNav.value, showPlaylistDetail]);
 
   const showAlbumDetail = useCallback(
     (albumId, albumMeta) => {

@@ -2,7 +2,7 @@
 
 ## Project overview
 Electron 33 + Preact 10.28 + electron-vite 5 desktop music player streaming from free sources (yt-dlp).
-Version: 1.6.2 | Repo: github.com/Flalal/Snowify
+Version: 1.6.4 | Repo: github.com/Flalal/Snowify
 
 ## Tech stack
 - **Runtime:** Electron 33, Preact 10.28, @preact/signals 2.8
@@ -31,13 +31,16 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 
 ### Renderer (`src/renderer/`)
 - `state/index.js` — all state as Preact signals, persisted to localStorage (debounced). Tokens excluded from localStorage — stored via secureStore
-- `hooks/` — 17 custom hooks (usePlayback, usePlaybackContext, useQueueControls, useTrackPlayer, useNavigation, useKeyboardShortcuts, usePlaybackWatchdog, useError, useLyrics, useVideoLoader, useFocusTrap, useSpotifyImport...)
+- `hooks/` — 18 custom hooks (usePlayback, usePlaybackContext, useQueueControls, useTrackPlayer, useNavigation, useAppNavigation, useKeyboardShortcuts, usePlaybackWatchdog, useMobileBridge, useError, useLyrics, useVideoLoader, useFocusTrap, useSpotifyImport...)
+- `components/App.jsx` — Pure orchestrator (~120 lines): providers, layout shell, hooks, floating search
+- `components/ViewRouter.jsx` — Renders 8 view sections (2 eager + 6 lazy-loaded)
+- `components/OverlayLayer.jsx` — Renders 4 lazy overlay panels (Lyrics, NowPlaying, VideoPlayer, SpotifyImport)
 - `components/views/` — lazy-loaded: Home, Search, Explore, Library, Playlist, Album, Artist, Settings
-- `components/overlays/` — Lyrics, Queue, VideoPlayer
-- `components/shared/` — TrackRow, TrackCard, AlbumCard, ArtistCard, Toast, Spinner, ContextMenu
+- `components/overlays/` — Lyrics, Queue, VideoPlayer, NowPlayingView, SpotifyImport
+- `components/shared/` — TrackRow, TrackCard, AlbumCard, ArtistCard, Toast, Spinner, ContextMenu, ViewErrorBoundary
 - `components/NowPlayingBar/` — playback controls (0 props, uses PlaybackContext + signal-based panel toggles)
 - `services/api.js` — dedup() pattern with inflight Map, exploreCache.js (30min TTL)
-- `state/ui.js` — toast, error state (`lastError` signal), overlay panels (`lyricsVisible`/`queueVisible` signals), context menus, modals
+- `state/ui.js` — toast, error state (`lastError` signal), overlay panels (`lyricsVisible`/`queueVisible`/`spotifyImportVisible`/`nowPlayingViewVisible` signals), context menus, modals
 - `utils/playbackError.js` — centralized playback error handler (reset + error state + toast + advance)
 - `styles/` — 30+ CSS files, 10 themes via CSS custom properties + `data-theme` attribute (incl. "system" auto-detect)
 
@@ -46,7 +49,7 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 - **IPC:** `register(ipcMain, deps)` exports, no classes. All handlers wrapped via `createHandler(channel, fn, fallback)` or `createOkHandler(channel, fn)` from `ipc/middleware.js`
 - **Logging:** `electron-log` patches `console.*` globally in main process. Renderer logs via `window.snowify.log(level, ...args)` IPC. Logs in `userData/logs/main.log`
 - **Secure storage:** Tokens encrypted via `safeStorage` in `userData/secure-tokens.json`, not in localStorage
-- **Lazy loading:** `lazy(() => import('./views/X.jsx'))` + `<Suspense>`
+- **Lazy loading:** `lazy(() => import('./views/X.jsx'))` + `<Suspense>` — views in `ViewRouter.jsx`, overlays in `OverlayLayer.jsx`
 - **API dedup:** `dedup(key, fn)` prevents duplicate concurrent requests
 - **Theming:** CSS custom properties, `[data-theme="X"]` selectors, 10 themes + "system" (auto `prefers-color-scheme`)
 - **Error state:** `lastError` signal + `setError(code, msg, ctx)` in `useError.js` — observable + auto-toast

@@ -1,8 +1,8 @@
 # Snowify — Architecture Reference
 
 ## Project metrics
-- **Source:** 612 KB across 96 JS/JSX files
-- **CSS:** 30+ files, 6 theme palettes
+- **Source:** ~700 KB across 112 JS/JSX files
+- **CSS:** 30+ files, 10 theme palettes
 - **Dependencies:** 5 runtime + 12 dev (minimalist stack + ESLint/Prettier)
 - **node_modules:** ~669 MB
 
@@ -43,7 +43,9 @@ snowify-front/
 │   ├── renderer/
 │   │   ├── index.jsx                # Renderer entry
 │   │   ├── components/
-│   │   │   ├── App.jsx              # Root (~640 lines, god component)
+│   │   │   ├── App.jsx              # Root orchestrator (~120 lines)
+│   │   │   ├── ViewRouter.jsx       # 8 view sections (2 eager + 6 lazy)
+│   │   │   ├── OverlayLayer.jsx     # 4 lazy overlay panels
 │   │   │   ├── views/               # Lazy-loaded route views
 │   │   │   │   ├── HomeView.jsx
 │   │   │   │   ├── SearchView.jsx
@@ -54,9 +56,11 @@ snowify-front/
 │   │   │   │   ├── ArtistView.jsx
 │   │   │   │   └── SettingsView.jsx
 │   │   │   ├── overlays/            # Modal overlays
-│   │   │   │   ├── LyricsOverlay.jsx
+│   │   │   │   ├── LyricsPanel.jsx
 │   │   │   │   ├── QueuePanel.jsx
-│   │   │   │   └── VideoPlayer.jsx
+│   │   │   │   ├── VideoPlayer.jsx
+│   │   │   │   ├── NowPlayingView.jsx
+│   │   │   │   └── SpotifyImport.jsx
 │   │   │   ├── shared/              # Reusable components
 │   │   │   │   ├── TrackRow.jsx
 │   │   │   │   ├── TrackCard.jsx
@@ -65,17 +69,21 @@ snowify-front/
 │   │   │   │   ├── Toast.jsx
 │   │   │   │   ├── Spinner.jsx
 │   │   │   │   ├── ContextMenu.jsx
+│   │   │   │   ├── ViewErrorBoundary.jsx
 │   │   │   │   └── ...modals
 │   │   │   ├── NowPlayingBar/       # Playback control bar
-│   │   │   ├── Sidebar.jsx
+│   │   │   ├── Sidebar/             # Sidebar + PlaylistItem
 │   │   │   └── Titlebar.jsx
-│   │   ├── hooks/                   # 15 custom hooks
+│   │   ├── hooks/                   # 18 custom hooks
 │   │   │   ├── usePlayback.js       # Orchestrator (play, pause, next, prev)
 │   │   │   ├── useTrackPlayer.js    # Audio element management
 │   │   │   ├── useQueueControls.js  # Queue manipulation
-│   │   │   ├── useNavigation.js     # View routing
+│   │   │   ├── useNavigation.js     # View routing context
+│   │   │   ├── useAppNavigation.js  # App-level nav + radio nav effect
+│   │   │   ├── useAppInit.js        # App initialization + theme + token migration
+│   │   │   ├── useMobileBridge.js   # Mobile playback bridge + auto-open NowPlaying
 │   │   │   ├── useKeyboardShortcuts.js
-│   │   │   ├── usePlaybackWatchdog.js  # Stall detection (2s interval)
+│   │   │   ├── usePlaybackWatchdog.js  # Stall detection (4s interval)
 │   │   │   ├── useLyrics.js         # Lyrics fetch + AbortController
 │   │   │   ├── useVideoLoader.js    # Video player loading
 │   │   │   ├── useFocusTrap.js      # Modal focus trap (a11y)
@@ -85,7 +93,9 @@ snowify-front/
 │   │   │   ├── api.js               # dedup() pattern, inflight Map
 │   │   │   └── exploreCache.js      # Explore data cache (30min TTL)
 │   │   ├── state/
-│   │   │   └── index.js             # All signals: queue, isPlaying, theme, etc. + saveState()
+│   │   │   ├── index.js             # All signals: queue, isPlaying, theme, etc. + saveState()
+│   │   │   ├── ui.js                # Toast, overlays, context menus, modals
+│   │   │   └── navigation.js        # View state signals (album, artist, playlist, video)
 │   │   ├── styles/                  # 30+ CSS files by feature
 │   │   │   ├── variables.css        # Theme palettes, CSS custom props
 │   │   │   ├── global.css           # Resets, focus-visible, truncation

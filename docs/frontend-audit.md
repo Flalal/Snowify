@@ -47,9 +47,8 @@
 
 #### LOW
 
-- [ ] **Prop drilling NowPlayingBar (10 props)**
-  - `App.jsx:198-209` → NowPlayingBar → PlaybackControls
-  - Fix: wrap playback callbacks in a context or import hooks directly
+- [x] **Prop drilling NowPlayingBar (10 props)** — Fixed (v1.4.9): `PlaybackContext` + signals, NowPlayingBar now 0 props
+- [x] **App.jsx god component (~640 lines)** — Fixed (v1.6.4): refactored to ~120 lines orchestrator. Views extracted to `ViewRouter.jsx`, overlays to `OverlayLayer.jsx`, mobile bridge to `useMobileBridge.js`, radio nav to `useAppNavigation.js`, spotify visibility to `spotifyImportVisible` signal
 
 ---
 
