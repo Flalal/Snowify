@@ -3,6 +3,9 @@
 
 import { syncMerge } from '@shared/syncMerge.js';
 import { Chromecast } from '@flalal/capacitor-chromecast';
+import { registerPlugin } from '@capacitor/core';
+
+const AppUpdater = registerPlugin('AppUpdater');
 
 const API_URL_KEY = 'snowify_api_url';
 const API_KEY_KEY = 'snowify_api_key';
@@ -85,6 +88,15 @@ async function apiFetch(path, options = {}) {
   }
   return res.json();
 }
+
+// ─── Update state ───
+const GITHUB_REPO = 'Flalal/snowify-front';
+const APK_ASSET_NAME = 'snowify-mobile.apk';
+let latestApkUrl = null;
+let updateCbs = { available: null, notAvailable: null, progress: null, downloaded: null, error: null };
+let progressHandle = null;
+let completeHandle = null;
+let errorHandle = null;
 
 // ─── Chromecast state ───
 let chromecastReady = false;
@@ -329,16 +341,58 @@ window.snowify = {
   disconnectDiscord: () => Promise.resolve(),
   updatePresence: () => Promise.resolve(),
   clearPresence: () => Promise.resolve(),
-  checkForUpdates: () => Promise.resolve(),
-  downloadUpdate: () => Promise.resolve(),
-  installUpdate: () => {},
-  onUpdateAvailable: () => {},
-  onDownloadProgress: () => {},
-  onUpdateDownloaded: () => {},
-  onUpdateNotAvailable: () => {},
-  onUpdateError: () => {},
-  removeUpdateListeners: () => {},
-  getAppVersion: () => Promise.resolve('1.0.0-mobile'),
+  checkForUpdates: async () => {
+    try {
+      const { version: current } = await AppUpdater.getVersionName();
+      const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+      const release = await res.json();
+      const latest = release.tag_name.replace(/^v/, '');
+      if (latest !== current) {
+        const asset = release.assets?.find(a => a.name === APK_ASSET_NAME);
+        if (asset) {
+          latestApkUrl = asset.browser_download_url;
+          if (updateCbs.available) updateCbs.available({ version: latest });
+        } else {
+          if (updateCbs.error) updateCbs.error({ message: 'APK asset not found in release' });
+        }
+      } else {
+        if (updateCbs.notAvailable) updateCbs.notAvailable();
+      }
+    } catch (err) {
+      if (updateCbs.error) updateCbs.error({ message: err.message });
+    }
+  },
+  downloadUpdate: async () => {
+    if (!latestApkUrl) return;
+    try {
+      progressHandle = await AppUpdater.addListener('downloadProgress', (data) => {
+        if (updateCbs.progress) updateCbs.progress({ percent: data.percent });
+      });
+      completeHandle = await AppUpdater.addListener('downloadComplete', () => {
+        if (updateCbs.downloaded) updateCbs.downloaded();
+      });
+      errorHandle = await AppUpdater.addListener('downloadError', (data) => {
+        if (updateCbs.error) updateCbs.error({ message: data.message });
+      });
+      await AppUpdater.downloadApk({ url: latestApkUrl });
+    } catch (err) {
+      if (updateCbs.error) updateCbs.error({ message: err.message });
+    }
+  },
+  installUpdate: () => { AppUpdater.installApk(); },
+  onUpdateAvailable: (cb) => { updateCbs.available = cb; },
+  onDownloadProgress: (cb) => { updateCbs.progress = cb; },
+  onUpdateDownloaded: (cb) => { updateCbs.downloaded = cb; },
+  onUpdateNotAvailable: (cb) => { updateCbs.notAvailable = cb; },
+  onUpdateError: (cb) => { updateCbs.error = cb; },
+  removeUpdateListeners: () => {
+    updateCbs = { available: null, notAvailable: null, progress: null, downloaded: null, error: null };
+    if (progressHandle) { progressHandle.remove(); progressHandle = null; }
+    if (completeHandle) { completeHandle.remove(); completeHandle = null; }
+    if (errorHandle) { errorHandle.remove(); errorHandle = null; }
+  },
+  getAppVersion: () => AppUpdater.getVersionName().then(r => r.version),
   openExternal: (url) => { window.open(url, '_blank'); return Promise.resolve(); },
   onYtMusicInitError: () => {},
 };
