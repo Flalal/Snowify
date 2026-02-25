@@ -1,6 +1,6 @@
 {
   "name": "snowify-mobile",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "Snowify mobile app (Capacitor)",
   "type": "module",
   "scripts": {

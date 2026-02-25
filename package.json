@@ -1,6 +1,6 @@
 {
   "name": "snowify",
-  "version": "1.8.3",
+  "version": "1.8.5",
   "description": "A Spotify-like desktop music player that streams from free sources",
   "main": "./out/main/index.js",
   "scripts": {
