@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'preact/hooks';
 import { currentTrack, isCurrentLiked, isLoading } from '../../state/index.js';
-import { toggleLyricsPanel, toggleQueuePanel, showPlaylistPicker, nowPlayingViewVisible } from '../../state/ui.js';
+import { toggleLyricsPanel, toggleQueuePanel, showPlaylistPicker, nowPlayingViewVisible, isCasting, castDevice, castPosition, castDuration, castPickerVisible } from '../../state/ui.js';
 import { usePlaybackContext } from '../../hooks/usePlaybackContext.js';
 import { useNavigation } from '../../hooks/useNavigation.js';
 import { PlaybackControls } from './PlaybackControls.jsx';
@@ -56,6 +56,10 @@ export function NowPlayingBar() {
   };
 
   const handleSeek = (ratio) => {
+    if (isCasting.value) {
+      window.snowify.castSeek(ratio * castDuration.value);
+      return;
+    }
     if (audio && audio.duration) {
       audio.currentTime = ratio * audio.duration;
     }
@@ -140,10 +144,28 @@ export function NowPlayingBar() {
 
       <div className="np-controls">
         <PlaybackControls loading={loading} />
-        <ProgressBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
+        <ProgressBar
+          currentTime={isCasting.value ? castPosition.value : currentTime}
+          duration={isCasting.value ? castDuration.value : duration}
+          onSeek={handleSeek}
+        />
+        {isCasting.value && castDevice.value && (
+          <span className="cast-indicator">Casting to {castDevice.value.name}</span>
+        )}
       </div>
 
       <div className="np-extras">
+        <button
+          className={`icon-btn${isCasting.value ? ' casting' : ''}`}
+          onClick={() => { castPickerVisible.value = true; }}
+          title={isCasting.value ? `Casting to ${castDevice.value?.name}` : 'Cast'}
+          aria-label="Cast"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6" />
+            <line x1="2" y1="20" x2="2.01" y2="20" />
+          </svg>
+        </button>
         <button className="icon-btn" onClick={toggleLyricsPanel} title="Lyrics" aria-label="Lyrics">
           <svg
             width="18"

@@ -13,6 +13,8 @@ process.on('unhandledRejection', (reason) => console.error('Unhandled rejection:
 import { initYTMusic, getYtMusic } from './services/ytmusic.js';
 import * as stream from './services/stream.js';
 import * as lyrics from './services/lyrics.js';
+import * as cast from './services/cast.js';
+import * as castProxy from './services/castProxy.js';
 
 // ─── IPC Handler Modules ───
 import * as discordHandlers from './ipc/discord.handlers.js';
@@ -25,6 +27,7 @@ import * as spotifyHandlers from './ipc/spotify.handlers.js';
 import * as streamHandlers from './ipc/stream.handlers.js';
 import * as updaterHandlers from './ipc/updater.handlers.js';
 import * as authHandlers from './ipc/auth.handlers.js';
+import * as castHandlers from './ipc/cast.handlers.js';
 
 // ─── Auto-Update ───
 import { initUpdater } from './services/updater.js';
@@ -88,7 +91,9 @@ const deps = {
   getMainWindow,
   getYtMusic,
   stream,
-  lyrics
+  lyrics,
+  cast,
+  castProxy
 };
 
 // ─── Register all IPC handlers ───
@@ -102,6 +107,7 @@ spotifyHandlers.register(ipcMain, deps);
 streamHandlers.register(ipcMain, deps);
 updaterHandlers.register(ipcMain, deps);
 authHandlers.register(ipcMain, deps);
+castHandlers.register(ipcMain, deps);
 
 // ─── App Version ───
 ipcMain.handle('app:version', () => app.getVersion());
@@ -127,6 +133,11 @@ app.whenReady().then(async () => {
     console.error('YTMusic init failed:', err);
     mainWindow?.webContents?.send('ytmusic-init-error');
   });
+});
+
+app.on('before-quit', () => {
+  cast.disconnect();
+  castProxy.stopProxy();
 });
 
 app.on('window-all-closed', () => {

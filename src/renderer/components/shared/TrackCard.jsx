@@ -6,13 +6,21 @@ import { showContextMenu } from '../../state/ui.js';
  *
  * Props:
  *   track         - track object { id, title, thumbnail, artist, artists, artistId, ... }
- *   onPlay        - callback(track) when the card or play button is clicked
+ *   onClick       - callback(track) when the card body is clicked (e.g. navigate to album)
+ *   onPlay        - callback(track) when the play button is clicked
  *   onContextMenu - callback(e, track) for right-click
  *   onDragStart   - callback(e, track) for drag start
+ *
+ * When onClick is provided, card click navigates and play button plays.
+ * When only onPlay is provided, both card click and play button play (legacy).
  */
-export function TrackCard({ track, onPlay, onContextMenu, onDragStart }) {
+export function TrackCard({ track, onClick, onPlay, onContextMenu, onDragStart }) {
   function handleClick() {
-    if (onPlay) onPlay(track);
+    if (onClick) {
+      onClick(track);
+    } else if (onPlay) {
+      onPlay(track);
+    }
   }
 
   function handleContextMenu(e) {
@@ -54,7 +62,7 @@ export function TrackCard({ track, onPlay, onContextMenu, onDragStart }) {
         aria-label="Play"
         onClick={(e) => {
           e.stopPropagation();
-          handleClick();
+          if (onPlay) onPlay(track);
         }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

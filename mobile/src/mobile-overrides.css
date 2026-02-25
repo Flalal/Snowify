@@ -245,8 +245,25 @@ input[type="checkbox"]:not(.settings-toggle) {
   height: 40px !important;
 }
 
-/* Hide extras (lyrics, queue) in mini bar */
-.np-extras {
+/* Extras — show only cast button in mini bar */
+#now-playing-bar .np-extras {
+  display: flex !important;
+  align-items: center;
+  padding: 0;
+  gap: 0;
+}
+
+#now-playing-bar .np-extras > * {
+  display: none !important;
+}
+
+#now-playing-bar .np-extras > .icon-btn[aria-label="Cast"] {
+  display: flex !important;
+}
+
+/* Hide text cast indicators on mobile — cast icon button is enough */
+.cast-indicator,
+.np-view-cast-label {
   display: none !important;
 }
 
@@ -665,6 +682,10 @@ input[type="checkbox"]:not(.settings-toggle) {
   opacity: 1 !important;
   transform: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CAST — visible on mobile (mini bar shows only cast, NowPlayingView has its own)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    REDUCED MOTION

@@ -13,7 +13,7 @@ import {
   saveState
 } from '../state/index.js';
 import { shuffleArray } from '../utils/shuffleArray.js';
-import { showToast } from '../state/ui.js';
+import { showToast, isCasting } from '../state/ui.js';
 import { updateDiscordPresence, clearDiscordPresence } from '../utils/discordPresence.js';
 import {
   VOLUME_SCALE,
@@ -84,6 +84,11 @@ export function useQueueControls(getAudio, playTrack) {
     if (!queue.value.length) return;
 
     if (repeat.value === 'one') {
+      if (isCasting.value) {
+        window.snowify.castSeek(0);
+        isPlaying.value = true;
+        return;
+      }
       if (audio) {
         audio.currentTime = 0;
         audio.play();
@@ -126,7 +131,24 @@ export function useQueueControls(getAudio, playTrack) {
     playTrack(queue.value[prevIdx]);
   }, [playTrack]);
 
-  const togglePlay = useCallback(() => {
+  const togglePlay = useCallback(async () => {
+    if (isCasting.value) {
+      if (isPlaying.value) {
+        await window.snowify.castPause();
+        isPlaying.value = false;
+      } else {
+        // castPlay returns true on success, null if no media session
+        const ok = await window.snowify.castPlay();
+        if (ok) {
+          isPlaying.value = true;
+        } else {
+          // No media loaded on Chromecast yet — load current track
+          const track = currentTrack.value;
+          if (track) playTrack(track);
+        }
+      }
+      return;
+    }
     const audio = getAudio();
     if (isLoading.value || !audio || !audio.src) return;
     if (audio.paused) {
@@ -148,6 +170,7 @@ export function useQueueControls(getAudio, playTrack) {
     const audio = getAudio();
     volume.value = Math.max(0, Math.min(1, vol));
     if (audio) audio.volume = volume.value * VOLUME_SCALE;
+    if (isCasting.value) window.snowify.castSetVolume(volume.value);
     saveState();
   }, []);
 

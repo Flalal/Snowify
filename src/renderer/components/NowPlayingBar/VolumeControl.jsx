@@ -41,6 +41,13 @@ export function VolumeControl() {
     }
   };
 
+  const onWheel = (e) => {
+    e.preventDefault();
+    const step = 0.05;
+    if (e.deltaY < 0) onSetVolume(Math.min(1, vol + step));
+    else if (e.deltaY > 0) onSetVolume(Math.max(0, vol - step));
+  };
+
   const onKeyDown = (e) => {
     const step = 0.05;
     if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
@@ -53,7 +60,7 @@ export function VolumeControl() {
   };
 
   return (
-    <div className="volume-control">
+    <div className="volume-control" onWheel={onWheel}>
       <button className="icon-btn" onClick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
         {isMuted ? (
           <svg

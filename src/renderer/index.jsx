@@ -30,6 +30,7 @@ import './styles/scroll-arrows.css';
 import './styles/animations.css';
 import './styles/quickpicks.css';
 import './styles/views.css';
+import './styles/cast.css';
 
 render(
   <ErrorBoundary>

@@ -184,6 +184,17 @@ export function HomeView() {
     [playFromList]
   );
 
+  const handleTrackClick = useCallback(
+    (track) => {
+      if (track.albumId) {
+        showAlbumDetail(track.albumId, { name: track.album, thumbnail: track.thumbnail });
+      } else {
+        playFromList([track], 0);
+      }
+    },
+    [showAlbumDetail, playFromList]
+  );
+
   const handleAlbumClick = useCallback(
     (albumId, album) => {
       showAlbumDetail(albumId, album);
@@ -257,7 +268,7 @@ export function HomeView() {
             </div>
           ) : (
             recentCards.map((track) => (
-              <TrackCard key={track.id} track={track} onPlay={handleTrackPlay} />
+              <TrackCard key={track.id} track={track} onClick={handleTrackClick} onPlay={handleTrackPlay} />
             ))
           )}
         </div>
@@ -297,7 +308,7 @@ export function HomeView() {
           <h2>Recommended For You</h2>
           <div id="recommended-songs" className="card-grid">
             {recommendedSongs.map((track) => (
-              <TrackCard key={track.id} track={track} onPlay={handleTrackPlay} />
+              <TrackCard key={track.id} track={track} onClick={handleTrackClick} onPlay={handleTrackPlay} />
             ))}
           </div>
         </div>

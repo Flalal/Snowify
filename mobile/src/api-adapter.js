@@ -2,6 +2,7 @@
 // This file is loaded before the renderer and provides window.snowify
 
 import { syncMerge } from '@shared/syncMerge.js';
+import { Chromecast } from '@flalal/capacitor-chromecast';
 
 const API_URL_KEY = 'snowify_api_url';
 const API_KEY_KEY = 'snowify_api_key';
@@ -83,6 +84,18 @@ async function apiFetch(path, options = {}) {
     throw new Error(body.message || `API error ${res.status}`);
   }
   return res.json();
+}
+
+// ─── Chromecast state ───
+let chromecastReady = false;
+let castStatusCb = null;
+let mediaUpdateHandle = null;
+let sessionEndHandle = null;
+
+async function ensureChromecast() {
+  if (chromecastReady) return;
+  await Chromecast.initialize({});
+  chromecastReady = true;
 }
 
 window.snowify = {
@@ -205,6 +218,70 @@ window.snowify = {
   },
   syncMerge: (local, remote) => Promise.resolve(syncMerge(local, remote)),
   onTokensUpdated: () => {}, // no-op on mobile, tokens managed via localStorage
+
+  // ─── Cast (native Chromecast via Capacitor plugin) ───
+  castDiscover: () => Promise.resolve([]), // native picker handles discovery
+  castConnect: async () => {
+    await ensureChromecast();
+    const session = await Chromecast.requestSession();
+    return {
+      name: session?.receiver?.friendlyName || 'Chromecast',
+      id: session?.sessionId || 'cast',
+      host: ''
+    };
+  },
+  castDisconnect: async () => {
+    await Chromecast.sessionStop();
+  },
+  castLoadMedia: async (url, meta) => {
+    await Chromecast.loadMedia({
+      contentId: url,
+      contentType: 'audio/mp4',
+      streamType: 'buffered',
+      autoPlay: true,
+      metadata: {
+        title: meta?.title || '',
+        artist: meta?.artist || '',
+        images: meta?.thumbnail ? [{ url: meta.thumbnail }] : []
+      }
+    });
+  },
+  castSeek: (time) => Chromecast.mediaSeek({ position: time }),
+  castPause: () => Chromecast.mediaPause(),
+  castPlay: () => Chromecast.mediaPlay(),
+  castStop: () => Chromecast.mediaStop(),
+  castSetVolume: (level) => Chromecast.setReceiverVolumeLevel({ level }),
+  onCastDevices: () => {},  // native picker handles device list
+  offCastDevices: () => {},
+  onCastStatus: (cb) => {
+    castStatusCb = cb;
+    mediaUpdateHandle = Chromecast.addListener('MEDIA_UPDATE', (data) => {
+      if (castStatusCb) {
+        castStatusCb({
+          playerState: data.playerState,
+          currentTime: data.currentTime || 0,
+          duration: data.media?.duration || 0,
+          volume: data.volume?.level ?? 1
+        });
+      }
+    });
+    sessionEndHandle = Chromecast.addListener('SESSION_ENDED', () => {
+      if (castStatusCb) {
+        castStatusCb({ playerState: 'IDLE', currentTime: 0, duration: 0, volume: 1 });
+      }
+    });
+  },
+  offCastStatus: () => {
+    castStatusCb = null;
+    if (mediaUpdateHandle) {
+      mediaUpdateHandle.then(h => h.remove());
+      mediaUpdateHandle = null;
+    }
+    if (sessionEndHandle) {
+      sessionEndHandle.then(h => h.remove());
+      sessionEndHandle = null;
+    }
+  },
 
   // ─── Desktop-only stubs ───
   minimize: () => {},

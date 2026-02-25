@@ -1,8 +1,6 @@
 // ─── Mobile entry point ───
 // Loads the shared renderer but with mobile overrides
 
-import './mobile-overrides.css';
-
 // Import shared renderer styles (same as desktop)
 import '@renderer/styles/variables.css';
 import '@renderer/styles/global.css';
@@ -31,6 +29,10 @@ import '@renderer/styles/scroll-arrows.css';
 import '@renderer/styles/animations.css';
 import '@renderer/styles/quickpicks.css';
 import '@renderer/styles/views.css';
+import '@renderer/styles/cast.css';
+
+// Mobile overrides MUST load AFTER shared styles to win the CSS cascade
+import './mobile-overrides.css';
 
 // Load state (from localStorage, same as desktop)
 import { loadState, saveState, cloudApiUrl, cloudApiKey, cloudUser, cloudAccessToken, cloudRefreshToken, cloudSyncEnabled } from '@state/index.js';

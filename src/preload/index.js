@@ -77,5 +77,19 @@ contextBridge.exposeInMainWorld('snowify', {
   syncPush: (localState) => ipcRenderer.invoke('sync:push', localState),
   syncPull: () => ipcRenderer.invoke('sync:pull'),
   syncMerge: (local, remote) => ipcRenderer.invoke('sync:merge', local, remote),
-  onTokensUpdated: (cb) => ipcRenderer.on('auth:tokens-updated', (_, tokens) => cb(tokens))
+  onTokensUpdated: (cb) => ipcRenderer.on('auth:tokens-updated', (_, tokens) => cb(tokens)),
+
+  // Casting
+  castDiscover: () => ipcRenderer.invoke('cast:discover'),
+  castConnect: (deviceId) => ipcRenderer.invoke('cast:connect', deviceId),
+  castDisconnect: () => ipcRenderer.invoke('cast:disconnect'),
+  castLoadMedia: (streamUrl, metadata) => ipcRenderer.invoke('cast:loadMedia', streamUrl, metadata),
+  castPlay: () => ipcRenderer.invoke('cast:play'),
+  castPause: () => ipcRenderer.invoke('cast:pause'),
+  castSeek: (time) => ipcRenderer.invoke('cast:seek', time),
+  castSetVolume: (level) => ipcRenderer.invoke('cast:setVolume', level),
+  onCastStatus: (cb) => ipcRenderer.on('cast:status', (_e, status) => cb(status)),
+  offCastStatus: () => ipcRenderer.removeAllListeners('cast:status'),
+  onCastDevices: (cb) => ipcRenderer.on('cast:devices', (_e, devices) => cb(devices)),
+  offCastDevices: () => ipcRenderer.removeAllListeners('cast:devices')
 });

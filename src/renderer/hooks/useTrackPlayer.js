@@ -12,7 +12,7 @@ import {
   saveState
 } from '../state/index.js';
 import { shuffleArray } from '../utils/shuffleArray.js';
-import { showToast } from '../state/ui.js';
+import { showToast, isCasting } from '../state/ui.js';
 import { updateDiscordPresence } from '../utils/discordPresence.js';
 import { handlePlaybackError } from '../utils/playbackError.js';
 import { VOLUME_SCALE, RECENT_TRACKS_MAX } from '../../shared/constants.js';
@@ -50,6 +50,31 @@ export function useTrackPlayer() {
   const playTrack = useCallback(async (track) => {
     const audio = getAudio();
     if (!audio) return;
+
+    // ─── Cast branch: send to Chromecast instead of local audio ───
+    if (isCasting.value) {
+      isLoading.value = true;
+      showToast(`Casting: ${track.title}`);
+      try {
+        const directUrl = await api.getStreamUrl(track.url, audioQuality.value);
+        await window.snowify.castLoadMedia(directUrl, {
+          title: track.title,
+          artist: track.artist,
+          thumbnail: track.thumbnail
+        });
+        isPlaying.value = true;
+        isLoading.value = false;
+        addToRecent(track);
+        saveState();
+        prefetchNextTrack();
+        onTrackPlayedRef.current?.(track);
+      } catch (err) {
+        console.error('Cast playback error:', err);
+        isLoading.value = false;
+        showToast('Cast playback failed');
+      }
+      return;
+    }
 
     isLoading.value = true;
     showToast(`Loading: ${track.title}`);

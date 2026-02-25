@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'preact/hooks';
 import { currentTrack, isCurrentLiked, isLoading } from '../../state/index.js';
-import { nowPlayingViewVisible } from '../../state/ui.js';
+import { nowPlayingViewVisible, isCasting, castDevice, castPickerVisible, castPosition, castDuration } from '../../state/ui.js';
 import { usePlaybackContext } from '../../hooks/usePlaybackContext.js';
 import { useLikeTrack } from '../../hooks/useLikeTrack.js';
 import { PlaybackControls } from '../NowPlayingBar/PlaybackControls.jsx';
@@ -92,6 +92,10 @@ export function NowPlayingView({ visible }) {
   if (!track) return null;
 
   const handleSeek = (ratio) => {
+    if (isCasting.value) {
+      window.snowify.castSeek(ratio * castDuration.value);
+      return;
+    }
     if (audio && audio.duration) {
       audio.currentTime = ratio * audio.duration;
     }
@@ -195,16 +199,40 @@ export function NowPlayingView({ visible }) {
 
         {/* Progress */}
         <div className="np-view-progress">
-          <ProgressBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
+          <ProgressBar
+            currentTime={isCasting.value ? castPosition.value : currentTime}
+            duration={isCasting.value ? castDuration.value : duration}
+            onSeek={handleSeek}
+          />
           <div className="np-view-times">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
+            <span>{formatTime(isCasting.value ? castPosition.value : currentTime)}</span>
+            <span>{formatTime(isCasting.value ? castDuration.value : duration)}</span>
           </div>
         </div>
 
         {/* Controls */}
         <div className="np-view-controls">
           <PlaybackControls loading={loading} />
+        </div>
+
+        {/* Extras — cast */}
+        <div className="np-view-extras">
+          <button
+            className={`icon-btn np-view-cast${isCasting.value ? ' casting' : ''}`}
+            onClick={() => { castPickerVisible.value = true; }}
+            title={isCasting.value ? `Casting to ${castDevice.value?.name}` : 'Cast'}
+            aria-label="Cast to device"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6" />
+              <line x1="2" y1="20" x2="2.01" y2="20" />
+            </svg>
+          </button>
+          {isCasting.value && castDevice.value && (
+            <span className="np-view-cast-label">
+              Casting to {castDevice.value.name}
+            </span>
+          )}
         </div>
       </div>
     </div>

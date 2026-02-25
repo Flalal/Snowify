@@ -145,3 +145,11 @@ export function cleanupPicker(result) {
 }
 
 export { pickerVisible, pickerTracks };
+
+// ─── Casting ───
+export const isCasting = signal(false);
+export const castDevice = signal(null); // { name, host, id }
+export const castDevices = signal([]); // discovered devices
+export const castPickerVisible = signal(false);
+export const castPosition = signal(0); // currentTime from Chromecast
+export const castDuration = signal(0); // duration from Chromecast

@@ -14,6 +14,7 @@ import { ContextMenu } from './shared/ContextMenu.jsx';
 import { PlaylistContextMenu } from './shared/PlaylistContextMenu.jsx';
 import { InputModal } from './shared/InputModal.jsx';
 import { PlaylistPickerModal } from './shared/PlaylistPickerModal.jsx';
+import { CastPicker } from './shared/CastPicker.jsx';
 import { usePlayback } from '../hooks/usePlayback.js';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts.js';
 import { useAppInit } from '../hooks/useAppInit.js';
@@ -21,6 +22,7 @@ import { useAppNavigation } from '../hooks/useAppNavigation.js';
 import { useMobileBridge } from '../hooks/useMobileBridge.js';
 import { NavigationProvider } from '../hooks/useNavigation.js';
 import { PlaybackProvider } from '../hooks/usePlaybackContext.js';
+import { useCast } from '../hooks/useCast.js';
 
 export function App() {
   const {
@@ -52,6 +54,8 @@ export function App() {
     playFromList,
     getAudio
   );
+
+  const { startDiscovery, connectDevice, disconnectCast } = useCast();
 
   useMobileBridge({ togglePlay, playNext, playPrev });
 
@@ -125,6 +129,7 @@ export function App() {
         <Toast />
         <InputModal />
         <PlaylistPickerModal />
+        <CastPicker onDiscover={startDiscovery} onConnect={connectDevice} onDisconnect={disconnectCast} />
       </NavigationProvider>
     </PlaybackProvider>
   );
