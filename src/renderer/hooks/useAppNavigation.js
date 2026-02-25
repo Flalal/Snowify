@@ -6,13 +6,14 @@ import {
   playlistViewState,
   videoPlayerState
 } from '../state/navigation.js';
-import { showToast, lyricsVisible } from '../state/ui.js';
+import { showToast, lyricsVisible, nowPlayingViewVisible } from '../state/ui.js';
 import { api } from '../services/api.js';
 
 export function useAppNavigation(playFromList, getAudio) {
   const switchView = useCallback((name) => {
     currentView.value = name;
     if (lyricsVisible.value) lyricsVisible.value = false;
+    if (nowPlayingViewVisible.value) nowPlayingViewVisible.value = false;
   }, []);
 
   const showPlaylistDetail = useCallback(

@@ -143,6 +143,11 @@ input[type="checkbox"]:not(.settings-toggle) {
   font-size: 10px;
 }
 
+/* Show Search button in bottom nav (hidden inline on desktop) */
+#sidebar .nav-btn[data-view="search"] {
+  display: flex !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    NOW PLAYING BAR — mini player (Spotify-style)
    Layout: [Title - Artist] [♡] [▶/⏸]
@@ -312,20 +317,16 @@ input[type="checkbox"]:not(.settings-toggle) {
   padding: 0 !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   FLOATING SEARCH
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.floating-search {
-  left: 12px !important;
-  right: 12px !important;
-  transform: none !important;
-  max-width: none !important;
-  width: auto !important;
+/* Loading spinner — scale to match larger mobile play button */
+.now-playing-view .play-btn-spinner {
+  width: 28px !important;
+  height: 28px !important;
+  border-width: 3px !important;
 }
 
-.floating-search:active {
-  transform: scale(0.97) !important;
+/* ═══ FLOATING SEARCH — hidden on mobile, use bottom nav Search instead ═══ */
+.floating-search {
+  display: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -434,11 +435,22 @@ input[type="checkbox"]:not(.settings-toggle) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PLAYLIST ACTIONS — icon only (hide text labels)
+   ACTION BUTTONS — icon only (hide text labels)
    ═══════════════════════════════════════════════════════════════════════════ */
 
+.playlist-actions,
+.artist-actions,
+.album-actions {
+  display: flex;
+  gap: 12px;
+}
+
 .playlist-actions .btn-primary,
-.playlist-actions .btn-secondary {
+.playlist-actions .btn-secondary,
+.artist-actions .btn-primary,
+.artist-actions .btn-secondary,
+.album-actions .btn-primary,
+.album-actions .btn-secondary {
   font-size: 0 !important;
   gap: 0 !important;
   padding: 0 !important;
@@ -448,7 +460,11 @@ input[type="checkbox"]:not(.settings-toggle) {
 }
 
 .playlist-actions .btn-primary svg,
-.playlist-actions .btn-secondary svg {
+.playlist-actions .btn-secondary svg,
+.artist-actions .btn-primary svg,
+.artist-actions .btn-secondary svg,
+.album-actions .btn-primary svg,
+.album-actions .btn-secondary svg {
   font-size: initial;
   width: 18px;
   height: 18px;

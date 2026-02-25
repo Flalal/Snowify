@@ -137,6 +137,9 @@ export function ContextMenu() {
         saveState();
         showToast('Removed from Recently Played');
         break;
+      case 'remove':
+        if (options.onRemove) options.onRemove(track);
+        break;
       case 'share':
         if (options.onShare) {
           options.onShare(track);
@@ -273,6 +276,17 @@ export function ContextMenu() {
       </div>
       {playlistSection}
       <div className="context-menu-divider" role="separator" />
+      {options.onRemove && (
+        <div
+          className="context-menu-item"
+          role="menuitem"
+          tabIndex={-1}
+          data-action="remove"
+          onClick={() => handleAction('remove')}
+        >
+          Remove from playlist
+        </div>
+      )}
       {isRecent && (
         <div
           className="context-menu-item"

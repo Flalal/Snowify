@@ -74,6 +74,18 @@ export function PlaylistView({ playlist, isLiked }) {
     playFromList(trackList, index);
   }
 
+  function handleRemoveTrack(track) {
+    if (isLiked) {
+      likedSongs.value = likedSongs.value.filter((t) => t.id !== track.id);
+    } else {
+      playlists.value = playlists.value.map((p) =>
+        p.id === playlist.id ? { ...p, tracks: p.tracks.filter((t) => t.id !== track.id) } : p
+      );
+    }
+    saveState();
+    showToast(`Removed "${track.title}"`);
+  }
+
   function handlePlaylistTrackContextMenu(e, track) {
     showContextMenu(e, track, {
       onPlay: (t) => {
@@ -81,7 +93,8 @@ export function PlaylistView({ playlist, isLiked }) {
       },
       onLike: (t) => {
         handleLike(t, null);
-      }
+      },
+      onRemove: handleRemoveTrack
     });
   }
 
