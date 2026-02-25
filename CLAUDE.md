@@ -2,7 +2,7 @@
 
 ## Project overview
 Electron 33 + Preact 10.28 + electron-vite 5 desktop music player streaming from free sources (yt-dlp).
-Version: 1.5.0 | Repo: github.com/Flalal/Snowify
+Version: 1.6.2 | Repo: github.com/Flalal/Snowify
 
 ## Tech stack
 - **Runtime:** Electron 33, Preact 10.28, @preact/signals 2.8
@@ -51,6 +51,8 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 - **Theming:** CSS custom properties, `[data-theme="X"]` selectors, 10 themes + "system" (auto `prefers-color-scheme`)
 - **Error state:** `lastError` signal + `setError(code, msg, ctx)` in `useError.js` — observable + auto-toast
 - **Playback context:** `PlaybackProvider` + `usePlaybackContext()` — shares playback controls without prop drilling
+- **Navigation dismisses now-playing:** `switchView()` in `useAppNavigation.js` sets `nowPlayingViewVisible = false`, so navigating away auto-closes the now-playing view
+- **Context menu `onRemove`:** ContextMenu accepts an optional `onRemove` callback — when provided, a "Remove from playlist" action is shown. Used by PlaylistView via `handleRemoveTrack`
 - **Preact, not React:** use `import { useState } from 'preact/hooks'`, NOT `react`
 
 ### Security

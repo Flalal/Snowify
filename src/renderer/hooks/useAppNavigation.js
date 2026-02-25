@@ -59,9 +59,9 @@ export function useAppNavigation(playFromList, getAudio) {
     async (albumId) => {
       try {
         showToast('Loading album...');
-        const tracks = await api.albumTracks(albumId);
-        if (tracks?.length) {
-          playFromList(tracks, 0);
+        const album = await api.albumTracks(albumId);
+        if (album?.tracks?.length) {
+          playFromList(album.tracks, 0);
         } else {
           showToast('Could not load album tracks');
         }

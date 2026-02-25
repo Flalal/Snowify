@@ -180,3 +180,11 @@ Token storage:
 - 1200px: card grid reduction
 - 900px: sidebar collapse
 - 600px: mobile layout (view padding, modal widths, queue panel)
+
+## Mobile-specific patterns
+- **Bottom nav Search button:** Search is hidden in JSX (`hidden: true`) but shown on mobile via CSS override (`display: flex !important`) in `mobile/src/mobile-overrides.css`. The floating search pill is hidden on mobile; the bottom nav Search button replaces it.
+- **Action buttons:** Artist/album/playlist page action buttons are icon-only on mobile (text hidden via CSS).
+- **Loading spinner:** Scaled down for mobile play button context.
+
+## Context menu patterns
+- **`onRemove` callback:** `ContextMenu` accepts an optional `onRemove` prop. When provided, a "Remove from playlist" action appears in the menu. Currently used by `PlaylistView.jsx` which passes a `handleRemoveTrack` function.
