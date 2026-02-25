@@ -48,7 +48,7 @@
 #### LOW
 
 - [x] **Prop drilling NowPlayingBar (10 props)** — Fixed (v1.4.9): `PlaybackContext` + signals, NowPlayingBar now 0 props
-- [x] **App.jsx god component (~640 lines)** — Fixed (v1.6.4): refactored to ~120 lines orchestrator. Views extracted to `ViewRouter.jsx`, overlays to `OverlayLayer.jsx`, mobile bridge to `useMobileBridge.js`, radio nav to `useAppNavigation.js`, spotify visibility to `spotifyImportVisible` signal
+- [x] **App.jsx god component (~640 lines)** — Fixed (v1.6.4): refactored to ~130 lines orchestrator. Views extracted to `ViewRouter.jsx`, overlays to `OverlayLayer.jsx`, mobile bridge to `useMobileBridge.js`, radio nav to `useAppNavigation.js`, spotify visibility to `spotifyImportVisible` signal. Back button added in v1.7.0
 
 ---
 

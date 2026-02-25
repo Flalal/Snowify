@@ -43,7 +43,7 @@ snowify-front/
 │   ├── renderer/
 │   │   ├── index.jsx                # Renderer entry
 │   │   ├── components/
-│   │   │   ├── App.jsx              # Root orchestrator (~120 lines)
+│   │   │   ├── App.jsx              # Root orchestrator (~130 lines, incl. back button)
 │   │   │   ├── ViewRouter.jsx       # 8 view sections (2 eager + 6 lazy)
 │   │   │   ├── OverlayLayer.jsx     # 4 lazy overlay panels
 │   │   │   ├── views/               # Lazy-loaded route views
@@ -79,7 +79,7 @@ snowify-front/
 │   │   │   ├── useTrackPlayer.js    # Audio element management
 │   │   │   ├── useQueueControls.js  # Queue manipulation
 │   │   │   ├── useNavigation.js     # View routing context
-│   │   │   ├── useAppNavigation.js  # App-level nav + radio nav effect
+│   │   │   ├── useAppNavigation.js  # App-level nav + history stack + goBack + radio nav effect
 │   │   │   ├── useAppInit.js        # App initialization + theme + token migration
 │   │   │   ├── useMobileBridge.js   # Mobile playback bridge + auto-open NowPlaying
 │   │   │   ├── useKeyboardShortcuts.js
@@ -93,9 +93,9 @@ snowify-front/
 │   │   │   ├── api.js               # dedup() pattern, inflight Map
 │   │   │   └── exploreCache.js      # Explore data cache (30min TTL)
 │   │   ├── state/
-│   │   │   ├── index.js             # All signals: queue, isPlaying, theme, etc. + saveState()
+│   │   │   ├── index.js             # All signals: queue, isPlaying, theme, searchHistory, etc. + saveState()
 │   │   │   ├── ui.js                # Toast, overlays, context menus, modals
-│   │   │   └── navigation.js        # View state signals (album, artist, playlist, video)
+│   │   │   └── navigation.js        # View state signals + navigationHistory + captureNavSnapshot/restoreNavSnapshot
 │   │   ├── styles/                  # 30+ CSS files by feature
 │   │   │   ├── variables.css        # Theme palettes, CSS custom props
 │   │   │   ├── global.css           # Resets, focus-visible, truncation
@@ -106,7 +106,7 @@ snowify-front/
 │   │       └── ...helpers
 │   │
 │   └── shared/
-│       ├── constants.js             # STREAM_CACHE_TTL, QUEUE_MAX_SIZE, WATCHDOG_INTERVAL_MS
+│       ├── constants.js             # STREAM_CACHE_TTL, QUEUE_MAX_SIZE, NAV_HISTORY_MAX, SEARCH_HISTORY_MAX...
 │       └── fieldMapping.js          # Sync field mapping (client ↔ server)
 │
 ├── mobile/                          # Capacitor mobile app

@@ -2,7 +2,7 @@
 
 ## Project overview
 Electron 33 + Preact 10.28 + electron-vite 5 desktop music player streaming from free sources (yt-dlp).
-Version: 1.6.4 | Repo: github.com/Flalal/Snowify
+Version: 1.7.0 | Repo: github.com/Flalal/Snowify
 
 ## Tech stack
 - **Runtime:** Electron 33, Preact 10.28, @preact/signals 2.8
@@ -30,9 +30,9 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 - Handler pattern: `register(ipcMain, { getMainWindow, getYtMusic, stream, lyrics })`, all wrapped via `createHandler(channel, fn, fallback)`
 
 ### Renderer (`src/renderer/`)
-- `state/index.js` — all state as Preact signals, persisted to localStorage (debounced). Tokens excluded from localStorage — stored via secureStore
+- `state/index.js` — all state as Preact signals, persisted to localStorage (debounced). Tokens excluded from localStorage — stored via secureStore. Includes `searchHistory` signal + helpers (`addSearchTerm`, `removeSearchTerm`, `clearSearchHistory`)
 - `hooks/` — 18 custom hooks (usePlayback, usePlaybackContext, useQueueControls, useTrackPlayer, useNavigation, useAppNavigation, useKeyboardShortcuts, usePlaybackWatchdog, useMobileBridge, useError, useLyrics, useVideoLoader, useFocusTrap, useSpotifyImport...)
-- `components/App.jsx` — Pure orchestrator (~120 lines): providers, layout shell, hooks, floating search
+- `components/App.jsx` — Pure orchestrator (~130 lines): providers, layout shell, hooks, back button, floating search
 - `components/ViewRouter.jsx` — Renders 8 view sections (2 eager + 6 lazy-loaded)
 - `components/OverlayLayer.jsx` — Renders 4 lazy overlay panels (Lyrics, NowPlaying, VideoPlayer, SpotifyImport)
 - `components/views/` — lazy-loaded: Home, Search, Explore, Library, Playlist, Album, Artist, Settings
@@ -40,6 +40,7 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 - `components/shared/` — TrackRow, TrackCard, AlbumCard, ArtistCard, Toast, Spinner, ContextMenu, ViewErrorBoundary
 - `components/NowPlayingBar/` — playback controls (0 props, uses PlaybackContext + signal-based panel toggles)
 - `services/api.js` — dedup() pattern with inflight Map, exploreCache.js (30min TTL)
+- `state/navigation.js` — view state signals (album, artist, playlist, video) + `navigationHistory` signal + `captureNavSnapshot()`/`restoreNavSnapshot()` helpers
 - `state/ui.js` — toast, error state (`lastError` signal), overlay panels (`lyricsVisible`/`queueVisible`/`spotifyImportVisible`/`nowPlayingViewVisible` signals), context menus, modals
 - `utils/playbackError.js` — centralized playback error handler (reset + error state + toast + advance)
 - `styles/` — 30+ CSS files, 10 themes via CSS custom properties + `data-theme` attribute (incl. "system" auto-detect)
@@ -54,6 +55,7 @@ src/shared/        → Constants + field mapping (shared between main/renderer)
 - **Theming:** CSS custom properties, `[data-theme="X"]` selectors, 10 themes + "system" (auto `prefers-color-scheme`)
 - **Error state:** `lastError` signal + `setError(code, msg, ctx)` in `useError.js` — observable + auto-toast
 - **Playback context:** `PlaybackProvider` + `usePlaybackContext()` — shares playback controls without prop drilling
+- **Navigation history:** `navigationHistory` signal in `state/navigation.js`. Deep nav (album/artist/playlist) pushes snapshot via `captureNavSnapshot()`, sidebar tabs clear the stack. `goBack()` pops + `restoreNavSnapshot()`. Cap 50 entries, transient (not persisted). Backspace shortcut in `useKeyboardShortcuts.js`
 - **Navigation dismisses now-playing:** `switchView()` in `useAppNavigation.js` sets `nowPlayingViewVisible = false`, so navigating away auto-closes the now-playing view
 - **Context menu `onRemove`:** ContextMenu accepts an optional `onRemove` callback — when provided, a "Remove from playlist" action is shown. Used by PlaylistView via `handleRemoveTrack`
 - **Preact, not React:** use `import { useState } from 'preact/hooks'`, NOT `react`
