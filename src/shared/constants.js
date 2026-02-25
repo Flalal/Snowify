@@ -22,6 +22,8 @@ export const STREAM_CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours for stream URLs
 // UI
 export const SEARCH_DEBOUNCE_MS = 400; // Search input debounce
 export const SAVE_STATE_DEBOUNCE_MS = 300; // State persistence debounce
+export const NAV_HISTORY_MAX = 50; // Max navigation history entries
+export const SEARCH_HISTORY_MAX = 20; // Max search history entries
 
 // Virtualization (TrackList)
 export const ROW_HEIGHT = 56;

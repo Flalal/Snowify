@@ -1,5 +1,5 @@
 import { signal, computed } from '@preact/signals';
-import { SAVE_STATE_DEBOUNCE_MS } from '../../shared/constants.js';
+import { SAVE_STATE_DEBOUNCE_MS, SEARCH_HISTORY_MAX } from '../../shared/constants.js';
 
 // ─── Persistent signals (saved to localStorage) ───
 export const playlists = signal([]);
@@ -19,6 +19,7 @@ export const effects = signal(true);
 export const theme = signal('dark');
 export const discordRpc = signal(false);
 export const country = signal('');
+export const searchHistory = signal([]);
 
 // ─── Cloud Sync signals (persisted) ───
 export const cloudSyncEnabled = signal(false);
@@ -78,7 +79,8 @@ const PERSISTENT_KEYS = {
   cloudSyncEnabled,
   cloudApiUrl,
   cloudUser,
-  lastSyncAt
+  lastSyncAt,
+  searchHistory
 };
 
 function _writeState() {
@@ -155,8 +157,30 @@ export function loadState() {
       cloudApiUrl.value = saved.cloudApiUrl || '';
       cloudUser.value = saved.cloudUser || null;
       lastSyncAt.value = saved.lastSyncAt || '';
+      searchHistory.value = saved.searchHistory || [];
     }
   } catch (err) {
     console.error('Failed to load state:', err);
   }
+}
+
+// ─── Search history helpers ───
+
+export function addSearchTerm(term) {
+  const trimmed = term.trim();
+  if (!trimmed) return;
+  const lower = trimmed.toLowerCase();
+  const filtered = searchHistory.value.filter((t) => t.toLowerCase() !== lower);
+  searchHistory.value = [trimmed, ...filtered].slice(0, SEARCH_HISTORY_MAX);
+  saveState();
+}
+
+export function removeSearchTerm(term) {
+  searchHistory.value = searchHistory.value.filter((t) => t !== term);
+  saveState();
+}
+
+export function clearSearchHistory() {
+  searchHistory.value = [];
+  saveState();
 }

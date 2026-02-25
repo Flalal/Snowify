@@ -324,6 +324,14 @@ input[type="checkbox"]:not(.settings-toggle) {
   border-width: 3px !important;
 }
 
+/* ═══ BACK BUTTON — mobile touch target ═══ */
+.back-btn {
+  width: 44px;
+  height: 44px;
+  top: 8px;
+  left: 8px;
+}
+
 /* ═══ FLOATING SEARCH — hidden on mobile, use bottom nav Search instead ═══ */
 .floating-search {
   display: none !important;
@@ -336,6 +344,18 @@ input[type="checkbox"]:not(.settings-toggle) {
 .search-input-wrap {
   width: 100% !important;
   max-width: none !important;
+}
+
+/* Search history — mobile touch targets */
+.search-history-remove {
+  width: 44px;
+  height: 44px;
+}
+.search-history-term {
+  padding: 14px 12px;
+}
+.search-history-clear {
+  min-height: 44px;
 }
 
 #search-input {

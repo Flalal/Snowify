@@ -13,7 +13,7 @@ export function useKeyboardShortcuts(callbacks) {
         if (e.key === 'Escape') e.target.blur();
         return;
       }
-      const { getAudio, togglePlay, playNext, playPrev, setVolumeLevel, switchView } =
+      const { getAudio, togglePlay, playNext, playPrev, setVolumeLevel, switchView, goBack } =
         cbRef.current;
       const audio = getAudio();
       switch (e.key) {
@@ -42,6 +42,9 @@ export function useKeyboardShortcuts(callbacks) {
         case '/':
           e.preventDefault();
           switchView('search');
+          break;
+        case 'Backspace':
+          if (goBack) goBack();
           break;
         case 'Escape':
           if (videoPlayerState.value) videoPlayerState.value = null;

@@ -4,25 +4,39 @@ import {
   albumViewState,
   artistViewState,
   playlistViewState,
-  videoPlayerState
+  videoPlayerState,
+  navigationHistory,
+  captureNavSnapshot,
+  restoreNavSnapshot
 } from '../state/navigation.js';
 import { showToast, lyricsVisible, nowPlayingViewVisible } from '../state/ui.js';
 import { api } from '../services/api.js';
+import { NAV_HISTORY_MAX } from '../../shared/constants.js';
 
 export function useAppNavigation(playFromList, getAudio) {
   const switchView = useCallback((name) => {
     currentView.value = name;
+    navigationHistory.value = [];
     if (lyricsVisible.value) lyricsVisible.value = false;
     if (nowPlayingViewVisible.value) nowPlayingViewVisible.value = false;
   }, []);
 
+  const pushHistory = useCallback(() => {
+    const snapshot = captureNavSnapshot();
+    const stack = navigationHistory.value.slice(0, NAV_HISTORY_MAX - 1);
+    navigationHistory.value = [...stack, snapshot];
+  }, []);
+
   const showPlaylistDetail = useCallback(
     (playlist, isLiked) => {
+      pushHistory();
       currentPlaylistId.value = playlist.id;
       playlistViewState.value = { playlist, isLiked };
-      switchView('playlist');
+      currentView.value = 'playlist';
+      if (lyricsVisible.value) lyricsVisible.value = false;
+      if (nowPlayingViewVisible.value) nowPlayingViewVisible.value = false;
     },
-    [switchView]
+    [pushHistory]
   );
 
   // ─── Radio navigation (from ContextMenu) ───
@@ -36,20 +50,37 @@ export function useAppNavigation(playFromList, getAudio) {
 
   const showAlbumDetail = useCallback(
     (albumId, albumMeta) => {
+      pushHistory();
       albumViewState.value = { albumId, albumMeta };
-      switchView('album');
+      currentView.value = 'album';
+      if (lyricsVisible.value) lyricsVisible.value = false;
+      if (nowPlayingViewVisible.value) nowPlayingViewVisible.value = false;
     },
-    [switchView]
+    [pushHistory]
   );
 
   const openArtistPage = useCallback(
     (artistId) => {
       if (!artistId) return;
+      pushHistory();
       artistViewState.value = { artistId };
-      switchView('artist');
+      currentView.value = 'artist';
+      if (lyricsVisible.value) lyricsVisible.value = false;
+      if (nowPlayingViewVisible.value) nowPlayingViewVisible.value = false;
     },
-    [switchView]
+    [pushHistory]
   );
+
+  const goBack = useCallback(() => {
+    const stack = navigationHistory.value;
+    if (!stack.length) return;
+    const entry = stack[stack.length - 1];
+    navigationHistory.value = stack.slice(0, -1);
+    restoreNavSnapshot(entry);
+    currentView.value = entry.view;
+    if (lyricsVisible.value) lyricsVisible.value = false;
+    if (nowPlayingViewVisible.value) nowPlayingViewVisible.value = false;
+  }, []);
 
   const openVideoPlayer = useCallback((videoId, title, artist) => {
     const audio = getAudio();
@@ -89,9 +120,10 @@ export function useAppNavigation(playFromList, getAudio) {
       showAlbumDetail,
       openArtistPage,
       openVideoPlayer,
-      showPlaylistDetail
+      showPlaylistDetail,
+      goBack
     }),
-    [playFromList, playAlbum, showAlbumDetail, openArtistPage, openVideoPlayer, showPlaylistDetail]
+    [playFromList, playAlbum, showAlbumDetail, openArtistPage, openVideoPlayer, showPlaylistDetail, goBack]
   );
 
   return {
@@ -100,6 +132,7 @@ export function useAppNavigation(playFromList, getAudio) {
     showAlbumDetail,
     openVideoPlayer,
     closeVideoPlayer,
+    goBack,
     nav
   };
 }

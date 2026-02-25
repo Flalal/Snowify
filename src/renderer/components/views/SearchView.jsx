@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
-import { musicOnly } from '../../state/index.js';
+import {
+  musicOnly,
+  searchHistory,
+  addSearchTerm,
+  removeSearchTerm,
+  clearSearchHistory
+} from '../../state/index.js';
 import { TrackList } from '../shared/TrackList.jsx';
 import { Spinner } from '../shared/Spinner.jsx';
 import { useNavigation } from '../../hooks/useNavigation.js';
@@ -50,6 +56,7 @@ export function SearchView() {
 
       setArtists(artistResults);
       setTracks(results);
+      addSearchTerm(q);
     } catch (err) {
       setSearchError(true);
       setArtists([]);
@@ -93,6 +100,14 @@ export function SearchView() {
     setLoading(false);
     if (inputRef.current) inputRef.current.focus();
   }
+
+  const handleHistoryClick = useCallback(
+    (term) => {
+      setQuery(term);
+      performSearch(term);
+    },
+    [performSearch]
+  );
 
   const handlePlay = useCallback(
     (trackList, index) => {
@@ -139,22 +154,55 @@ export function SearchView() {
       </div>
 
       <div id="search-results">
-        {/* Empty state */}
+        {/* Empty state / Search history */}
         {!trimmedQuery && !loading && (
-          <div className="empty-state search-empty">
-            <svg
-              width="64"
-              height="64"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#535353"
-              strokeWidth="1.5"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <path d="M16 16l4.5 4.5" strokeLinecap="round" />
-            </svg>
-            <p>Search for songs, artists, or albums</p>
-          </div>
+          searchHistory.value.length > 0 ? (
+            <div className="search-history">
+              <div className="search-history-header">
+                <h3>Recent searches</h3>
+                <button className="search-history-clear" onClick={clearSearchHistory}>
+                  Clear all
+                </button>
+              </div>
+              <ul className="search-history-list">
+                {searchHistory.value.map((term) => (
+                  <li key={term} className="search-history-item">
+                    <button className="search-history-term" onClick={() => handleHistoryClick(term)}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="M16 16l4.5 4.5" strokeLinecap="round" />
+                      </svg>
+                      {term}
+                    </button>
+                    <button
+                      className="search-history-remove"
+                      aria-label={`Remove ${term}`}
+                      onClick={() => removeSearchTerm(term)}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <div className="empty-state search-empty">
+              <svg
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#535353"
+                strokeWidth="1.5"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M16 16l4.5 4.5" strokeLinecap="round" />
+              </svg>
+              <p>Search for songs, artists, or albums</p>
+            </div>
+          )
         )}
 
         {/* Loading */}
