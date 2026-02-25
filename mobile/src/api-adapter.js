@@ -91,6 +91,10 @@ let chromecastReady = false;
 let castStatusCb = null;
 let mediaUpdateHandle = null;
 let sessionEndHandle = null;
+let castPollInterval = null;
+let lastKnownPlayerState = null;
+let lastKnownPosition = 0;
+let lastKnownDuration = 0;
 
 async function ensureChromecast() {
   if (chromecastReady) return;
@@ -234,12 +238,15 @@ window.snowify = {
     await Chromecast.sessionStop();
   },
   castLoadMedia: async (url, meta) => {
+    const startPos = meta?.currentTime || 0;
+    lastKnownPosition = startPos;
+    lastKnownPlayerState = 'PLAYING';
     await Chromecast.loadMedia({
       contentId: url,
       contentType: 'audio/mp4',
       streamType: 'buffered',
       autoPlay: true,
-      currentTime: meta?.currentTime || 0,
+      currentTime: startPos,
       metadata: {
         title: meta?.title || '',
         artist: meta?.artist || '',
@@ -247,33 +254,58 @@ window.snowify = {
       }
     });
   },
-  castSeek: (time) => Chromecast.mediaSeek({ position: time }),
-  castPause: () => Chromecast.mediaPause(),
-  castPlay: () => Chromecast.mediaPlay(),
+  castSeek: (time) => { lastKnownPosition = time; return Chromecast.mediaSeek({ position: time }); },
+  castPause: () => { lastKnownPlayerState = 'PAUSED'; return Chromecast.mediaPause(); },
+  castPlay: () => { lastKnownPlayerState = 'PLAYING'; return Chromecast.mediaPlay(); },
   castStop: () => Chromecast.mediaStop(),
   castSetVolume: (level) => Chromecast.setReceiverVolumeLevel({ level }),
   onCastDevices: () => {},  // native picker handles device list
   offCastDevices: () => {},
   onCastStatus: (cb) => {
     castStatusCb = cb;
+    // Native event listeners for state changes
     mediaUpdateHandle = Chromecast.addListener('MEDIA_UPDATE', (data) => {
+      lastKnownPlayerState = data.playerState;
+      lastKnownPosition = data.currentTime || 0;
+      lastKnownDuration = data.media?.duration || 0;
       if (castStatusCb) {
         castStatusCb({
           playerState: data.playerState,
-          currentTime: data.currentTime || 0,
-          duration: data.media?.duration || 0,
+          currentTime: lastKnownPosition,
+          duration: lastKnownDuration,
           volume: data.volume?.level ?? 1
         });
       }
     });
     sessionEndHandle = Chromecast.addListener('SESSION_ENDED', () => {
+      lastKnownPlayerState = 'IDLE';
+      lastKnownPosition = 0;
       if (castStatusCb) {
         castStatusCb({ playerState: 'IDLE', currentTime: 0, duration: 0, volume: 1 });
       }
     });
+    // JS polling fallback — increment position every second while playing
+    castPollInterval = setInterval(() => {
+      if (castStatusCb && lastKnownPlayerState === 'PLAYING') {
+        lastKnownPosition += 1;
+        castStatusCb({
+          playerState: 'PLAYING',
+          currentTime: lastKnownPosition,
+          duration: lastKnownDuration,
+          volume: 1
+        });
+      }
+    }, 1000);
   },
   offCastStatus: () => {
     castStatusCb = null;
+    lastKnownPlayerState = null;
+    lastKnownPosition = 0;
+    lastKnownDuration = 0;
+    if (castPollInterval) {
+      clearInterval(castPollInterval);
+      castPollInterval = null;
+    }
     if (mediaUpdateHandle) {
       mediaUpdateHandle.then(h => h.remove());
       mediaUpdateHandle = null;
