@@ -3,9 +3,13 @@
 import { Client, DefaultMediaReceiver } from 'castv2-client';
 import { Bonjour } from 'bonjour-service';
 
+const SCAN_INTERVAL_MS = 30_000; // Re-scan every 30s
+const DEVICE_TTL_MS = 60_000; // Remove devices not seen for 60s
+
 let bonjour = null;
 let browser = null;
-let devices = [];
+let devices = []; // { name, host, port, id, lastSeen }
+let backgroundTimer = null;
 let client = null;
 let player = null;
 let statusInterval = null;
@@ -14,41 +18,43 @@ let connectedDevice = null;
 
 // ─── Discovery ───
 
-export function startDiscovery() {
-  // If already browsing, just return current devices
-  if (browser) return [...devices];
+function addOrUpdateDevice(service) {
+  const id = service.txt?.id || `${service.name}-${service.port}`;
+  const host = service.referer?.address || service.addresses?.[0];
+  if (!host) return;
 
-  devices = [];
+  const existing = devices.find((d) => d.id === id);
+  if (existing) {
+    existing.lastSeen = Date.now();
+    return;
+  }
+
+  const device = {
+    name: service.txt?.fn || service.name || 'Chromecast',
+    host,
+    port: service.port || 8009,
+    id,
+    lastSeen: Date.now()
+  };
+
+  devices.push(device);
+  console.log(`[cast] discovered: ${device.name} @ ${device.host}:${device.port}`);
+  emitDevices();
+}
+
+function pruneStaleDevices() {
+  const before = devices.length;
+  devices = devices.filter((d) => Date.now() - d.lastSeen < DEVICE_TTL_MS);
+  if (devices.length < before) emitDevices();
+}
+
+function startBrowse() {
+  if (browser) return;
   bonjour = new Bonjour();
-  browser = bonjour.find({ type: 'googlecast' }, (service) => {
-    const existing = devices.find((d) => d.id === service.txt?.id);
-    if (existing) return;
-
-    const device = {
-      name: service.txt?.fn || service.name || 'Chromecast',
-      host: service.referer?.address || service.addresses?.[0],
-      port: service.port || 8009,
-      id: service.txt?.id || `${service.name}-${service.port}`
-    };
-
-    if (device.host) {
-      devices.push(device);
-      console.log(`[cast] discovered: ${device.name} @ ${device.host}:${device.port}`);
-      emitDevices();
-    }
-  });
-
-  return [...devices];
+  browser = bonjour.find({ type: 'googlecast' }, addOrUpdateDevice);
 }
 
-function emitDevices() {
-  if (!mainWindowRef) return;
-  const win = typeof mainWindowRef === 'function' ? mainWindowRef() : mainWindowRef;
-  if (!win?.webContents) return;
-  win.webContents.send('cast:devices', [...devices]);
-}
-
-export function stopDiscovery() {
+function stopBrowse() {
   if (browser) {
     browser.stop();
     browser = null;
@@ -57,6 +63,43 @@ export function stopDiscovery() {
     bonjour.destroy();
     bonjour = null;
   }
+}
+
+/** Start background scanning — call once at app startup. */
+export function startBackgroundScan() {
+  if (backgroundTimer) return;
+  startBrowse();
+  backgroundTimer = setInterval(() => {
+    pruneStaleDevices();
+    // Restart browse to re-query devices that may have appeared
+    stopBrowse();
+    startBrowse();
+  }, SCAN_INTERVAL_MS);
+}
+
+/** Called when picker opens — return cached devices and force a fresh scan. */
+export function startDiscovery() {
+  // Force a fresh scan cycle
+  stopBrowse();
+  startBrowse();
+  return devices.map(({ name, host, port, id }) => ({ name, host, port, id }));
+}
+
+function emitDevices() {
+  if (!mainWindowRef) return;
+  const win = typeof mainWindowRef === 'function' ? mainWindowRef() : mainWindowRef;
+  if (!win?.webContents) return;
+  win.webContents.send(
+    'cast:devices',
+    devices.map(({ name, host, port, id }) => ({ name, host, port, id }))
+  );
+}
+
+export function stopDiscovery() {
+  // Keep background scan alive, just stop the active browse
+  stopBrowse();
+  // Restart background scan if it was running
+  if (backgroundTimer) startBrowse();
 }
 
 export function getDevices() {

@@ -129,6 +129,7 @@ if (process.env.ELECTRON_RENDERER_URL) {
 app.whenReady().then(async () => {
   createWindow();
   initUpdater(mainWindow);
+  cast.startBackgroundScan();
   initYTMusic().catch((err) => {
     console.error('YTMusic init failed:', err);
     mainWindow?.webContents?.send('ytmusic-init-error');
